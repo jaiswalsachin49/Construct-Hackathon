@@ -1,72 +1,76 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     // Basic info
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // hashed
-    profilePhoto: String, // Cloudinary URL
-    coverPhoto: String, // Cloudinary URL
+    password: { type: String, required: true },
+    profilePhoto: String,
+    coverPhoto: String,
     bio: { type: String, maxlength: 500 },
 
-    // Location
+    // Location (simple, no GeoJSON)
     location: {
-        lat: Number,
-        lng: Number,
-        areaLabel: String // "Koramangala, Bangalore"
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true },
+        areaLabel: { type: String, required: true }, // "Koramangala, Bangalore"
     },
 
     // Skills
-    teachTags: [{ tag: String, level: String }], // level: beginner/intermediate/expert
-    learnTags: [String],
+    teachTags: [
+        {
+            name: String,
+            slug: String,
+        },
+    ],
+    learnTags: [
+        {
+            name: String,
+            slug: String,
+        },
+    ],
 
-    // Availability
-    availability: String, // morning/evening/weekend/flexible
+    availability: {
+        type: String,
+        enum: ['morning', 'evening', 'weekends', 'flexible'],
+        default: 'flexible',
+    },
 
-    // Stats
     stats: {
         sessionsCompleted: { type: Number, default: 0 },
         hoursCompleted: { type: Number, default: 0 },
         averageRating: { type: Number, default: 0 },
-        reviewCount: { type: Number, default: 0 }
+        reviewCount: { type: Number, default: 0 },
     },
 
-    // Verification
     isVerified: { type: Boolean, default: false },
     verificationCode: String,
 
-    // Connections
     allies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     blocked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
-    // Badges
     badges: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Badge' }],
 
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    updatedAt: { type: Date, default: Date.now },
 });
 
-// Hash password before saving
+// password hashing
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-
-    const bcrypt = require('bcryptjs');
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-// Compare password method
+// compare password
 userSchema.methods.comparePassword = async function (inputPassword) {
-    const bcrypt = require('bcryptjs');
     return await bcrypt.compare(inputPassword, this.password);
 };
 
-// Create geospatial index
-userSchema.index({ 'location': '2dsphere' });
-userSchema.index({ 'email': 1 });
-userSchema.index({ 'teachTags.tag': 'text', 'name': 'text' });
+// REMOVE the geo index — your data is not GeoJSON.
+/*
+userSchema.index({ location: '2dsphere' });
+*/
 
 module.exports = mongoose.model('User', userSchema);

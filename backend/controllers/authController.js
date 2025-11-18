@@ -8,42 +8,105 @@ const generateToken = (userId) => {
 };
 
 // Register user (4-step complete registration)
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, teachTags, learnTags, location, availability, bio } = req.body;
-
-    // Validation
-    if (!email || !password || password !== confirmPassword) {
-      return res.status(400).json({ error: 'Invalid input' });
-    }
-
-    if (await User.findOne({ email })) {
-      return res.status(409).json({ error: 'Email already exists' });
-    }
-
-    if (!teachTags || teachTags.length === 0 || !learnTags || learnTags.length === 0) {
-      return res.status(400).json({ error: 'Must select at least 1 skill to teach and learn' });
-    }
-
-    if (!location || !location.lat || !location.lng) {
-      return res.status(400).json({ error: 'Location required' });
-    }
-
-    // Create user
-    const user = new User({
+    const {
       name,
       email,
       password,
+      confirmPassword,
       teachTags,
       learnTags,
       location,
       availability,
       bio
+    } = req.body;
+
+    // ---------------------------
+    //  VALIDATION
+    // ---------------------------
+
+    if (!name?.trim()) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+
+    if (!email?.trim()) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    if (!password || password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+
+    if (await User.findOne({ email })) {
+      return res.status(409).json({ error: "Email already exists" });
+    }
+
+    if (!teachTags?.length || !learnTags?.length) {
+      return res.status(400).json({
+        error: "Please select at least 1 skill to teach and learn"
+      });
+    }
+
+    // Location must contain lat, lng & areaLabel
+    if (
+      !location ||
+      typeof location !== "object" ||
+      !location.lat ||
+      !location.lng ||
+      !location.areaLabel?.trim()
+    ) {
+      return res.status(400).json({
+        error: "Valid location (lat, lng, areaLabel) is required"
+      });
+    }
+
+    // ---------------------------
+    //  NORMALIZE SKILL TAGS
+    // ---------------------------
+
+    const slugify = (s) =>
+      String(s)
+        .trim()
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+
+    const normalizeTags = (tags) =>
+      tags.map((t) => ({
+        name: t.trim(),
+        slug: slugify(t),
+      }));
+
+    const normalizedTeachTags = normalizeTags(teachTags);
+    const normalizedLearnTags = normalizeTags(learnTags);
+
+    // ---------------------------
+    //  CREATE USER DOCUMENT
+    // ---------------------------
+
+    const user = new User({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+      bio: bio?.trim() || "",
+      availability,
+      teachTags: normalizedTeachTags,
+      learnTags: normalizedLearnTags,
+      location: {
+        lat: location.lat,
+        lng: location.lng,
+        areaLabel: location.areaLabel.trim()
+      }
     });
 
     await user.save();
 
     const token = generateToken(user._id);
+
+    // ---------------------------
+    //  RESPONSE
+    // ---------------------------
 
     res.status(201).json({
       success: true,
@@ -52,19 +115,20 @@ exports.register = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        profilePhoto: user.profilePhoto,
         location: user.location,
         teachTags: user.teachTags,
-        learnTags: user.learnTags
+        learnTags: user.learnTags,
+        profilePhoto: user.profilePhoto
       }
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
 
 // Login user
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -97,7 +161,7 @@ exports.login = async (req, res) => {
 };
 
 // Get current user
-exports.getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId)
       .select('-password')
@@ -110,12 +174,12 @@ exports.getCurrentUser = async (req, res) => {
 };
 
 // Logout (frontend clears token, backend can blacklist if needed)
-exports.logout = (req, res) => {
+const logout = (req, res) => {
   res.json({ success: true, message: 'Logged out' });
 };
 
 // Refresh token
-exports.refreshToken = (req, res) => {
+const refreshToken = (req, res) => {
   try {
     const token = generateToken(req.user.userId);
     res.json({ success: true, token });
@@ -124,4 +188,10 @@ exports.refreshToken = (req, res) => {
   }
 };
 
-module.exports = exports;
+module.exports = {
+  register,
+  login,
+  getCurrentUser,
+  logout,
+  refreshToken
+};

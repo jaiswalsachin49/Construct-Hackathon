@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, MapPin, Zap } from 'lucide-react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    Eye,
+    EyeOff,
+    User,
+    Mail,
+    Lock,
+    MapPin,
+    Zap
+} from 'lucide-react';
 import Button from '../../components/common/Button';
 import TagInput from '../../components/auth/TagInput';
 import PasswordStrength from '../../components/auth/PasswordStrength';
@@ -20,6 +30,7 @@ const RegisterPage = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [detectingLocation, setDetectingLocation] = useState(false);
 
     const [formData, setFormData] = useState({
         // Step 1
@@ -32,14 +43,35 @@ const RegisterPage = () => {
         // Step 3
         learnTags: [],
         // Step 4
-        location: '',
+        location: {
+            lat: null,
+            lng: null,
+            areaLabel: '',
+        },
         availability: 'flexible',
         bio: '',
     });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // special handling for nested location.areaLabel
+        if (name === 'location') {
+            setFormData((prev) => ({
+                ...prev,
+                location: {
+                    ...prev.location,
+                    areaLabel: value,
+                },
+            }));
+            if (errors.location) {
+                setErrors((prev) => ({ ...prev, location: '' }));
+            }
+            return;
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
+
         // Clear error for this field
         if (errors[name]) {
             setErrors((prev) => ({ ...prev, [name]: '' }));
@@ -95,7 +127,7 @@ const RegisterPage = () => {
 
     const validateStep4 = () => {
         const newErrors = {};
-        if (!formData.location.trim()) {
+        if (!formData.location.areaLabel.trim()) {
             newErrors.location = 'Location is required';
         }
         setErrors(newErrors);
@@ -121,6 +153,45 @@ const RegisterPage = () => {
         window.scrollTo(0, 0);
     };
 
+    const handleDetectLocation = () => {
+        if (!navigator.geolocation) {
+            setErrors((prev) => ({
+                ...prev,
+                location: 'Geolocation is not supported by your browser',
+            }));
+            return;
+        }
+
+        setDetectingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setFormData((prev) => ({
+                    ...prev,
+                    location: {
+                        ...prev.location,
+                        lat: latitude,
+                        lng: longitude,
+                        // keep whatever user typed, or set a basic label
+                        areaLabel:
+                            prev.location.areaLabel ||
+                            `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`,
+                    },
+                }));
+                setErrors((prev) => ({ ...prev, location: '' }));
+                setDetectingLocation(false);
+            },
+            (error) => {
+                console.error(error);
+                setErrors((prev) => ({
+                    ...prev,
+                    location: 'Could not detect location. Please enter it manually.',
+                }));
+                setDetectingLocation(false);
+            }
+        );
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -130,9 +201,15 @@ const RegisterPage = () => {
             name: formData.name.trim(),
             email: formData.email.trim(),
             password: formData.password,
+            confirmPassword: formData.confirmPassword,
             teachTags: formData.teachTags,
             learnTags: formData.learnTags,
-            location: formData.location.trim(),
+            // send location in structured form to match schema
+            location: {
+                lat: formData.location.lat,
+                lng: formData.location.lng,
+                areaLabel: formData.location.areaLabel.trim(),
+            },
             availability: formData.availability,
             bio: formData.bio.trim(),
         };
@@ -162,8 +239,9 @@ const RegisterPage = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.name ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         placeholder="John Doe"
                     />
                 </div>
@@ -185,8 +263,9 @@ const RegisterPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         placeholder="your.email@example.com"
                     />
                 </div>
@@ -208,8 +287,9 @@ const RegisterPage = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`block w-full pl-10 pr-10 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`block w-full pl-10 pr-10 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.password ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         placeholder="At least 8 characters"
                     />
                     <button
@@ -239,12 +319,15 @@ const RegisterPage = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         placeholder="Re-enter your password"
                     />
                 </div>
-                {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                )}
             </div>
         </div>
     );
@@ -270,7 +353,8 @@ const RegisterPage = () => {
             <div>
                 <p className="text-sm font-medium text-gray-700 mb-3">Popular Skills:</p>
                 <div className="flex flex-wrap gap-2">
-                    {POPULAR_SKILLS.filter((skill) => !formData.teachTags.includes(skill.toLowerCase()))
+                    {POPULAR_SKILLS
+                        .filter((skill) => !formData.teachTags.includes(skill.toLowerCase()))
                         .slice(0, 12)
                         .map((skill, index) => (
                             <button
@@ -351,7 +435,7 @@ const RegisterPage = () => {
         <div className="space-y-5 animate-in fade-in duration-300">
             <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Almost there!</h2>
-                <p className="text-gray-600">Just a few more details</p>
+            <p className="text-gray-600">Just a few more details</p>
             </div>
 
             {/* Location */}
@@ -367,14 +451,29 @@ const RegisterPage = () => {
                         type="text"
                         id="location"
                         name="location"
-                        value={formData.location}
+                        value={formData.location.areaLabel}
                         onChange={handleInputChange}
-                        className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.location ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                        placeholder="San Francisco, CA"
+                        className={`block w-full pl-10 pr-24 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.location ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Koramangala, Bangalore"
                     />
+                    <button
+                        type="button"
+                        onClick={handleDetectLocation}
+                        disabled={detectingLocation}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-blue-600 hover:text-blue-800 disabled:opacity-60"
+                    >
+                        {detectingLocation ? 'Detecting…' : 'Use my location'}
+                    </button>
                 </div>
                 {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
+                {formData.location.lat && formData.location.lng && (
+                    <p className="mt-1 text-xs text-gray-500">
+                        Detected: lat {formData.location.lat.toFixed(4)}, lng{' '}
+                        {formData.location.lng.toFixed(4)}
+                    </p>
+                )}
             </div>
 
             {/* Availability */}
@@ -451,8 +550,9 @@ const RegisterPage = () => {
                         {[1, 2, 3, 4].map((step) => (
                             <div
                                 key={step}
-                                className={`h-2 w-12 rounded-full transition-all duration-300 ${step <= currentStep ? 'bg-blue-600' : 'bg-gray-200'
-                                    }`}
+                                className={`h-2 w-12 rounded-full transition-all duration-300 ${
+                                    step <= currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                                }`}
                             />
                         ))}
                     </div>
@@ -514,7 +614,10 @@ const RegisterPage = () => {
                     <div className="mt-6 text-center">
                         <p className="text-gray-600 text-sm">
                             Already have an account?{' '}
-                            <Link to="/auth/login" className="text-blue-600 font-medium hover:underline">
+                            <Link
+                                to="/auth/login"
+                                className="text-blue-600 font-medium hover:underline"
+                            >
                                 Log in
                             </Link>
                         </p>

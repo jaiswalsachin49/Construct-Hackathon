@@ -7,7 +7,7 @@ class SocketService {
 
     connect() {
         const token = useAuthStore.getState().token;
-        const SOCKET_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+        const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
         if (this.socket?.connected) {
             console.log('Socket already connected');

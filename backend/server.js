@@ -26,14 +26,16 @@ const io = socketIo(server, {
 });
 
 // Middleware
-app.use(cors());
+app.use(cors(
+  { origin: process.env.FRONTEND_URL, credentials: true }
+));
 app.use(express.json());
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Rate limiting
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
-app.use('/api/', apiLimiter);
+// // Rate limiting
+// app.use('/api/auth/login', authLimiter);
+// app.use('/api/auth/register', authLimiter);
+// app.use('/api/', apiLimiter);
 
 // Make io accessible to routes
 app.set('io', io);

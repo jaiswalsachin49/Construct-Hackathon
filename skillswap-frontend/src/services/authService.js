@@ -1,4 +1,4 @@
-import api from '../App';
+import api from '../services/api';
 
 // Register user
 export const registerUser = async (data) => {
