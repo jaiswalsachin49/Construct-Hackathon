@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 const DashboardLayout = () => {
     const navItems = [
         { to: '/app/discover', icon: Home, label: 'Discover' },
-        { to: '/app/matches', icon: Users, label: 'Matches' },
+        // { to: '/app/matches', icon: Users, label: 'Matches' },
         { to: '/app/chat', icon: MessageCircle, label: 'Chat' },
         { to: '/app/waves', icon: Zap, label: 'Waves' },
         { to: '/app/feed', icon: FileText, label: 'Feed' },

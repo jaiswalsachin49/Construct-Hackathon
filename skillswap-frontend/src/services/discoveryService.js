@@ -1,33 +1,40 @@
 import api from './api';
 
+// Extract array safely from backend
+const extractArray = (res) => {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    return [];
+};
+
 // Get nearby users
 export const getNearbyUsers = async (lat, lng, radius) => {
     const response = await api.get('/api/users/nearby', {
         params: { lat, lng, radius },
     });
-    return response.data;
+    // console.log("Nearby users response:", response.data);
+    return extractArray(response.data.users);
 };
 
 // Get best matches
-export const getBestMatches = async (userId) => {
-    const response = await api.get('/api/users/matches', {
-        params: { userId },
-    });
-    return response.data;
+export const getBestMatches = async () => {
+    const response = await api.get('/api/matches/ai');
+    return response.data.matches || [];
 };
+
 
 // Search users by skill
 export const searchUsers = async (query, lat, lng) => {
-    const response = await api.get('/api/users/search', {
+    const response = await api.get('/api/users/nearby', {
         params: { query, lat, lng },
     });
-    return response.data;
+    return extractArray(response.data.users);
 };
 
-// Get user by ID
+// Get user by ID (returns object, not array)
 export const getUserById = async (userId) => {
     const response = await api.get(`/api/users/${userId}`);
-    return response.data;
+    return response.data.user || response.data;
 };
 
 // Add user as ally

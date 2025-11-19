@@ -79,7 +79,11 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                 {/* Match Score */}
                 {user.matchScore !== undefined && (
                     <div className="mb-4 flex justify-center">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getMatchColor(user.matchScore)}`}>
+                        <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getMatchColor(
+                                user.matchScore
+                            )}`}
+                        >
                             {user.matchScore}% Match
                         </span>
                     </div>
@@ -90,12 +94,12 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                     <div className="mb-3">
                         <p className="text-xs font-semibold text-gray-700 mb-2">Can Teach:</p>
                         <div className="flex flex-wrap gap-1.5">
-                            {user.teachTags.slice(0, 3).map((tag, index) => (
+                            {user.teachTags.slice(0, 3).map((tag) => (
                                 <span
-                                    key={index}
+                                    key={tag._id}
                                     className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium"
                                 >
-                                    {tag}
+                                    {tag.name}
                                 </span>
                             ))}
                             {user.teachTags.length > 3 && (
@@ -112,12 +116,12 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                     <div className="mb-4">
                         <p className="text-xs font-semibold text-gray-700 mb-2">Wants to Learn:</p>
                         <div className="flex flex-wrap gap-1.5">
-                            {user.learnTags.slice(0, 3).map((tag, index) => (
+                            {user.learnTags.slice(0, 3).map((tag) => (
                                 <span
-                                    key={index}
+                                    key={tag._id}
                                     className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium"
                                 >
-                                    {tag}
+                                    {tag.name}
                                 </span>
                             ))}
                             {user.learnTags.length > 3 && (
@@ -134,9 +138,13 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                     <div className="flex items-center justify-center gap-2 mb-4 text-sm">
                         <div className="flex items-center gap-1 text-yellow-500">
                             <Star className="h-4 w-4 fill-current" />
-                            <span className="font-semibold text-gray-900">{user.rating.average || 0}</span>
+                            <span className="font-semibold text-gray-900">
+                                {user.rating.average || 0}
+                            </span>
                         </div>
-                        <span className="text-gray-500">({user.rating.count || 0} reviews)</span>
+                        <span className="text-gray-500">
+                            ({user.rating.count || 0} reviews)
+                        </span>
                     </div>
                 )}
 
@@ -173,8 +181,20 @@ UserCard.propTypes = {
         profilePhoto: PropTypes.string,
         distance: PropTypes.number,
         areaLabel: PropTypes.string,
-        teachTags: PropTypes.arrayOf(PropTypes.string),
-        learnTags: PropTypes.arrayOf(PropTypes.string),
+        teachTags: PropTypes.arrayOf(
+            PropTypes.shape({
+                _id: PropTypes.string,
+                name: PropTypes.string,
+                slug: PropTypes.string,
+            })
+        ),
+        learnTags: PropTypes.arrayOf(
+            PropTypes.shape({
+                _id: PropTypes.string,
+                name: PropTypes.string,
+                slug: PropTypes.string,
+            })
+        ),
         rating: PropTypes.shape({
             average: PropTypes.number,
             count: PropTypes.number,

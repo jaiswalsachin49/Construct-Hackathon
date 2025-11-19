@@ -60,7 +60,12 @@ exports.createPost = async (req, res) => {
                 });
 
                 // Delete local file after upload
-                fs.unlinkSync(file.path);
+                try {
+                    if (file?.path) fs.unlinkSync(file.path);
+                } catch (e) {
+                    console.error('Failed to delete local file:', e.message);
+                }
+
             }
         }
 
@@ -235,5 +240,43 @@ exports.sharePost = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.getCommunityPosts = async (req, res) => {
+    try {
+        const { communityId } = req.params;
+        const posts = await Post.find({ communityId })
+            .populate('userId', 'name profilePhoto')
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, posts });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.createCommunityPost = async (req, res) => {
+    try {
+        const { content, tags } = req.body;
+        const { communityId } = req.params;
+        const userId = req.user.userId;
+
+        const post = new Post({
+            userId,
+            content,
+            tags: tags || [],
+            visibility: 'public',
+            communityId,
+        });
+
+        await post.save();
+        await post.populate('userId', 'name profilePhoto');
+
+        res.status(201).json({ success: true, post });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 module.exports = exports;

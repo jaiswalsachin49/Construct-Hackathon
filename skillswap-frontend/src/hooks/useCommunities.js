@@ -1,4 +1,4 @@
-import useCommunityStore from '@/store/communityStore';
+import useCommunityStore from '../store/communityStore';
 import {
   getMyCommunities,
   getNearbyCommunities,
@@ -9,7 +9,7 @@ import {
   getCommunityMembers,
   getCommunityPosts,
   searchCommunities
-} from '@/services/communityService';
+} from '../services/communityService';
 
 export const useCommunities = () => {
   const store = useCommunityStore();

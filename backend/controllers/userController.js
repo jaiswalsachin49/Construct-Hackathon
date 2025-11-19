@@ -1,50 +1,68 @@
 const User = require('../models/User');
 
 // Get nearby users with geospatial query
+// controllers/userController.js
 exports.getNearbyUsers = async (req, res) => {
     try {
-        const { radius = 5, search = '', availability = null } = req.query;
-        const user = await User.findById(req.user.userId);
+        let { radius = 5, search = '', availability = null, lat, lng } = req.query;
+        radius = Number(radius) || 5;
 
-        if (!user.location || !user.location.lat || !user.location.lng) {
-            return res.status(400).json({ error: 'User location not set' });
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        let baseLocation;
+
+        // Use live map location from frontend if provided
+        if (lat && lng) {
+            baseLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        } else {
+            if (!user.location?.lat || !user.location?.lng) {
+                return res.status(400).json({ error: "User location not set" });
+            }
+            baseLocation = user.location;
         }
 
+        // -------- Search query logic -------------
         let query = {
             _id: { $ne: user._id },
-            'location.lat': { $exists: true },
-            'location.lng': { $exists: true }
+            "location.lat": { $exists: true },
+            "location.lng": { $exists: true }
         };
 
-        // Filter by availability
+        if (search && search.trim() !== "") {
+            const regex = new RegExp(search.trim(), "i");
+            query.$or = [
+                { name: regex },
+                { bio: regex },
+                { "teachTags.name": regex },
+                { "learnTags.name": regex }
+            ];
+        }
+
         if (availability) {
             query.availability = availability;
         }
 
-        // Filter by search text
-        if (search) {
-            query.$text = { $search: search };
-        }
+        let users = await User.find(query)
+            .select("name profilePhoto location teachTags learnTags stats availability bio")
+            .lean();
 
-        const nearbyUsers = await User.find(query)
-            .select('name profilePhoto location teachTags learnTags availability stats')
-            .limit(100);
-
-        // Calculate distance for each user and filter by radius
-        const usersWithDistance = nearbyUsers
-            .map(u => {
-                const distance = getDistance(user.location, u.location);
-                return { ...u.toObject(), distance };
-            })
+        // Calculate distance
+        const filtered = users
+            .map(u => ({
+                ...u,
+                distance: getDistance(baseLocation, u.location)
+            }))
             .filter(u => u.distance <= radius)
-            .sort((a, b) => a.distance - b.distance)
-            .slice(0, 20);
+            .sort((a, b) => a.distance - b.distance);
 
-        res.json({ success: true, users: usersWithDistance });
+        res.json({ success: true, users: filtered });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 // Get best matches using AI algorithm
 exports.getBestMatches = async (req, res) => {

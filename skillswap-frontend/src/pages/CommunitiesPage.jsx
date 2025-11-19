@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
-import { useCommunities } from '@/hooks/useCommunities';
-import CommunityPreview from '@/components/communities/CommunityPreview';
-import CommunityCard from '@/components/communities/CommunityCard';
+import { useCommunities } from '../hooks/useCommunities';
+import CommunityPreview from '../components/communities/CommunityPreview';
+import CommunityCard from '../components/communities/CommunityCard';
 
 const CommunitiesPage = () => {
   const navigate = useNavigate();

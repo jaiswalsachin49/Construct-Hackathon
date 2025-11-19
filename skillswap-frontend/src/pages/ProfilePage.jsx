@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Share2, MessageCircle, MapPin, Calendar, Star } from 'lucide-react';
-import AlliesList from '@/components/profile/AlliesList';
-import UserPosts from '@/components/profile/UserPosts';
-import UserWaves from '@/components/profile/UserWaves';
-import EditProfileModal from '@/components/profile/EditProfileModal';
-import ReportModal from '@/components/safety/ReportModal';
-import BlockConfirmModal from '@/components/safety/BlockConfirmModal';
+import AlliesList from '../components/profile/AlliesList';
+import UserPosts from '../components/profile/UserPosts';
+import UserWaves from '../components/profile/UserWaves';
+import EditProfileModal from '../components/profile/EditProfileModal';
+import ReportModal from '../components/safety/ReportModal';
+import BlockConfirmModal from '../components/safety/BlockConfirmModal';
 
 const ProfilePage = () => {
   const { userId } = useParams();

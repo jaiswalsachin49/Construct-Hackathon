@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Upload } from 'lucide-react';
-import { useCommunities } from '@/hooks/useCommunities';
+import { useCommunities } from '../../hooks/useCommunities';
 
 const CreateCommunityModal = ({ isOpen, onClose }) => {
   const { createNewCommunity, isLoading } = useCommunities();
