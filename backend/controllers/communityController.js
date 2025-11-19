@@ -71,7 +71,12 @@ exports.createCommunity = async (req, res) => {
             coverImage = uploaded.secure_url;
 
             // Delete local file after upload
-            fs.unlinkSync(req.file.path);
+            try {
+                if (file?.path) fs.unlinkSync(file.path);
+            } catch (e) {
+                console.error('Failed to delete local file:', e.message);
+            }
+
         }
 
         const parsedLocation = typeof location === 'string' ? JSON.parse(location) : location;
@@ -200,6 +205,30 @@ exports.kickMember = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+exports.searchCommunities = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || !q.trim()) {
+            return res.json({ success: true, communities: [] });
+        }
+
+        const regex = new RegExp(q.trim(), 'i');
+        const communities = await Community.find({
+            $or: [
+                { name: regex },
+                { description: regex },
+                { tags: regex },
+            ],
+        })
+            .limit(20)
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, communities });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 // Helper function
 function getDistance(loc1, loc2) {

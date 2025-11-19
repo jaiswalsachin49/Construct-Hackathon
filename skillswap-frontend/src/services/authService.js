@@ -25,7 +25,7 @@ export const updateProfile = async (data) => {
 };
 
 // Check if email exists
-export const checkEmailExists = async (email) => {
-    const response = await api.post('/api/auth/check-email', { email });
-    return response.data;
-};
+// export const checkEmailExists = async (email) => {
+//     const response = await api.post('/api/auth/check-email', { email });
+//     return response.data;
+// };

@@ -19,7 +19,12 @@ exports.createWave = async (req, res) => {
             mediaUrl = uploadedFile.secure_url;
 
             // Delete local file after upload
-            fs.unlinkSync(req.file.path);
+            try {
+                if (file?.path) fs.unlinkSync(file.path);
+            } catch (e) {
+                console.error('Failed to delete local file:', e.message);
+            }
+
         }
 
         const wave = new Wave({

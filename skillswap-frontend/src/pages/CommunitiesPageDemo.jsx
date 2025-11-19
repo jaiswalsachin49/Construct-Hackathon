@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
-import CommunityPreview from '@/components/communities/CommunityPreview';
-import CommunityCard from '@/components/communities/CommunityCard';
-import CreateCommunityModal from '@/components/communities/CreateCommunityModal';
+import CommunityPreview from '../components/communities/CommunityPreview';
+import CommunityCard from '../components/communities/CommunityCard';
+import CreateCommunityModal from '../components/communities/CreateCommunityModal';
 
 // Mock data for demonstration
 const mockMyCommunities = [

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ReportModal from '@/components/safety/ReportModal';
-import BlockConfirmModal from '@/components/safety/BlockConfirmModal';
-import SafetyTips from '@/components/safety/SafetyTips';
+import ReportModal from '../components/safety/ReportModal';
+import BlockConfirmModal from '../components/safety/BlockConfirmModal';
+import SafetyTips from '../components/safety/SafetyTips';
 
 const SafetyComponentsDemo = () => {
   const [showReportModal, setShowReportModal] = useState(false);

@@ -12,9 +12,10 @@ const useDiscoveryStore = create((set) => ({
     isLoading: false,
     error: null,
 
-    setNearbyUsers: (users) => set({ nearbyUsers: users }),
+    setNearbyUsers: (users) => set({ nearbyUsers: Array.isArray(users) ? users : [] }),
 
-    setMatchedUsers: (users) => set({ matchedUsers: users }),
+    setMatchedUsers: (users) => set({ matchedUsers: Array.isArray(users) ? users : [] }),
+
 
     setFilters: (filters) => set((state) => ({
         filters: { ...state.filters, ...filters },

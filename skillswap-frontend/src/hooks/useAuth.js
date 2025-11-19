@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import { loginUser, registerUser, getCurrentUser } from '../services/authService';
-import { initializeSocket, disconnectSocket } from '../services/socket.js';
+import socketService from '../services/socketService';
 
 export const useAuth = () => {
     const { user, isAuthenticated, token, isLoading, error, setUser, setToken, setLoading, setError, logout: logoutStore } = useAuthStore();
@@ -17,8 +17,8 @@ export const useAuth = () => {
             setToken(data.token);
             setUser(data.user);
 
-            // Initialize socket connection
-            initializeSocket(data.token);
+            // INIT SOCKET
+            socketService.connect();
 
             navigate('/app/discover');
             return { success: true };
@@ -41,8 +41,8 @@ export const useAuth = () => {
             setToken(data.token);
             setUser(data.user);
 
-            // Initialize socket connection
-            initializeSocket(data.token);
+            // INIT SOCKET
+            socketService.connect();
 
             navigate('/app/discover');
             return { success: true };
@@ -56,7 +56,7 @@ export const useAuth = () => {
     };
 
     const logout = () => {
-        disconnectSocket();
+        socketService.disconnect();
         logoutStore();
         navigate('/auth/login');
     };

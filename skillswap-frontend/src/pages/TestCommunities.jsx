@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useCommunities } from '@/hooks/useCommunities';
+import { useCommunities } from '../hooks/useCommunities';
 
 const TestCommunities = () => {
   const {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Settings, Users, MapPin } from 'lucide-react';
-import { useCommunities } from '@/hooks/useCommunities';
-import CommunityPosts from '@/components/communities/CommunityPosts';
-import CommunityChat from '@/components/communities/CommunityChat';
-import MembersList from '@/components/communities/MembersList';
+import { useCommunities } from '../hooks/useCommunities';
+import CommunityPosts from '../components/communities/CommunityPosts';
+import CommunityChat from '../components/communities/CommunityChat';
+import MembersList from '../components/communities/MembersList';
 
 const CommunityDetailPage = () => {
   const { communityId } = useParams();

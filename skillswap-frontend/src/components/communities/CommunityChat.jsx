@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
-import socketService from '@/services/socketService';
-import useCommunityStore from '@/store/communityStore';
+import socketService from '../../services/socketService';
+import useCommunityStore from '../../store/communityStore';
 
 const CommunityChat = ({ communityId }) => {
   const [message, setMessage] = useState('');

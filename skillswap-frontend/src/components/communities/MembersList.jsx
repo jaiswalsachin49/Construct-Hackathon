@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCommunities } from '@/hooks/useCommunities';
+import { useCommunities } from '../../hooks/useCommunities';
 import { Search, Crown, Shield } from 'lucide-react';
 
 const MembersList = ({ communityId }) => {

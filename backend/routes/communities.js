@@ -3,6 +3,7 @@ const router = express.Router();
 const communityController = require('../controllers/communityController');
 const authenticateToken = require('../middlewares/auth');
 const upload = require('../config/multer');
+const postController = require('../controllers/postController');
 
 router.get('/nearby', authenticateToken, communityController.getNearbyCommunities);
 router.get('/my', authenticateToken, communityController.getMyCommunities);
@@ -12,5 +13,9 @@ router.post('/:communityId/join', authenticateToken, communityController.joinCom
 router.post('/:communityId/leave', authenticateToken, communityController.leaveCommunity);
 router.get('/:communityId/members', communityController.getMembers);
 router.post('/:communityId/kick/:userId', authenticateToken, communityController.kickMember);
+
+router.get('/:communityId/posts', authenticateToken, postController.getCommunityPosts);
+router.post('/:communityId/posts', authenticateToken, postController.createCommunityPost);
+router.get('/search', authenticateToken, communityController.searchCommunities);
 
 module.exports = router;

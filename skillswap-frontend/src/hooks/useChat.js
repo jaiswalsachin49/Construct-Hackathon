@@ -9,25 +9,34 @@ export const useChat = () => {
     const { user } = useAuthStore();
 
     useEffect(() => {
-        // Connect socket on mount
-        if (user) {
-            socketService.connect();
-            fetchConversations();
-        }
+        if (!user) return;
 
-        // Cleanup on unmount
-        return () => {
-            // Don't disconnect on unmount as socket should persist
-            // socketService.disconnect();
-        };
+        socketService.connect();
+        fetchConversations();
+
+        // ===== SOCKET MESSAGE LISTENER =====
+        socketService.onMessage((message) => {
+            const convId = message.conversationId;
+            if (!convId) return;
+
+            // replace temp + old version
+            store.updateMessage(convId, message);
+
+            // if still missing add cleanly
+            const exist = store.messages[convId] || [];
+            if (!exist.some((m) => m._id === message._id)) {
+                store.addMessage(convId, message);
+            }
+        });
+
     }, [user]);
 
     const fetchConversations = async () => {
         try {
             const data = await getConversations();
             store.setConversations(data.conversations || data);
-        } catch (error) {
-            console.error('Failed to fetch conversations:', error);
+        } catch (err) {
+            console.error('Failed to fetch conversations:', err);
         }
     };
 
@@ -35,45 +44,50 @@ export const useChat = () => {
         try {
             const data = await getMessages(conversationId);
             store.setMessages(conversationId, data.messages || data);
-        } catch (error) {
-            console.error('Failed to fetch messages:', error);
+        } catch (err) {
+            console.error('Failed to fetch messages:', err);
         }
     };
 
+    // ===== SEND MESSAGE =====
     const sendMessage = (content) => {
-        if (!store.currentConversation || !content.trim()) return;
+        const convId = store.currentConversation;
+        if (!convId || !content.trim()) return;
 
-        // Optimistic update
+        const tempId = "temp-" + Date.now();
+
         const tempMessage = {
-            _id: 'temp-' + Date.now(),
-            content: content.trim(),
+            _id: tempId,
+            conversationId: convId,
             senderId: user._id,
+            content: content.trim(),
             timestamp: new Date().toISOString(),
+
             pending: true,
+            delivered: false,
+            read: false,
         };
 
-        store.addMessage(store.currentConversation, tempMessage);
-        socketService.sendMessage(store.currentConversation, content.trim());
+        store.addMessage(convId, tempMessage);
+
+        socketService.sendMessage(convId, content.trim());
     };
 
-    const setCurrentConversation = (conversationId) => {
-        // Leave previous conversation
-        if (store.currentConversation) {
+    const setCurrentConversation = (id) => {
+        if (store.currentConversation)
             socketService.leaveConversation(store.currentConversation);
+
+        if (!id) {
+            store.setCurrentConversation(null);
+            return;
         }
 
-        // Join new conversation
-        if (conversationId) {
-            store.setCurrentConversation(conversationId);
-            socketService.joinConversation(conversationId);
-            socketService.markAsRead(conversationId);
+        store.setCurrentConversation(id);
+        socketService.joinConversation(id);
+        socketService.markAsRead(id);
 
-            // Fetch messages if not loaded
-            if (!store.messages[conversationId]) {
-                fetchMessages(conversationId);
-            }
-        } else {
-            store.setCurrentConversation(null);
+        if (!store.messages[id]) {
+            fetchMessages(id);
         }
     };
 

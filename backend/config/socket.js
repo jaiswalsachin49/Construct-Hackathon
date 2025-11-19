@@ -28,24 +28,22 @@ module.exports = (io) => {
                 const message = new Message({
                     conversationId,
                     senderId,
-                    content
+                    content,
                 });
 
                 await message.save();
-                await message.populate('senderId', 'name profilePhoto');
 
-                // Update conversation
                 await Conversation.findByIdAndUpdate(conversationId, {
                     lastMessage: content,
-                    lastMessageTime: new Date()
+                    lastMessageTime: new Date(),
                 });
 
-                // Emit to all in room
                 io.to(`conversation:${conversationId}`).emit('receive:message', {
                     _id: message._id,
+                    conversationId,            // ✅ include this
                     content,
                     senderId,
-                    timestamp: message.createdAt
+                    timestamp: message.createdAt,
                 });
             } catch (error) {
                 console.error('Message error:', error);
@@ -56,8 +54,9 @@ module.exports = (io) => {
         socket.on('typing', (data) => {
             const { conversationId, senderId, isTyping } = data;
             io.to(`conversation:${conversationId}`).emit('user:typing', {
+                conversationId,
                 senderId,
-                isTyping
+                isTyping,
             });
         });
 
@@ -65,60 +64,64 @@ module.exports = (io) => {
         socket.on('mark:read', async (conversationId) => {
             try {
                 await Message.updateMany(
-                    { conversationId, read: false },
-                    { read: true, readAt: new Date() }
+                    {
+                        conversationId,
+                        senderId: { $ne: socket.userId },   // ❗ only mark messages from the other user
+                        read: false
+                    },
+                    { read: true }
                 );
 
-                io.to(`conversation:${conversationId}`).emit('messages:read');
-            } catch (error) {
-                console.error('Mark read error:', error);
-            }
+        io.to(`conversation:${conversationId}`).emit('messages:read');
+    } catch (error) {
+        console.error('Mark read error:', error);
+    }
+});
+
+// ========== COMMUNITY GROUP CHAT ==========
+
+// Join community room
+socket.on('community:join', (communityId) => {
+    socket.join(`community:${communityId}`);
+    console.log(`User ${socket.id} joined community:${communityId}`);
+});
+
+// Leave community room
+socket.on('community:leave', (communityId) => {
+    socket.leave(`community:${communityId}`);
+    console.log(`User ${socket.id} left community:${communityId}`);
+});
+
+// Send community message
+socket.on('send:community:message', async (data) => {
+    try {
+        const { communityId, content, senderId, senderName, senderPhoto } = data;
+
+        // Broadcast to all members in the community room
+        io.to(`community:${communityId}`).emit('receive:community:message', {
+            content,
+            senderId,
+            senderName,
+            senderPhoto,
+            timestamp: new Date()
         });
+    } catch (error) {
+        console.error('Community message error:', error);
+    }
+});
 
-        // ========== COMMUNITY GROUP CHAT ==========
+// Community typing indicator
+socket.on('community:typing', (data) => {
+    const { communityId, senderId, senderName, isTyping } = data;
+    io.to(`community:${communityId}`).emit('community:user:typing', {
+        senderId,
+        senderName,
+        isTyping
+    });
+});
 
-        // Join community room
-        socket.on('community:join', (communityId) => {
-            socket.join(`community:${communityId}`);
-            console.log(`User ${socket.id} joined community:${communityId}`);
-        });
-
-        // Leave community room
-        socket.on('community:leave', (communityId) => {
-            socket.leave(`community:${communityId}`);
-            console.log(`User ${socket.id} left community:${communityId}`);
-        });
-
-        // Send community message
-        socket.on('send:community:message', async (data) => {
-            try {
-                const { communityId, content, senderId, senderName, senderPhoto } = data;
-
-                // Broadcast to all members in the community room
-                io.to(`community:${communityId}`).emit('receive:community:message', {
-                    content,
-                    senderId,
-                    senderName,
-                    senderPhoto,
-                    timestamp: new Date()
-                });
-            } catch (error) {
-                console.error('Community message error:', error);
-            }
-        });
-
-        // Community typing indicator
-        socket.on('community:typing', (data) => {
-            const { communityId, senderId, senderName, isTyping } = data;
-            io.to(`community:${communityId}`).emit('community:user:typing', {
-                senderId,
-                senderName,
-                isTyping
-            });
-        });
-
-        socket.on('disconnect', () => {
-            console.log('User disconnected:', socket.id);
-        });
+socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+});
     });
 };
