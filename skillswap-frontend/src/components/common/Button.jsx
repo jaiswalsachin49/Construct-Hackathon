@@ -20,6 +20,9 @@ const Button = ({
         secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
         danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
         ghost: 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
+        ghostWarm: "text-pink-600 hover:bg-pink-100",
+        warm: "bg-gradient-to-r from-pink-500 to-orange-400 text-white hover:opacity-90",
+        warmAlt: "bg-white text-pink-600 hover:bg-pink-50",
     };
 
     const sizes = {

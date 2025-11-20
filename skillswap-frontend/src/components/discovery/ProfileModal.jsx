@@ -107,7 +107,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                 ) : (
                     <>
                         {/* Header / Cover */}
-                        <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600 w-full flex-shrink-0" />
+                        <div className="h-32 bg-gradient-to-r from-pink-500 to-orange-400 w-full flex-shrink-0" />
 
                         {/* Profile Info */}
                         <div className="px-6 pb-6 -mt-12 flex-1">
@@ -128,7 +128,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
 
                             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                                 {user.name}
-                                {user.isVerified && <CheckCircle className="w-5 h-5 text-blue-500" />}
+                                {user.isVerified && <CheckCircle className="w-5 h-5 text-pink-200" />}
                             </h2>
 
                             <div className="flex items-center gap-4 text-sm text-gray-600 mt-1 mb-4">
@@ -158,7 +158,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.teachTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100">
+                                            <span key={i} className="px-3 py-1 bg-pink-80 text-pink-300 rounded-full text-sm font-medium border border-pink-200">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}
@@ -174,7 +174,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.learnTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+                                            <span key={i} className="px-3 py-1 bg-yellow-80 text-yellow-500 rounded-full text-sm font-medium border border-yellow-200">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}
@@ -189,7 +189,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                             {currentUser?._id !== user._id && (
                                 <div className="flex gap-3">
                                     <Button
-                                        variant={isAlly ? "secondary" : "primary"}
+                                        variant={isAlly ? "secondary" : "warm"}
                                         className="flex-1"
                                         onClick={handleConnect}
                                         disabled={isAlly || isAddingAlly}

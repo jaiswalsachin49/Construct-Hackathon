@@ -11,7 +11,9 @@ const useAuthStore = create(
             error: null,
 
             setUser: (user) => {
-                set({ user, isAuthenticated: !!user });
+                // Defensive: if caller passes API wrapper like { success: true, user: {...} }
+                const realUser = user && typeof user === 'object' && user.user ? user.user : user;
+                set({ user: realUser, isAuthenticated: !!realUser });
             },
 
             setToken: (token) => {

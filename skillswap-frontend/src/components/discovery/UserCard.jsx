@@ -57,7 +57,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                                 className="h-16 w-16 rounded-full object-cover border border-gray-200"
                             />
                         ) : (
-                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br  from-pink-200 to-orange-100  flex items-center justify-center text-white font-bold text-xl">
                                 {getInitials(user.name)}
                             </div>
                         )}
@@ -81,9 +81,9 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
 
                 {/* Match Reason */}
                 {matchReason && (
-                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                        <p className="text-xs font-medium text-blue-700 line-clamp-1">
+                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-pink-50 to-orange-50 rounded-lg border border-pink-100 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-pink-500 flex-shrink-0" />
+                        <p className="text-xs font-medium text-pink-700 line-clamp-1">
                             {matchReason}
                         </p>
                     </div>
@@ -105,7 +105,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                             <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1.5">Teaches</p>
                             <div className="flex flex-wrap gap-1.5">
                                 {user.teachTags.slice(0, 3).map((tag, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs font-medium">
+                                    <span key={i} className="px-2 py-0.5 bg-pink-50 text-pink-700 border border-pink-100 rounded text-xs font-medium">
                                         {tag.name || tag}
                                     </span>
                                 ))}
@@ -117,7 +117,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                 {/* Actions */}
                 <div className="flex gap-2 mt-auto" onClick={(e) => e.stopPropagation()}>
                     <Button
-                        variant={status === 'none' ? 'primary' : 'secondary'}
+                        variant={status === 'none' ? 'warm' : 'secondary'}
                         size="sm"
                         className="flex-1"
                         onClick={handleConnect}

@@ -37,7 +37,11 @@ exports.getFeed = async (req, res) => {
             hasMore: skip + limit < totalPosts
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // Log full error for debugging
+        console.error('Get feed error:', error);
+        const payload = { error: error.message };
+        if (process.env.NODE_ENV !== 'production') payload.stack = error.stack;
+        res.status(500).json(payload);
     }
 };
 
@@ -69,10 +73,42 @@ exports.createPost = async (req, res) => {
             }
         }
 
+        // Helper to parse media sent in req.body (string or array). Prefer uploaded files when present.
+        const parseMediaField = (field) => {
+            if (!field) return [];
+            if (Array.isArray(field)) return field.map(f => {
+                // If items are simple strings (urls), normalize to object
+                if (typeof f === 'string') return { url: f, type: 'photo' };
+                return f;
+            });
+            if (typeof field === 'string') {
+                // Try JSON.parse first
+                try {
+                    const parsed = JSON.parse(field);
+                    if (Array.isArray(parsed)) return parsed.map(f => (typeof f === 'string' ? { url: f, type: 'photo' } : f));
+                } catch (e) {
+                    // Attempt a tolerant fallback: replace single quotes with double quotes
+                    try {
+                        const fixed = field.replace(/'/g, '"');
+                        const parsed = JSON.parse(fixed);
+                        if (Array.isArray(parsed)) return parsed.map(f => (typeof f === 'string' ? { url: f, type: 'photo' } : f));
+                    } catch (e2) {
+                        // Last resort: extract any URLs from the string
+                            const urls = Array.from(field.matchAll(/https?:\/\/[^\s'\)"]+/g)).map(m => ({ url: m[0], type: 'photo' }));
+                        if (urls.length) return urls;
+                    }
+                }
+            }
+            return [];
+        };
+
+        // Resolve final media array: prefer uploaded files, fall back to any media sent in body
+        const finalMedia = (media && media.length > 0) ? media : parseMediaField(req.body.media);
+
         const post = new Post({
             userId,
             content,
-            media,
+            media: finalMedia,
             tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : [],
             visibility: visibility || 'public',
             communityId: communityId || null
@@ -83,7 +119,11 @@ exports.createPost = async (req, res) => {
 
         res.status(201).json({ success: true, post });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // Log and return stack in dev to help debugging client-side 500s
+        console.error('Create post error:', error);
+        const payload = { error: error.message };
+        if (process.env.NODE_ENV !== 'production') payload.stack = error.stack;
+        res.status(500).json(payload);
     }
 };
 

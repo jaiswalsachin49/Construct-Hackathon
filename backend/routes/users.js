@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const authenticateToken = require('../middlewares/auth');
+const upload = require('../config/multer');
 
 // Public routes (Search/Discovery)
 router.get('/nearby', authenticateToken, userController.getNearbyUsers);
@@ -18,7 +19,11 @@ router.delete('/allies/:userId', authenticateToken, userController.removeAlly); 
 // -----------------------------
 
 // Other routes
-router.put('/profile', authenticateToken, userController.updateProfile);
+// Accept multipart/form-data for profile updates (cover/profile photos + fields)
+router.put('/profile', authenticateToken, upload.fields([
+	{ name: 'coverPhoto', maxCount: 1 },
+	{ name: 'profilePhoto', maxCount: 1 }
+]), userController.updateProfile);
 router.get('/:userId/allies', userController.getAllies);
 router.post('/block/:userId', authenticateToken, userController.blockUser);
 router.post('/unblock/:userId', authenticateToken, userController.unblockUser);

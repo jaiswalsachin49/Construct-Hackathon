@@ -147,16 +147,118 @@ exports.getUserById = async (req, res) => {
 // Update profile
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, bio, location, teachTags, learnTags, availability } = req.body;
+        // req.body may contain stringified JSON when sent as multipart/form-data
+        let { name, bio, location, teachTags, learnTags, availability } = req.body || {};
+
+        // Parse JSON strings if necessary
+        try {
+            if (location && typeof location === 'string') location = JSON.parse(location);
+        } catch (e) {
+            console.warn('Failed to parse location:', e.message);
+        }
+        try {
+            if (teachTags && typeof teachTags === 'string') teachTags = JSON.parse(teachTags);
+        } catch (e) {
+            console.warn('Failed to parse teachTags:', e.message);
+        }
+        try {
+            if (learnTags && typeof learnTags === 'string') learnTags = JSON.parse(learnTags);
+        } catch (e) {
+            console.warn('Failed to parse learnTags:', e.message);
+        }
+
+        // Handle uploaded files (multer placed them in req.files)
+        const cloudinary = require('../config/cloudinary');
+        const fs = require('fs');
+
+        const updateData = {
+            updatedAt: Date.now()
+        };
+
+        if (name) updateData.name = name;
+        if (bio !== undefined) updateData.bio = bio;
+        if (location) updateData.location = location;
+        // Normalize tags: model expects objects like { name, slug }
+        const slugify = (s) => String(s || '')
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+
+        if (teachTags) {
+            if (Array.isArray(teachTags)) {
+                updateData.teachTags = teachTags.map(t => {
+                    if (!t) return null;
+                    if (typeof t === 'string') return { name: t, slug: slugify(t) };
+                    // support old shape { tag, level } or { name }
+                    const name = t.name || t.tag || t?.label || '';
+                    return { name, slug: slugify(name) };
+                }).filter(Boolean);
+            } else {
+                updateData.teachTags = teachTags;
+            }
+        }
+
+        if (learnTags) {
+            if (Array.isArray(learnTags)) {
+                updateData.learnTags = learnTags.map(t => {
+                    if (!t) return null;
+                    if (typeof t === 'string') return { name: t, slug: slugify(t) };
+                    const name = t.name || t.tag || t?.label || '';
+                    return { name, slug: slugify(name) };
+                }).filter(Boolean);
+            } else {
+                updateData.learnTags = learnTags;
+            }
+        }
+        if (availability) {
+            // Normalize frontend value 'weekend' -> model expects 'weekends'
+            if (availability === 'weekend') availability = 'weekends';
+            updateData.availability = availability;
+        }
+
+        // Upload files to Cloudinary if provided, similar to other controllers
+        if (req.files) {
+            // profilePhoto
+            if (req.files.profilePhoto && req.files.profilePhoto.length > 0) {
+                const file = req.files.profilePhoto[0];
+                try {
+                    const uploaded = await cloudinary.uploader.upload(file.path, {
+                        folder: 'skillswap/profiles'
+                    });
+                    updateData.profilePhoto = uploaded.secure_url;
+                } catch (err) {
+                    console.error('Cloudinary upload failed for profilePhoto:', err.message);
+                } finally {
+                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) {}
+                }
+            }
+
+            // coverPhoto
+            if (req.files.coverPhoto && req.files.coverPhoto.length > 0) {
+                const file = req.files.coverPhoto[0];
+                try {
+                    const uploaded = await cloudinary.uploader.upload(file.path, {
+                        folder: 'skillswap/covers'
+                    });
+                    updateData.coverPhoto = uploaded.secure_url;
+                } catch (err) {
+                    console.error('Cloudinary upload failed for coverPhoto:', err.message);
+                } finally {
+                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) {}
+                }
+            }
+        }
 
         const user = await User.findByIdAndUpdate(
             req.user.userId,
-            { name, bio, location, teachTags, learnTags, availability, updatedAt: Date.now() },
+            updateData,
             { new: true }
         ).select('-password');
 
         res.json({ success: true, user });
     } catch (error) {
+        console.error('Update profile error:', error);
         res.status(500).json({ error: error.message });
     }
 };

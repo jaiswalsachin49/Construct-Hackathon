@@ -36,14 +36,14 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
                     {/* View Toggle */}
                     <div className="flex gap-2">
                         <Button
-                            variant={view === 'nearby' ? 'primary' : 'ghost'}
+                            variant={view === 'nearby' ? 'warm' : 'ghost'}
                             onClick={() => onViewChange('nearby')}
                             size="md"
                         >
                             Nearby
                         </Button>
                         <Button
-                            variant={view === 'matches' ? 'primary' : 'ghost'}
+                            variant={view === 'matches' ? 'warm' : 'ghost'}
                             onClick={() => onViewChange('matches')}
                             size="md"
                         >

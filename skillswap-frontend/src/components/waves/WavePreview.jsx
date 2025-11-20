@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
 const WavePreview = ({ wave, onClick, isViewed }) => {
+    // --- FIX: Normalize User Data ---
+    // Backend sends 'userId' (populated), Frontend might expect 'user'
+    const waveUser = wave.userId || wave.user || {};
+    // --------------------------------
+
     const getInitials = (name) => {
         if (!name) return 'U';
         return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -31,7 +36,7 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
         } else if (wave.type === 'text') {
             return null; // Will show text content
         }
-        return wave.user?.profilePhoto;
+        return waveUser.profilePhoto;
     };
 
     const thumbnail = getThumbnail();
@@ -43,52 +48,58 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
         >
             <div className="relative">
                 {/* Ring */}
-                <div className={`absolute inset-0 rounded-full ${isViewed ? 'bg-gray-300' : 'bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500'
-                    } p-0.5`}>
-                    <div className="h-full w-full bg-white rounded-full" />
+                <div className={`absolute -inset-1 rounded-full ${
+                    isViewed ? 'bg-gray-300' : 'bg-gradient-to-tr from-blue-500 to-purple-500'
+                } p-[2px]`}>
+                    <div className="bg-white rounded-full w-full h-full" />
                 </div>
 
-                {/* Avatar/Content */}
-                <div className="relative h-20 w-20 rounded-full overflow-hidden bg-gray-100 border-4 border-white">
+                {/* Avatar / Thumbnail */}
+                <div className="relative w-16 h-16 rounded-full border-2 border-white overflow-hidden bg-gray-100">
                     {thumbnail ? (
-                        <img
-                            src={thumbnail}
-                            alt={wave.user?.name}
-                            className={`h-full w-full object-cover ${isViewed ? 'filter grayscale opacity-60' : ''
-                                }`}
+                        <img 
+                            src={thumbnail} 
+                            alt="Wave" 
+                            className="w-full h-full object-cover transition-transform group-hover:scale-110"
                         />
-                    ) : wave.type === 'text' ? (
-                        <div
-                            className={`h-full w-full flex items-center justify-center text-white text-xs font-bold ${isViewed ? 'filter grayscale opacity-60' : ''
-                                }`}
-                            style={{ backgroundColor: wave.backgroundColor || '#3B82F6' }}
-                        >
-                            Aa
-                        </div>
                     ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                            <span className="text-white font-semibold text-lg">
-                                {getInitials(wave.user?.name)}
-                            </span>
-                        </div>
+                         <div 
+                            className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
+                            style={{ backgroundColor: wave.backgroundColor || '#3B82F6' }}
+                         >
+                             {wave.type === 'text' ? 'T' : getInitials(waveUser.name)}
+                         </div>
                     )}
+                </div>
+
+                {/* User Badge (Small Icon) */}
+                <div className="absolute bottom-0 right-0 translate-y-1">
+                     {waveUser.profilePhoto ? (
+                        <img 
+                            src={waveUser.profilePhoto} 
+                            className="w-6 h-6 rounded-full border-2 border-white"
+                            alt={waveUser.name}
+                        />
+                     ) : (
+                        <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[10px] text-white font-bold">
+                            {getInitials(waveUser.name)}
+                        </div>
+                     )}
 
                     {/* Plus icon for unviewed */}
                     {!isViewed && (
-                        <div className="absolute bottom-0 right-0 h-5 w-5 bg-blue-600 rounded-full border-2 border-white flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">+</span>
-                        </div>
+                        <div className="absolute bottom-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white" />
                     )}
                 </div>
             </div>
 
             {/* Name */}
             <p className="text-xs font-medium text-gray-900 mt-2 text-center truncate w-20">
-                {wave.user?.name || 'Unknown'}
+                {waveUser.name || 'Unknown'} 
             </p>
 
             {/* Time */}
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-[10px] text-gray-500 text-center">
                 {getTimeRemaining(wave.createdAt)}
             </p>
         </div>
@@ -96,19 +107,7 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
 };
 
 WavePreview.propTypes = {
-    wave: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        user: PropTypes.shape({
-            _id: PropTypes.string,
-            name: PropTypes.string,
-            profilePhoto: PropTypes.string,
-        }).isRequired,
-        mediaUrl: PropTypes.string,
-        thumbnailUrl: PropTypes.string,
-        type: PropTypes.string.isRequired,
-        backgroundColor: PropTypes.string,
-        createdAt: PropTypes.string.isRequired,
-    }).isRequired,
+    wave: PropTypes.object.isRequired,
     onClick: PropTypes.func.isRequired,
     isViewed: PropTypes.bool,
 };

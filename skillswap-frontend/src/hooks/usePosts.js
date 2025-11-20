@@ -12,11 +12,31 @@ export const usePosts = () => {
 
             const data = await postService.getFeedPosts(page);
 
+            // Normalize posts so frontend uses `post.user` and `comment.user`
+            const raw = data.posts || data;
+            const normalizePost = (p) => {
+                const post = { ...p };
+                // Support different backend shapes: `user`, `userId` or `author`
+                post.user = post.user || post.userId || post.author || null;
+
+                // Normalize comments: map userId -> user
+                if (Array.isArray(post.comments)) {
+                    post.comments = post.comments.map(c => ({
+                        ...c,
+                        user: c.user || c.userId || null
+                    }));
+                }
+
+                return post;
+            };
+
+            const normalized = Array.isArray(raw) ? raw.map(normalizePost) : [];
+
             if (page === 1) {
-                store.setFeedPosts(data.posts || data);
+                store.setFeedPosts(normalized);
             } else {
                 // Append for pagination
-                store.setFeedPosts([...store.feedPosts, ...(data.posts || data)]);
+                store.setFeedPosts([...store.feedPosts, ...normalized]);
             }
         } catch (error) {
             console.error('Failed to fetch feed:', error);
@@ -45,7 +65,13 @@ export const usePosts = () => {
             }
 
             const data = await postService.createPost(formData);
-            store.addPost(data.post || data);
+            const rawPost = data.post || data;
+            const post = {
+                ...rawPost,
+                user: rawPost.user || rawPost.userId || rawPost.author || null,
+                comments: (rawPost.comments || []).map(c => ({ ...c, user: c.user || c.userId || null }))
+            };
+            store.addPost(post);
             return data;
         } catch (error) {
             console.error('Failed to create post:', error);
@@ -57,8 +83,22 @@ export const usePosts = () => {
         try {
             await postService.deletePost(postId);
             store.deletePost(postId);
+            return true;
         } catch (error) {
             console.error('Failed to delete post:', error);
+            return false;
+        }
+    };
+
+    const updatePost = async (postId, data) => {
+        try {
+            const res = await postService.updatePost(postId, data);
+            const rawPost = res.post || res;
+            // Update store (shallow merge)
+            store.updatePost(postId, rawPost);
+            return rawPost;
+        } catch (error) {
+            console.error('Failed to update post:', error);
             throw error;
         }
     };
