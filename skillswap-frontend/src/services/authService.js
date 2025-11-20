@@ -20,7 +20,12 @@ export const getCurrentUser = async () => {
 
 // Update profile
 export const updateProfile = async (data) => {
-    const response = await api.put('/api/users/profile', data);
+    // If caller passed FormData (for files), set multipart header.
+    const config = {};
+    if (typeof FormData !== 'undefined' && data instanceof FormData) {
+        config.headers = { 'Content-Type': 'multipart/form-data' };
+    }
+    const response = await api.put('/api/users/profile', data, config);
     return response.data;
 };
 

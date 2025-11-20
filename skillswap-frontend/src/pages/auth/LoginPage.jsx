@@ -40,114 +40,110 @@ const LoginPage = () => {
 
     return (
         <div className="min-h-screen flex">
-            {/* Left Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-                <div className="w-full max-w-md">
+
+            {/* LEFT SIDE — LOGIN FORM */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-16 bg-gradient-to-br from-orange-50 via-pink-50 to-rose-100">
+                <div className="w-full max-w-lg bg-white/70 backdrop-blur-xl shadow-2xl p-10 rounded-3xl border border-pink-100">
+
                     {/* Logo */}
                     <div className="text-center mb-8">
                         <Link to="/" className="inline-flex items-center gap-2">
-                            <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center">
-                                <Zap className="h-6 w-6 text-white" />
+                            <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center shadow">
+                                <Zap className="h-6 w-6 text-pink-600" />
                             </div>
-                            <span className="text-2xl font-bold text-gray-900">SkillSwap</span>
+                            <span className="text-2xl font-extrabold text-pink-600 tracking-tight">SkillSwap</span>
                         </Link>
                     </div>
 
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
-                        <p className="text-gray-600">Log in to continue to SkillSwap</p>
+                    <div className="text-center mb-6">
+                        <h1 className="text-3xl font-extrabold text-gray-900">Welcome Back!</h1>
+                        <p className="text-gray-700 mt-1">Log in to continue to SkillSwap</p>
                     </div>
 
                     {/* Error Banner */}
                     {authError && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow">
                             <p className="text-sm text-red-600">{authError}</p>
                         </div>
                     )}
 
                     {/* Form */}
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                        {/* Email */}
+
+                        {/* Email Field */}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Email <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
-                                </div>
+                                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
                                     {...register('email')}
                                     type="email"
-                                    id="email"
-                                    disabled={isLoading}
                                     className={`
-                    block w-full pl-10 pr-3 py-2.5 border rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                    disabled:bg-gray-100 disabled:cursor-not-allowed
-                    ${errors.email ? 'border-red-500' : 'border-gray-300'}
-                  `}
+                                        w-full pl-10 pr-3 py-3 rounded-xl border
+                                        bg-white shadow-sm
+                                        focus:outline-none focus:ring-2 focus:ring-pink-300
+                                        ${errors.email ? 'border-red-500' : 'border-pink-200'}
+                                    `}
                                     placeholder="your.email@example.com"
+                                    disabled={isLoading}
                                 />
                             </div>
                             {errors.email && (
-                                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                                <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
                             )}
                         </div>
 
-                        {/* Password */}
+                        {/* Password Field */}
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Password <span className="text-red-500">*</span>
                             </label>
+
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
-                                </div>
+                                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+
                                 <input
                                     {...register('password')}
                                     type={showPassword ? 'text' : 'password'}
-                                    id="password"
-                                    disabled={isLoading}
                                     className={`
-                    block w-full pl-10 pr-10 py-2.5 border rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                    disabled:bg-gray-100 disabled:cursor-not-allowed
-                    ${errors.password ? 'border-red-500' : 'border-gray-300'}
-                  `}
+                                        w-full pl-10 pr-12 py-3 rounded-xl border
+                                        bg-white shadow-sm
+                                        focus:outline-none focus:ring-2 focus:ring-pink-300
+                                        ${errors.password ? 'border-red-500' : 'border-pink-200'}
+                                    `}
                                     placeholder="Enter your password"
+                                    disabled={isLoading}
                                 />
+
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                                    disabled={isLoading}
+                                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                                 >
-                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    {showPassword ? <EyeOff /> : <Eye />}
                                 </button>
                             </div>
+
                             {errors.password && (
-                                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                                <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
                             )}
                         </div>
 
-                        {/* Remember Me & Forgot Password */}
+                        {/* Remember Me + Forgot Password */}
                         <div className="flex items-center justify-between">
-                            <label className="flex items-center cursor-pointer">
+                            <label className="flex items-center gap-2 cursor-pointer text-gray-700">
                                 <input
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
-                                    disabled={isLoading}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="accent-pink-500 rounded"
                                 />
-                                <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                                Remember me
                             </label>
-                            <Link
-                                to="/auth/forgot-password"
-                                className="text-sm text-blue-600 hover:underline"
-                            >
+                            <Link to="/auth/forgot-password" className="text-pink-600 text-sm hover:underline">
                                 Forgot password?
                             </Link>
                         </div>
@@ -155,50 +151,66 @@ const LoginPage = () => {
                         {/* Submit Button */}
                         <Button
                             type="submit"
-                            variant="primary"
-                            size="lg"
-                            isLoading={isLoading}
+                            variant="warm"
+                            className="w-full rounded-xl py-3"
                             disabled={isLoading}
-                            className="w-full"
                         >
-                            {isLoading ? 'Logging in...' : 'Log In'}
+                            {isLoading ? 'Logging in…' : 'Log In'}
                         </Button>
                     </form>
 
                     {/* Sign Up Link */}
-                    <div className="mt-6 text-center">
-                        <p className="text-gray-600">
-                            Don't have an account?{' '}
-                            <Link to="/auth/register" className="text-blue-600 font-medium hover:underline">
-                                Sign up
-                            </Link>
+                    <p className="text-center text-gray-700 mt-6">
+                        Don’t have an account?{' '}
+                        <Link to="/auth/register" className="text-pink-600 font-semibold hover:underline">
+                            Sign up
+                        </Link>
+                    </p>
+                </div>
+            </div>
+
+            {/* RIGHT SIDE — HERO PANEL */}
+            <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-pink-400 via-orange-300 to-purple-500 items-center justify-center p-16 relative text-white">
+
+                {/* Ambient Glow */}
+                <div className="absolute right-20 top-20 w-72 h-72 bg-purple-300/40 blur-3xl rounded-full opacity-70"></div>
+
+                {/* GLASS CARD */}
+                <div className="
+                    relative z-10 max-w-xl w-full 
+                    bg-white/20 backdrop-blur-2xl 
+                    rounded-3xl p-10 shadow-2xl
+                    border border-white/30
+                    text-white
+                ">
+                    {/* Icon */}
+                    <div className="h-14 w-14 rounded-full bg-white/30 backdrop-blur flex items-center justify-center mb-6 shadow-inner">
+                        <Zap className="h-7 w-7 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="text-4xl font-extrabold leading-tight mb-4">
+                        Connect. Learn. Grow.
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-white/90 text-lg leading-relaxed mb-8">
+                        Join thousands of learners and teachers sharing skills and
+                        building meaningful friendships.
+                    </p>
+
+                    {/* Quote */}
+                    <div className="border-l-4 border-white/40 pl-4">
+                        <p className="italic text-white/95 text-base mb-2">
+                            “SkillSwap changed my life. I learned guitar and taught
+                            coding. Made amazing friends along the way!”
                         </p>
+                        <p className="text-white/70 text-sm">— Sarah K., San Francisco</p>
                     </div>
                 </div>
             </div>
 
-            {/* Right Side - Hero Section (Desktop Only) */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center p-12">
-                <div className="max-w-md text-white">
-                    <div className="mb-8">
-                        <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-white/20 mb-4">
-                            <Zap className="h-8 w-8 text-white" />
-                        </div>
-                    </div>
-                    <h2 className="text-4xl font-bold mb-6">
-                        Connect. Learn. Grow.
-                    </h2>
-                    <p className="text-xl text-blue-100 mb-8">
-                        Join thousands of learners and teachers sharing skills and building meaningful connections.
-                    </p>
-                    <div className="border-l-4 border-white/30 pl-4">
-                        <p className="text-lg italic mb-2">
-                            "SkillSwap changed my life. I learned guitar and taught coding. Made amazing friends along the way!"
-                        </p>
-                        <p className="text-sm text-blue-200">— Sarah K., San Francisco</p>
-                    </div>
-                </div>
-            </div>
+
         </div>
     );
 };

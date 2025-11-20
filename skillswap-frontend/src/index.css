@@ -116,3 +116,11 @@ code {
         border-bottom-color: inherit;
     }
 } */
+@keyframes scrollFast {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-60%); }
+}
+
+.animate-scroll-fast {
+  animation: scrollFast 16s linear infinite;
+}

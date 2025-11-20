@@ -15,12 +15,29 @@ const CommunityDetailPage = () => {
   const [isMember, setIsMember] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const [loadError, setLoadError] = React.useState(null);
+
   useEffect(() => {
     const loadCommunity = async () => {
+      // If route is /app/communities/create, don't treat 'create' as an id — redirect to create page
+      if (communityId === 'create') {
+        navigate('/app/communities/create');
+        return;
+      }
+      // Validate communityId locally to avoid unnecessary 400 calls
+      if (!communityId || !/^[0-9a-fA-F]{24}$/.test(communityId)) {
+        const msg = 'Invalid community id';
+        console.error('Error loading community:', msg, communityId);
+        setLoadError(msg);
+        return;
+      }
+
       try {
         await fetchCommunity(communityId);
+        setLoadError(null);
       } catch (error) {
         console.error('Error loading community:', error);
+        setLoadError(error.response?.data?.error || error.message || 'Failed to load community');
       }
     };
     loadCommunity();
@@ -67,12 +84,28 @@ const CommunityDetailPage = () => {
     }
   };
 
-  if (isLoading || !currentCommunity) {
+  if (isLoading || (!currentCommunity && !loadError)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading community...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold mb-2">{loadError}</p>
+          <button
+            onClick={() => navigate('/app/communities')}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Back to Communities
+          </button>
         </div>
       </div>
     );

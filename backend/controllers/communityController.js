@@ -2,6 +2,7 @@ const Community = require('../models/Community');
 const User = require('../models/User');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 exports.getNearbyCommunities = async (req, res) => {
     try {
@@ -107,7 +108,12 @@ exports.createCommunity = async (req, res) => {
 
 exports.getCommunity = async (req, res) => {
     try {
-        const community = await Community.findById(req.params.communityId)
+        const { communityId } = req.params;
+        if (!communityId || !mongoose.Types.ObjectId.isValid(communityId)) {
+            return res.status(400).json({ error: 'Invalid community id' });
+        }
+
+        const community = await Community.findById(communityId)
             .populate('creatorId', 'name profilePhoto')
             .populate('members.userId', 'name profilePhoto');
 
@@ -168,7 +174,12 @@ exports.leaveCommunity = async (req, res) => {
 
 exports.getMembers = async (req, res) => {
     try {
-        const community = await Community.findById(req.params.communityId)
+        const { communityId } = req.params;
+        if (!communityId || !mongoose.Types.ObjectId.isValid(communityId)) {
+            return res.status(400).json({ error: 'Invalid community id' });
+        }
+
+        const community = await Community.findById(communityId)
             .populate('members.userId', 'name profilePhoto stats');
 
         if (!community) {

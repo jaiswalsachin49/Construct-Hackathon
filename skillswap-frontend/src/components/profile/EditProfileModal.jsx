@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
+import { updateProfile, getCurrentUser } from '../../services/authService';
+import useAuthStore from '../../store/authStore';
 
 const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   const coverInputRef = useRef(null);
@@ -28,8 +30,22 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
       setName(currentUser.name || '');
       setBio(currentUser.bio || '');
       setLocation(currentUser.location || null);
-      setTeachTags(currentUser.teachTags || []);
-      setLearnTags(currentUser.learnTags || []);
+
+      // Normalize teachTags
+      const normalizedTeachTags = (currentUser.teachTags || []).map(t => {
+        if (typeof t === 'string') return { tag: t, level: 'Intermediate' };
+        if (t.name && !t.tag) return { ...t, tag: t.name, level: t.level || 'Intermediate' };
+        return t;
+      });
+      setTeachTags(normalizedTeachTags);
+
+      // Normalize learnTags
+      const normalizedLearnTags = (currentUser.learnTags || []).map(t => {
+        if (typeof t === 'object' && t.name) return t.name;
+        return t;
+      });
+      setLearnTags(normalizedLearnTags);
+
       setAvailability(currentUser.availability || 'flexible');
       setCoverPreview(currentUser.coverPhoto || '');
       setPhotoPreview(currentUser.profilePhoto || '');
@@ -67,7 +83,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   };
 
   const removeTeachSkill = (skillTag) => {
-    setTeachTags(teachTags.filter(t => t.tag !== skillTag));
+    setTeachTags(teachTags.filter(t => ((t && (t.tag || t.name)) !== skillTag)));
   };
 
   const addLearnSkill = (skill) => {
@@ -77,7 +93,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   };
 
   const removeLearnSkill = (skill) => {
-    setLearnTags(learnTags.filter(t => t !== skill));
+    setLearnTags(learnTags.filter(t => {
+      const val = (typeof t === 'object') ? (t.name || t.tag || String(t)) : t;
+      return val !== skill;
+    }));
   };
 
   const selectLocation = (loc) => {
@@ -90,10 +109,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    
+
     try {
       setIsSaving(true);
-      
+
       const formData = new FormData();
       if (coverFile) formData.append('coverPhoto', coverFile);
       if (photoFile) formData.append('profilePhoto', photoFile);
@@ -104,9 +123,27 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
       formData.append('learnTags', JSON.stringify(learnTags));
       formData.append('availability', availability);
 
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Call real API
+      const updatedUser = await updateProfile(formData);
+
+      // Update local auth store so UI reflects changes immediately
+      const setUser = useAuthStore.getState().setUser;
+      // API may return { success: true, user: {...} }
+      if (updatedUser) {
+        const userObj = updatedUser.user || updatedUser;
+        if (userObj && userObj._id) {
+          setUser(userObj);
+        } else {
+          try {
+            const fresh = await getCurrentUser();
+            const freshUser = fresh.user || fresh;
+            if (freshUser) setUser(freshUser);
+          } catch (err) {
+            console.warn('Could not refresh user after update', err);
+          }
+        }
+      }
+
       alert('Profile updated successfully!');
       onClose();
     } catch (error) {
@@ -123,8 +160,24 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
       setName(currentUser.name || '');
       setBio(currentUser.bio || '');
       setLocation(currentUser.location || null);
-      setTeachTags(currentUser.teachTags || []);
-      setLearnTags(currentUser.learnTags || []);
+      // Normalize teachTags to internal shape { tag, level }
+      const normalizedTeachTags = (currentUser.teachTags || []).map(t => {
+        if (!t) return null;
+        if (typeof t === 'string') return { tag: t, level: 'Intermediate' };
+        if (t.tag) return t;
+        if (t.name) return { tag: t.name, level: t.level || 'Intermediate' };
+        return null;
+      }).filter(Boolean);
+      setTeachTags(normalizedTeachTags);
+
+      // Normalize learnTags to simple strings
+      const normalizedLearnTags = (currentUser.learnTags || []).map(t => {
+        if (!t) return null;
+        if (typeof t === 'string') return t;
+        if (typeof t === 'object' && t.name) return t.name;
+        return String(t);
+      }).filter(Boolean);
+      setLearnTags(normalizedLearnTags);
       setAvailability(currentUser.availability || 'flexible');
       setCoverPreview(currentUser.coverPhoto || '');
       setPhotoPreview(currentUser.profilePhoto || '');
@@ -134,10 +187,23 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
     onClose();
   };
 
+  // Helper renderers to avoid rendering objects directly
+  const renderLearnTag = (tag) => {
+    if (!tag) return null;
+    if (typeof tag === 'object') return tag.name || tag.tag || '';
+    return tag;
+  };
+
+  const renderTeachTag = (t) => {
+    if (!t) return null;
+    if (typeof t === 'object') return t.tag || t.name || '';
+    return t;
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -314,10 +380,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                   key={index}
                   className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm"
                 >
-                  {skill.tag}
+                  {renderTeachTag(skill)}
                   <button
                     type="button"
-                    onClick={() => removeTeachSkill(skill.tag)}
+                    onClick={() => removeTeachSkill(renderTeachTag(skill))}
                     className="hover:text-blue-800"
                   >
                     ×
@@ -355,10 +421,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                   key={index}
                   className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm"
                 >
-                  {skill}
+                  {renderLearnTag(skill)}
                   <button
                     type="button"
-                    onClick={() => removeLearnSkill(skill)}
+                    onClick={() => removeLearnSkill(renderLearnTag(skill))}
                     className="hover:text-green-800"
                   >
                     ×

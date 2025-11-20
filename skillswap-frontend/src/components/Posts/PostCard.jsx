@@ -10,7 +10,7 @@ import { sharePost } from '../../services/postService';
 const PostCard = ({ post }) => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { toggleLike, addComment, deletePost } = usePosts();
+    const { toggleLike, addComment, deletePost, updatePost } = usePosts();
 
     const [showComments, setShowComments] = useState(false);
     const [showMore, setShowMore] = useState(false);
@@ -139,11 +139,31 @@ const PostCard = ({ post }) => {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
                             {isOwnPost ? (
                                 <>
-                                    <button className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm">
+                                    <button onClick={() => {
+                                        const newContent = window.prompt('Edit post content', post.content);
+                                        if (newContent !== null) {
+                                            try {
+                                                // update post (async)
+                                                updatePost(post._id, { content: newContent }).catch(err => {
+                                                    console.error('Edit failed', err);
+                                                    alert('Failed to update post');
+                                                });
+                                            } catch (err) {
+                                                console.error(err);
+                                            }
+                                        }
+                                    }} className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm">
                                         Edit
                                     </button>
                                     <button
-                                        onClick={handleDelete}
+                                        onClick={async () => {
+                                            const ok = window.confirm('Are you sure you want to delete this post?');
+                                            if (!ok) return;
+                                            const success = await deletePost(post._id);
+                                            if (!success) {
+                                                alert('Failed to delete post');
+                                            }
+                                        }}
                                         className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm text-red-600"
                                     >
                                         Delete

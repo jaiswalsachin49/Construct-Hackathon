@@ -87,75 +87,145 @@ const DiscoveryPage = () => {
     const displayUsers = view === 'nearby' ? nearbyUsers : matchedUsers;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            {/* Filter Bar */}
-            <FilterBar
+        <div className="h-screen w-full bg-gray-50 overflow-hidden">
+      
+          {/* MAIN 2:1 LAYOUT */}
+          <div className="flex h-full">
+      
+            {/* ----------------------------------------------------------- */}
+            {/* LEFT SECTION (2 PARTS) — POST FEED SCROLLABLE               */}
+            {/* ----------------------------------------------------------- */}
+            <div className="w-[60%] h-full overflow-y-auto border-r border-gray-200 p-6 space-y-6">
+      
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Latest Posts
+              </h2>
+      
+              {/* IMAGE POST */}
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                <img
+                  src="/mnt/data/Screenshot 2025-11-20 at 7.19.35 PM.png"
+                  className="w-full h-52 rounded-lg object-cover"
+                />
+                <p className="text-gray-700 text-sm mt-2">
+                  Example image-based post preview.
+                </p>
+              </div>
+      
+              {/* VIDEO POST */}
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                <div className="w-full h-52 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-500 text-sm">Video Preview</span>
+                </div>
+                <p className="text-gray-700 text-sm mt-2">
+                  Sample tutorial video post preview.
+                </p>
+              </div>
+      
+              {/* TEXT POST */}
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                <div className="w-full h-52 rounded-lg bg-gray-100 p-4">
+                  <p className="text-gray-700 text-sm">
+                    Text-only post — clean, minimal, perfect for updates & ideas.
+                  </p>
+                </div>
+              </div>
+      
+            </div>
+      
+      
+            {/* ----------------------------------------------------------- */}
+            {/* RIGHT SECTION (1 PART) — DISCOVER + FILTER SCROLLABLE        */}
+            {/* ----------------------------------------------------------- */}
+            <div className="w-[40%] h-full flex flex-col p-6">
+           
+      
+              <FilterBar
                 filters={filters}
                 onFilterChange={setFilters}
                 view={view}
                 onViewChange={setView}
-            />
-
-            {/* Main Grid */}
-            <div className="max-w-7xl mx-auto p-4">
-                {error && (
-                    <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center justify-between">
-                        <span>{error}</span>
-                        <button onClick={() => fetchNearbyUsers()} className="text-sm underline hover:text-red-800">
-                            Retry
-                        </button>
-                    </div>
-                )}
-
-                {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <Loading size="lg" text={`Finding ${view === 'nearby' ? 'nearby users' : 'matches'}...`} />
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {displayUsers.map((user) => (
-                            <UserCard
-                                key={user._id}
-                                user={user}
-                                onConnect={handleConnect}
-                                onViewProfile={handleViewProfile}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* Empty State */}
-                {!isLoading && displayUsers.length === 0 && !error && (
-                    <div className="text-center py-16">
-                        <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gray-100 mb-4">
-                            <Search className="h-10 w-10 text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            No users found
-                        </h3>
-                        <p className="text-gray-600 mb-6">
-                            Try adjusting your filters or search in a wider radius
-                        </p>
-                        <Button variant="primary" onClick={() => setFilters({ radius: 10, search: '', availability: null })}>
-                            Reset Filters
-                        </Button>
-                    </div>
-                )}
-            </div>
-
-            {/* Profile Modal */}
-            {selectedUserId && (
+              />
+      
+              {/* Error */}
+              {error && (
+                <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center justify-between">
+                  <span>{error}</span>
+                  <button
+                    onClick={() => fetchNearbyUsers()}
+                    className="text-sm underline hover:text-red-800"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+      
+              {/* Loading */}
+              <div className="flex-1 overflow-y-auto mt-4">
+              {isLoading ? (
+                <div className="flex justify-center py-10">
+                  <Loading
+                    size="lg"
+                    text={`Finding ${
+                      view === "nearby" ? "nearby users" : "matches"
+                    }...`}
+                  />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-5 mt-6">
+                  {displayUsers.map((user) => (
+                    <UserCard
+                      key={user._id}
+                      user={user}
+                      onConnect={handleConnect}
+                      onViewProfile={handleViewProfile}
+                      className="!rounded-xl !shadow-sm"
+                    />
+                  ))}
+                </div>
+              )}
+                </div>
+              {/* Empty State */}
+              {!isLoading && displayUsers.length === 0 && !error && (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gray-100 mb-4">
+                    <Search className="h-10 w-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No users found
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Try adjusting your filters
+                  </p>
+                  <Button
+                    variant="primary"
+                    onClick={() =>
+                      setFilters({ radius: 10, search: "", availability: null })
+                    }
+                  >
+                    Reset Filters
+                  </Button>
+                </div>
+              )}
+      
+              {/* Modal */}
+              {selectedUserId && (
                 <ProfileModal
-                    userId={selectedUserId}
-                    isOpen={isModalOpen}
-                    onClose={() => {
-                        setIsModalOpen(false);
-                        setSelectedUserId(null);
-                    }}
+                  userId={selectedUserId}
+                  isOpen={isModalOpen}
+                  onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedUserId(null);
+                  }}
                 />
-            )}
+              )}
+      
+            </div>
+          </div>
         </div>
-    );
+   
+      );
+      
 };
 
 export default DiscoveryPage;

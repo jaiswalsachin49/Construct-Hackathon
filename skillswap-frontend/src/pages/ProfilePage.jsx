@@ -35,12 +35,16 @@ const ProfilePage = () => {
         const loadProfile = async () => {
             setIsLoading(true);
             try {
-                if (isOwnProfile) {
-                    setDisplayUser(authUser);
-                } else {
-                    const data = await getUserById(userId);
-                    setDisplayUser(data);
+                // Determine which user ID to load. Guard against undefined values.
+                const targetId = isOwnProfile ? authUser?._id : userId;
+                if (!targetId) {
+                    console.warn('ProfilePage: no targetId available to load profile', { isOwnProfile, userId, authUser });
+                    setIsLoading(false);
+                    return;
                 }
+
+                const data = await getUserById(targetId);
+                setDisplayUser(data);
             } catch (error) {
                 console.error("Failed to load profile", error);
             } finally {
@@ -48,7 +52,10 @@ const ProfilePage = () => {
             }
         };
 
-        if (authUser) loadProfile();
+        // Only attempt to load when we have the required identifiers
+        if ((isOwnProfile && authUser) || (!isOwnProfile && userId)) {
+            loadProfile();
+        }
     }, [userId, authUser, isOwnProfile]);
 
     if (isLoading) return <div className="min-h-screen pt-20 flex justify-center"><Loading size="lg" text="Loading Profile..." /></div>;
