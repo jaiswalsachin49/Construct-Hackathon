@@ -28,6 +28,12 @@ export const getAlliesWaves = async () => {
     return response.data;
 };
 
+// Get waves for a specific user
+export const getUserWaves = async (userId) => {
+    const response = await api.get(`/api/waves/user/${userId}`);
+    return response.data;
+};
+
 // Mark wave as viewed
 export const viewWave = async (waveId) => {
     await api.post(`/api/waves/${waveId}/view`);

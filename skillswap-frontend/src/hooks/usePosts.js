@@ -72,6 +72,17 @@ export const usePosts = () => {
                 comments: (rawPost.comments || []).map(c => ({ ...c, user: c.user || c.userId || null }))
             };
             store.addPost(post);
+            try {
+                // Also add to userPosts cache for the author so profile reflects immediately
+                const authorId = post.user?._id || post.user;
+                if (authorId) {
+                    const existing = store.userPosts?.[authorId] || [];
+                    store.setUserPosts(authorId, [post, ...existing]);
+                }
+            } catch (e) {
+                // Non-fatal
+                console.warn('Failed to update userPosts cache after createPost', e);
+            }
             return data;
         } catch (error) {
             console.error('Failed to create post:', error);
@@ -83,6 +94,18 @@ export const usePosts = () => {
         try {
             await postService.deletePost(postId);
             store.deletePost(postId);
+            // remove from any userPosts lists
+            try {
+                const userPosts = store.userPosts || {};
+                const updated = {};
+                Object.keys(userPosts).forEach((uid) => {
+                    updated[uid] = userPosts[uid].filter((p) => p._id !== postId);
+                });
+                // apply updated map
+                Object.keys(updated).forEach((uid) => store.setUserPosts(uid, updated[uid]));
+            } catch (e) {
+                console.warn('Failed to update userPosts cache after deletePost', e);
+            }
             return true;
         } catch (error) {
             console.error('Failed to delete post:', error);
@@ -96,6 +119,21 @@ export const usePosts = () => {
             const rawPost = res.post || res;
             // Update store (shallow merge)
             store.updatePost(postId, rawPost);
+            // also update any userPosts entries
+            try {
+                const userPosts = store.userPosts || {};
+                Object.keys(userPosts).forEach((uid) => {
+                    const list = userPosts[uid] || [];
+                    const idx = list.findIndex((p) => p._id === postId);
+                    if (idx !== -1) {
+                        const newList = [...list];
+                        newList[idx] = { ...newList[idx], ...rawPost };
+                        store.setUserPosts(uid, newList);
+                    }
+                });
+            } catch (e) {
+                console.warn('Failed to update userPosts cache after updatePost', e);
+            }
             return rawPost;
         } catch (error) {
             console.error('Failed to update post:', error);
