@@ -1,369 +1,276 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, MessageCircle, MapPin, Calendar, Star } from 'lucide-react';
+import { 
+    MessageCircle, MapPin, Calendar, Edit3, Shield, 
+    UserX, Flag, Camera, MoreVertical 
+} from 'lucide-react';
 import AlliesList from '../components/profile/AlliesList';
 import UserPosts from '../components/profile/UserPosts';
 import UserWaves from '../components/profile/UserWaves';
 import EditProfileModal from '../components/profile/EditProfileModal';
 import ReportModal from '../components/safety/ReportModal';
 import BlockConfirmModal from '../components/safety/BlockConfirmModal';
+import Loading from '../components/common/Loading';
+import useAuthStore from '../store/authStore';
+import { getUserById } from '../services/discoveryService';
 
 const ProfilePage = () => {
-  const { userId } = useParams();
-  const navigate = useNavigate();
-  
-  // Mock current user - replace with actual auth
-  const currentUser = { _id: 'current-user-id' };
-  const isOwnProfile = !userId || userId === currentUser._id;
-  
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('allies');
-  const [isAlly, setIsAlly] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [showBlockModal, setShowBlockModal] = useState(false);
+    const { userId } = useParams();
+    const navigate = useNavigate();
+    const { user: authUser } = useAuthStore();
 
-  useEffect(() => {
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      setUser({
-        _id: userId || currentUser._id,
-        name: isOwnProfile ? 'John Doe' : 'Jane Smith',
-        email: 'john@example.com',
-        profilePhoto: null,
-        coverPhoto: null,
-        bio: 'Passionate about learning and teaching. Guitar enthusiast and coding mentor. Always looking to connect with like-minded people!',
-        verified: true,
-        location: {
-          areaLabel: 'Koramangala, Bangalore'
-        },
-        createdAt: new Date('2025-01-01'),
-        rating: {
-          average: 4.8,
-          count: 25
-        },
-        teachTags: [
-          { tag: 'Guitar', level: 'Advanced' },
-          { tag: 'Coding', level: 'Intermediate' },
-          { tag: 'Photography', level: 'Beginner' }
-        ],
-        learnTags: ['Cooking', 'Yoga', 'Spanish'],
-        stats: {
-          sessionsCompleted: 42,
-          hoursCompleted: 126,
-          alliesCount: 15
-        },
-        alliesCount: 15
-      });
-      setIsLoading(false);
-    }, 500);
-  }, [userId]);
+    // Determine if this is the current user's profile
+    const isOwnProfile = !userId || (authUser && userId === authUser._id);
 
-  const handleAddAlly = () => {
-    setIsAlly(true);
-    alert('Added to allies!');
-  };
+    const [displayUser, setDisplayUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('allies');
+    
+    // Modal States
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [showBlockModal, setShowBlockModal] = useState(false);
 
-  const handleStartChat = () => {
-    navigate(`/app/chat/${userId}`);
-  };
+    useEffect(() => {
+        const loadProfile = async () => {
+            setIsLoading(true);
+            try {
+                if (isOwnProfile) {
+                    setDisplayUser(authUser);
+                } else {
+                    const data = await getUserById(userId);
+                    setDisplayUser(data);
+                }
+            } catch (error) {
+                console.error("Failed to load profile", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `${user.name}'s Profile`,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Profile link copied to clipboard!');
-    }
-  };
+        if (authUser) loadProfile();
+    }, [userId, authUser, isOwnProfile]);
 
-  if (isLoading || !user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
+    if (isLoading) return <div className="min-h-screen pt-20 flex justify-center"><Loading size="lg" text="Loading Profile..." /></div>;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Cover Photo */}
-      <div className="h-64 bg-gradient-to-br from-blue-400 to-purple-500 relative">
-        {user.coverPhoto ? (
-          <img
-            src={user.coverPhoto}
-            alt="Cover"
-            className="w-full h-full object-cover"
-          />
-        ) : null}
-      </div>
-
-      {/* Profile Content */}
-      <div className="max-w-5xl mx-auto px-6">
-        {/* Profile Header */}
-        <div className="relative -mt-20 mb-6">
-          <div className="flex flex-col md:flex-row md:items-end gap-4">
-            {/* Profile Photo */}
-            <div className="relative">
-              <div className="w-40 h-40 bg-white rounded-full border-4 border-white shadow-lg overflow-hidden">
-                {user.profilePhoto ? (
-                  <img
-                    src={user.profilePhoto}
-                    alt={user.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-5xl font-bold">
-                    {user.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-              {user.verified && (
-                <div className="absolute bottom-2 right-2 bg-blue-500 text-white rounded-full p-2">
-                  ✓
-                </div>
-              )}
+    if (!displayUser) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+            <div className="bg-gray-100 p-6 rounded-full mb-4">
+                <UserX className="h-12 w-12 text-gray-400" />
             </div>
-
-            {/* User Info & Actions */}
-            <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {user.name}
-                  </h1>
-                  <div className="flex items-center gap-2 text-gray-600 mb-3">
-                    <MapPin className="w-4 h-4" />
-                    <span>{user.location.areaLabel}</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  {isOwnProfile ? (
-                    <button
-                      data-testid="edit-profile-button"
-                      onClick={() => setShowEditModal(true)}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                    >
-                      Edit Profile
-                    </button>
-                  ) : (
-                    <>
-                      {isAlly ? (
-                        <button
-                          disabled
-                          className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg font-medium cursor-not-allowed"
-                        >
-                          Ally ✓
-                        </button>
-                      ) : (
-                        <button
-                          data-testid="add-ally-button"
-                          onClick={handleAddAlly}
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                        >
-                          Add to Allies
-                        </button>
-                      )}
-                      <button
-                        data-testid="message-button"
-                        onClick={handleStartChat}
-                        className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors flex items-center gap-2"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        Message
-                      </button>
-                    </>
-                  )}
-                  <button
-                    data-testid="share-button"
-                    onClick={handleShare}
-                    className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </button>
-                  {!isOwnProfile && (
-                    <>
-                      <button
-                        data-testid="report-button"
-                        onClick={() => setShowReportModal(true)}
-                        className="px-4 py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        Report
-                      </button>
-                      <button
-                        data-testid="block-button"
-                        onClick={() => setShowBlockModal(true)}
-                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                      >
-                        Block
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bio & Meta */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <p className="text-gray-700 mb-4">{user.bio}</p>
-          <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>
-                Joined {user.createdAt.toLocaleDateString('en-US', {
-                  month: 'short',
-                  year: 'numeric'
-                })}
-              </span>
-            </div>
-            <button className="flex items-center gap-2 hover:text-blue-500 transition-colors">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span>{user.rating.average} ({user.rating.count} reviews)</span>
+            <h2 className="text-xl font-bold text-gray-900">User Not Found</h2>
+            <p className="text-gray-500 mt-2 mb-6">The user you are looking for doesn't exist or has been removed.</p>
+            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Back to Discovery
             </button>
-          </div>
         </div>
+    );
 
-        {/* Skills */}
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Can Teach</h3>
-            <div className="flex flex-wrap gap-2">
-              {user.teachTags.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium"
-                >
-                  {skill.tag}
-                  {skill.level && ` (${skill.level})`}
-                </span>
-              ))}
-            </div>
-          </div>
+    // --- HELPERS FOR UI ---
+    const getInitials = (name) => name ? name.charAt(0).toUpperCase() : 'U';
+    const joinedDate = new Date(displayUser.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Wants to Learn</h3>
-            <div className="flex flex-wrap gap-2">
-              {user.learnTags.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm font-medium"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+    return (
+        <div className="max-w-5xl mx-auto px-4 pb-20">
+            {/* --- HEADER CARD --- */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-6">
+                
+                {/* Cover Photo with Fallback Gradient */}
+                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' : ''}`}>
+                    {displayUser.coverPhoto && (
+                        <img 
+                            src={displayUser.coverPhoto} 
+                            alt="Cover" 
+                            className="w-full h-full object-cover"
+                        />
+                    )}
+                    {isOwnProfile && (
+                        <button 
+                            onClick={() => setShowEditModal(true)}
+                            className="absolute bottom-4 right-4 bg-black/30 hover:bg-black/50 text-white p-2 rounded-lg backdrop-blur-sm transition-all"
+                        >
+                            <Camera size={18} />
+                        </button>
+                    )}
+                </div>
 
-        {/* Stats */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="grid grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{user.stats.sessionsCompleted}</div>
-              <div className="text-sm text-gray-600">Sessions</div>
-            </div>
-            <div className="text-center border-x border-gray-200">
-              <div className="text-3xl font-bold text-gray-900">{user.stats.hoursCompleted}</div>
-              <div className="text-sm text-gray-600">Hours</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{user.stats.alliesCount}</div>
-              <div className="text-sm text-gray-600">Allies</div>
-            </div>
-          </div>
-        </div>
+                <div className="px-6 pb-6 relative">
+                    {/* Profile Photo Container */}
+                    <div className="flex justify-between items-end -mt-16 mb-4">
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center bg-gray-100">
+                                {displayUser.profilePhoto ? (
+                                    <img src={displayUser.profilePhoto} alt={displayUser.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-4xl font-bold text-gray-400">{getInitials(displayUser.name)}</span>
+                                )}
+                            </div>
+                        </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="border-b border-gray-200">
-            <div className="flex gap-8 px-6">
-              <button
-                data-testid="allies-tab"
-                onClick={() => setActiveTab('allies')}
-                className={`py-4 border-b-2 font-medium transition-colors ${
-                  activeTab === 'allies'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Allies
-              </button>
-              <button
-                data-testid="posts-tab"
-                onClick={() => setActiveTab('posts')}
-                className={`py-4 border-b-2 font-medium transition-colors ${
-                  activeTab === 'posts'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Posts
-              </button>
-              <button
-                data-testid="waves-tab"
-                onClick={() => setActiveTab('waves')}
-                className={`py-4 border-b-2 font-medium transition-colors ${
-                  activeTab === 'waves'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Waves
-              </button>
-            </div>
-          </div>
+                        {/* Action Buttons (Desktop) */}
+                        <div className="hidden md:flex gap-3 mb-2">
+                            {isOwnProfile ? (
+                                <button 
+                                    onClick={() => setShowEditModal(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+                                >
+                                    <Edit3 size={18} /> Edit Profile
+                                </button>
+                            ) : (
+                                <>
+                                    <button 
+                                        onClick={() => navigate(`/app/chat/${displayUser._id}`)}
+                                        className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all"
+                                    >
+                                        <MessageCircle size={18} /> Message
+                                    </button>
+                                    <div className="relative group">
+                                        <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
+                                            <MoreVertical size={20} />
+                                        </button>
+                                        {/* Dropdown Menu */}
+                                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                                            <button onClick={() => setShowReportModal(true)} className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                                <Flag size={16} /> Report User
+                                            </button>
+                                            <button onClick={() => setShowBlockModal(true)} className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                <Shield size={16} /> Block User
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
 
-          <div className="p-6">
-            {activeTab === 'allies' && (
-              <AlliesList userId={user._id} isOwnProfile={isOwnProfile} />
+                    {/* User Info */}
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            {displayUser.name}
+                            {displayUser.isVerified && <span className="text-blue-500" title="Verified">✓</span>}
+                        </h1>
+                        
+                        {/* Meta Info */}
+                        <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-1">
+                                <MapPin size={16} className="text-gray-400" />
+                                {displayUser.location?.areaLabel || 'Location Unknown'}
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Calendar size={16} className="text-gray-400" />
+                                Joined {joinedDate}
+                            </div>
+                        </div>
+
+                        {/* Bio */}
+                        <p className="mt-4 text-gray-700 leading-relaxed max-w-2xl">
+                            {displayUser.bio || <span className="text-gray-400 italic">No bio yet...</span>}
+                        </p>
+
+                        {/* Skills Tags */}
+                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Teaching</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {displayUser.teachTags?.length > 0 ? (
+                                        displayUser.teachTags.map((tag, i) => (
+                                            <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100">
+                                                {tag.name || tag}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-gray-400">No skills listed</span>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Learning</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {displayUser.learnTags?.length > 0 ? (
+                                        displayUser.learnTags.map((tag, i) => (
+                                            <span key={i} className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+                                                {tag.name || tag}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-gray-400">No interests listed</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Mobile Action Buttons */}
+                    <div className="md:hidden mt-6 flex gap-3">
+                        {isOwnProfile ? (
+                            <button onClick={() => setShowEditModal(true)} className="flex-1 py-2 bg-gray-100 text-gray-800 rounded-lg font-medium">Edit Profile</button>
+                        ) : (
+                            <button onClick={() => navigate(`/app/chat/${displayUser._id}`)} className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium">Message</button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* --- TABS --- */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[400px]">
+                <div className="flex border-b border-gray-200">
+                    {['allies', 'posts', 'waves'].map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${
+                                activeTab === tab ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            {activeTab === tab && (
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="p-6 bg-gray-50/50 h-full">
+                    {activeTab === 'allies' && (
+                        <AlliesList userId={displayUser._id} isOwnProfile={isOwnProfile} />
+                    )}
+                    {activeTab === 'posts' && (
+                        <UserPosts userId={displayUser._id} />
+                    )}
+                    {activeTab === 'waves' && (
+                        <UserWaves userId={displayUser._id} isOwnProfile={isOwnProfile} />
+                    )}
+                </div>
+            </div>
+
+            {/* --- MODALS --- */}
+            {isOwnProfile && (
+                <EditProfileModal 
+                    isOpen={showEditModal} 
+                    onClose={() => setShowEditModal(false)} 
+                    currentUser={displayUser} 
+                />
             )}
-            {activeTab === 'posts' && <UserPosts userId={user._id} />}
-            {activeTab === 'waves' && (
-              <UserWaves userId={user._id} isOwnProfile={isOwnProfile} />
+            
+            {!isOwnProfile && (
+                <>
+                    <ReportModal 
+                        isOpen={showReportModal}
+                        onClose={() => setShowReportModal(false)}
+                        targetType="user"
+                        targetId={displayUser._id}
+                        targetName={displayUser.name}
+                    />
+                    <BlockConfirmModal
+                        isOpen={showBlockModal}
+                        onClose={() => setShowBlockModal(false)}
+                        userId={displayUser._id}
+                        userName={displayUser.name}
+                    />
+                </>
             )}
-          </div>
         </div>
-      </div>
-
-      {/* Add spacing at bottom */}
-      <div className="h-16"></div>
-
-      {/* Edit Profile Modal */}
-      <EditProfileModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        currentUser={user}
-      />
-
-      {/* Report Modal */}
-      <ReportModal
-        isOpen={showReportModal}
-        onClose={() => setShowReportModal(false)}
-        targetType="user"
-        targetId={user._id}
-        targetName={user.name}
-      />
-
-      {/* Block Confirmation Modal */}
-      <BlockConfirmModal
-        isOpen={showBlockModal}
-        onClose={() => setShowBlockModal(false)}
-        userId={user._id}
-        userName={user.name}
-        userPhoto={user.profilePhoto}
-      />
-    </div>
-  );
+    );
 };
 
 export default ProfilePage;

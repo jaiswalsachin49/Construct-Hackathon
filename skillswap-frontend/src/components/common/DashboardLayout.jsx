@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import  useAuthStore  from '../../store/authStore';
+import  socketService  from '../../services/socketService';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Home, Users, MessageCircle, Zap, FileText, UsersRound, User } from 'lucide-react';
 import Navbar from './Navbar';
@@ -13,6 +15,14 @@ const DashboardLayout = () => {
         { to: '/app/communities', icon: UsersRound, label: 'Communities' },
         { to: '/app/profile', icon: User, label: 'Profile' },
     ];
+    const { isAuthenticated } = useAuthStore();
+
+    useEffect(() => {
+        // If user is logged in but socket is disconnected, connect it.
+        if (isAuthenticated && !socketService.socket?.connected) {
+            socketService.connect();
+        }
+    }, [isAuthenticated]);
 
     return (
         <div className="min-h-screen bg-gray-50">

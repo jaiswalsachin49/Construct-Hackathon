@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { X, MapPin, Calendar, Star, CheckCircle, Phone, Mail, Award } from 'lucide-react';
+import { X, MapPin, Calendar, Star, CheckCircle, Phone, Mail, Award, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import Loading from '../common/Loading';
-import { getUserById, addAlly, startChat } from '../../services/discoveryService';
+import { getUserById, sendConnectionRequest, startChat } from '../../services/discoveryService';
+import useAuthStore from '../../store/authStore'; // Import auth store to check ownership
 
 const ProfileModal = ({ userId, isOpen, onClose }) => {
     const navigate = useNavigate();
+    const { user: currentUser } = useAuthStore(); // Get logged in user
+
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isAddingAlly, setIsAddingAlly] = useState(false);
     const [isAlly, setIsAlly] = useState(false);
-    const [showFullBio, setShowFullBio] = useState(false);
 
     useEffect(() => {
         if (isOpen && userId) {
@@ -27,7 +29,9 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
             setError(null);
             const data = await getUserById(userId);
             setUser(data);
-            setIsAlly(data.isAlly || false);
+            // Check if already an ally (robust check)
+            const alreadyAlly = currentUser?.allies?.some(a => a === userId || a._id === userId);
+            setIsAlly(alreadyAlly || false);
         } catch (err) {
             console.error('Failed to fetch user profile:', err);
             setError('Failed to load profile');
@@ -36,13 +40,14 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
         }
     };
 
-    const handleAddAlly = async () => {
+    const handleConnect = async () => {
         try {
             setIsAddingAlly(true);
-            await addAlly(userId);
-            setIsAlly(true);
+            await sendConnectionRequest(userId);
+            setIsAlly(true); // Reuse isAlly to show "Connected" or "Request Sent" state for now
+            // Ideally we should distinguish between connected and pending, but for UI feedback this works
         } catch (err) {
-            console.error('Failed to add ally:', err);
+            console.error('Failed to send connection request:', err);
         } finally {
             setIsAddingAlly(false);
         }
@@ -50,251 +55,168 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
 
     const handleStartChat = async () => {
         try {
-            const conv = await startChat(userId);
-            navigate(`/app/chat/${conv.conversationId}`);
-            onClose();
+            const response = await startChat(userId);
+
+            // Debug log to see what backend sends
+            console.log("Start chat response:", response);
+
+            const conversationId = response.conversation?._id || response._id;
+
+            if (conversationId) {
+                onClose();
+                navigate(`/app/chat/${conversationId}`);
+            } else {
+                // If we get here, backend succeeded but didn't send ID
+                console.error("Backend returned success but no ID:", response);
+            }
         } catch (err) {
             console.error('Failed to start chat:', err);
         }
     };
 
-    const getInitials = (name) => {
-        return name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
+    // Helper to safely render tags (Fixes your Error)
+    const renderTag = (tag) => {
+        if (!tag) return null;
+        // If it's an object (backend data), return .name. If string (mock), return it directly.
+        return typeof tag === 'object' ? tag.name : tag;
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-                onClick={onClose}
-            />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col animate-in zoom-in-95 duration-200 relative">
 
-            {/* Modal */}
-            <div className="flex min-h-screen items-center justify-center p-4">
-                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                    {/* Close Button */}
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
-                    >
-                        <X className="h-5 w-5 text-gray-600" />
-                    </button>
+                {/* Close Button */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-gray-100 z-10 transition-colors"
+                >
+                    <X className="w-5 h-5 text-gray-500" />
+                </button>
 
-                    {isLoading ? (
-                        <div className="p-12">
-                            <Loading size="lg" text="Loading profile..." />
-                        </div>
-                    ) : error ? (
-                        <div className="p-12 text-center">
-                            <p className="text-red-600 mb-4">{error}</p>
-                            <Button variant="primary" onClick={fetchUserProfile}>
-                                Retry
-                            </Button>
-                        </div>
-                    ) : user ? (
-                        <>
-                            {/* Header with Cover */}
-                            <div className="relative">
-                                {/* Cover Photo */}
-                                <div className="h-32 bg-gradient-to-r from-blue-500 to-indigo-600" />
+                {isLoading ? (
+                    <div className="p-12 flex justify-center">
+                        <Loading size="lg" text="Loading profile..." />
+                    </div>
+                ) : error || !user ? (
+                    <div className="p-12 text-center">
+                        <p className="text-red-500 mb-4">{error || 'User not found'}</p>
+                        <Button onClick={onClose} variant="secondary">Close</Button>
+                    </div>
+                ) : (
+                    <>
+                        {/* Header / Cover */}
+                        <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600 w-full flex-shrink-0" />
 
-                                {/* Profile Photo */}
-                                <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                                    {user.profilePhoto ? (
-                                        <img
-                                            src={user.profilePhoto}
-                                            alt={user.name}
-                                            className="h-24 w-24 rounded-full object-cover border-4 border-white shadow-lg"
-                                        />
-                                    ) : (
-                                        <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-lg">
-                                            <span className="text-3xl font-bold text-white">
-                                                {getInitials(user.name)}
-                                            </span>
-                                        </div>
-                                    )}
+                        {/* Profile Info */}
+                        <div className="px-6 pb-6 -mt-12 flex-1">
+                            <div className="flex justify-between items-end mb-4">
+                                <div className="w-24 h-24 bg-white rounded-full p-1 shadow-lg">
+                                    <img
+                                        src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=random`}
+                                        alt={user.name}
+                                        className="w-full h-full rounded-full object-cover"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-1 mb-2">
+                                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                                    <span className="font-bold text-gray-900">{user.stats?.averageRating || 'New'}</span>
+                                    <span className="text-sm text-gray-500">({user.stats?.reviewCount || 0})</span>
                                 </div>
                             </div>
 
-                            {/* User Info */}
-                            <div className="pt-16 px-6 pb-6">
-                                <div className="text-center mb-6">
-                                    <div className="flex items-center justify-center gap-2 mb-2">
-                                        <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
-                                        {user.verified && (
-                                            <CheckCircle className="h-6 w-6 text-blue-500 fill-current" />
-                                        )}
-                                    </div>
+                            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                                {user.name}
+                                {user.isVerified && <CheckCircle className="w-5 h-5 text-blue-500" />}
+                            </h2>
 
-                                    <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-                                        {user.areaLabel && (
-                                            <div className="flex items-center gap-1">
-                                                <MapPin className="h-4 w-4" />
-                                                <span>{user.areaLabel}</span>
-                                            </div>
-                                        )}
-                                        {user.distance && (
-                                            <span>{user.distance.toFixed(1)} km away</span>
-                                        )}
+                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1 mb-4">
+                                {user.location?.areaLabel && (
+                                    <div className="flex items-center gap-1">
+                                        <MapPin className="w-4 h-4" />
+                                        {user.location.areaLabel}
                                     </div>
-
-                                    {user.memberSince && (
-                                        <div className="flex items-center justify-center gap-1 text-sm text-gray-500 mt-2">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>Member since {new Date(user.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                                        </div>
-                                    )}
+                                )}
+                                <div className="flex items-center gap-1">
+                                    <Calendar className="w-4 h-4" />
+                                    Joined {new Date(user.createdAt).getFullYear()}
                                 </div>
+                            </div>
 
-                                {/* About Section */}
-                                {user.bio && (
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">About</h3>
-                                        <p className="text-gray-700">
-                                            {showFullBio || user.bio.length <= 200
-                                                ? user.bio
-                                                : `${user.bio.slice(0, 200)}...`}
-                                        </p>
-                                        {user.bio.length > 200 && (
-                                            <button
-                                                onClick={() => setShowFullBio(!showFullBio)}
-                                                className="text-blue-600 text-sm font-medium mt-2 hover:underline"
-                                            >
-                                                {showFullBio ? 'Show less' : 'Read more'}
-                                            </button>
+                            {user.bio && (
+                                <p className="text-gray-700 mb-6 leading-relaxed">
+                                    {user.bio}
+                                </p>
+                            )}
+
+                            {/* Skills Section */}
+                            <div className="space-y-4 mb-8">
+                                <div>
+                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                        Teaching
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {user.teachTags?.map((tag, i) => (
+                                            <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100">
+                                                {renderTag(tag)}
+                                            </span>
+                                        ))}
+                                        {(!user.teachTags || user.teachTags.length === 0) && (
+                                            <span className="text-sm text-gray-400 italic">No skills listed</span>
                                         )}
-                                    </div>
-                                )}
-
-                                {/* Can Teach Section */}
-                                {user.teachTags && user.teachTags.length > 0 && (
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Can Teach</h3>
-                                        <div className="space-y-2">
-                                            {user.teachTags.map((tag, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg"
-                                                >
-                                                    <span className="text-2xl">🎓</span>
-                                                    <div>
-                                                        <p className="font-medium text-gray-900 capitalize">{tag}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Wants to Learn Section */}
-                                {user.learnTags && user.learnTags.length > 0 && (
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Wants to Learn</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {user.learnTags.map((tag, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium capitalize"
-                                                >
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Stats Section */}
-                                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Stats</h3>
-                                    <div className="grid grid-cols-3 gap-4 text-center">
-                                        <div>
-                                            <p className="text-2xl font-bold text-blue-600">{user.stats?.sessions || 0}</p>
-                                            <p className="text-sm text-gray-600">Sessions</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-2xl font-bold text-green-600">{user.stats?.hours || 0}</p>
-                                            <p className="text-sm text-gray-600">Hours</p>
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center justify-center gap-1">
-                                                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                                                <p className="text-2xl font-bold text-yellow-600">
-                                                    {user.rating?.average || 0}
-                                                </p>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                ({user.rating?.count || 0} reviews)
-                                            </p>
-                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Badges Section */}
-                                {user.badges && user.badges.length > 0 && (
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Badges</h3>
-                                        <div className="flex flex-wrap gap-3">
-                                            {user.badges.map((badge, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center gap-2 px-3 py-2 bg-yellow-50 rounded-lg"
-                                                >
-                                                    <Award className="h-5 w-5 text-yellow-600" />
-                                                    <span className="text-sm font-medium text-gray-700">{badge}</span>
-                                                </div>
-                                            ))}
-                                        </div>
+                                <div>
+                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                        Learning
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {user.learnTags?.map((tag, i) => (
+                                            <span key={i} className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+                                                {renderTag(tag)}
+                                            </span>
+                                        ))}
+                                        {(!user.learnTags || user.learnTags.length === 0) && (
+                                            <span className="text-sm text-gray-400 italic">No interests listed</span>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                            </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex flex-col sm:flex-row gap-3">
+                            {/* Action Buttons */}
+                            {currentUser?._id !== user._id && (
+                                <div className="flex gap-3">
                                     <Button
-                                        variant={isAlly ? 'secondary' : 'primary'}
+                                        variant={isAlly ? "secondary" : "primary"}
                                         className="flex-1"
-                                        onClick={handleAddAlly}
-                                        isLoading={isAddingAlly}
+                                        onClick={handleConnect}
                                         disabled={isAlly || isAddingAlly}
+                                        isLoading={isAddingAlly}
                                     >
-                                        {isAlly ? 'Already Allies ✓' : 'Add to Allies'}
+                                        {isAlly ? 'Request Sent' : 'Connect'}
                                     </Button>
                                     <Button
-                                        variant="primary"
-                                        className="flex-1"
+                                        variant="secondary"
+                                        className="flex-1 gap-2"
                                         onClick={handleStartChat}
                                     >
-                                        Start Chat
+                                        <MessageCircle className="w-4 h-4" />
+                                        Message
                                     </Button>
                                 </div>
-
-                                {/* Report/Block Links */}
-                                <div className="flex justify-center gap-6 mt-4 text-sm">
-                                    <button className="text-gray-500 hover:text-red-600 transition-colors">
-                                        Report
-                                    </button>
-                                    <button className="text-gray-500 hover:text-red-600 transition-colors">
-                                        Block
-                                    </button>
-                                </div>
-                            </div>
-                        </>
-                    ) : null}
-                </div>
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
 };
 
 ProfileModal.propTypes = {
-    userId: PropTypes.string.isRequired,
+    userId: PropTypes.string,
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };

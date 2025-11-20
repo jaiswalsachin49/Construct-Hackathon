@@ -4,98 +4,110 @@ import useAuthStore from '../store/authStore';
 
 class SocketService {
     socket = null;
-    messageCallback = null; // NEW
-    typingCallback = null;  // optional future
+    messageListeners = [];
+    typingListeners = [];
+    notificationListeners = []; // <--- NEW: Array for notifications
 
     connect() {
-        const token = useAuthStore.getState().token;
+        const store = useAuthStore.getState();
+        const token = store.token;
+        const user = store.user; // Get user data
 
-        if (this.socket?.connected) return;
+        if (!token || this.socket?.connected) return;
 
         const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
         this.socket = io(SOCKET_URL, {
             auth: { token },
             transports: ['websocket', 'polling'],
+            reconnection: true,
         });
 
         this.socket.on('connect', () => {
-            console.log('Socket connected:', this.socket.id);
+            console.log('✅ Socket connected:', this.socket.id);
             useChatStore.getState().setConnected(true);
-        });
-
-        this.socket.on('disconnect', () => {
-            useChatStore.getState().setConnected(false);
-        });
-
-        // ===== SERVER MESSAGE RECEIVED =====
-        this.socket.on('receive:message', (message) => {
-            if (this.messageCallback) {
-                this.messageCallback(message); // pass to useChat
+            
+            // --- FIX: Join Personal Room Immediately ---
+            if (user) {
+                this.socket.emit('setup', user);
             }
         });
 
-        // typing indicator
-        this.socket.on('user:typing', (data) => {
-            if (this.typingCallback) this.typingCallback(data);
+        // --- EVENT LISTENERS ---
+
+        // 1. Chat Messages
+        this.socket.on('receive:message', (message) => {
+            this.messageListeners.forEach(cb => cb(message));
         });
 
-        // online users
-        this.socket.on('users:online', (ids) => {
-            useChatStore.getState().setOnlineUsers(ids);
+        // 2. Notifications (Connection Requests) <--- NEW
+        this.socket.on('notification:request', (data) => {
+            console.log("🔔 Notification received:", data);
+            this.notificationListeners.forEach(cb => cb(data));
+        });
+
+        // 3. Typing
+        this.socket.on('user:typing', (data) => {
+            this.typingListeners.forEach(cb => cb(data));
+        });
+        
+        // 4. Read Receipts
+        this.socket.on('messages:read', (data) => {
+            // You could add a listener array for this too if needed
         });
     }
 
     disconnect() {
-        if (!this.socket) return;
-        this.socket.disconnect();
-        this.socket = null;
+        if (this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+        }
     }
 
-    // ===== LISTENER REGISTER =====
+    // --- SUBSCRIPTION METHODS ---
+
     onMessage(callback) {
-        this.messageCallback = callback;
+        this.messageListeners.push(callback);
+        return () => {
+            this.messageListeners = this.messageListeners.filter(cb => cb !== callback);
+        };
+    }
+
+    // <--- NEW METHOD
+    onNotification(callback) {
+        this.notificationListeners.push(callback);
+        return () => {
+            this.notificationListeners = this.notificationListeners.filter(cb => cb !== callback);
+        };
     }
 
     onTyping(callback) {
-        this.typingCallback = callback;
+        this.typingListeners.push(callback);
+        return () => {
+            this.typingListeners = this.typingListeners.filter(cb => cb !== callback);
+        };
     }
 
-    joinConversation(id) {
-        if (!this.socket?.connected) return;
-        this.socket.emit('conversation:join', id);
-    }
-
-    leaveConversation(id) {
-        if (!this.socket?.connected) return;
-        this.socket.emit('conversation:leave', id);
-    }
-
+    // ... (Keep your existing joinConversation, sendMessage, markAsRead methods) ...
+    joinConversation(id) { this.socket?.emit('conversation:join', id); }
+    leaveConversation(id) { this.socket?.emit('conversation:leave', id); }
+    
     sendMessage(conversationId, content) {
-        if (!this.socket?.connected) return;
-
         const userId = useAuthStore.getState().user?._id;
-
-        this.socket.emit('send:message', {
-            conversationId,
-            content,
-            senderId: userId,
-        });
-    }
-
-    sendTyping(conversationId, isTyping) {
-        if (!this.socket?.connected) return;
-
-        const userId = useAuthStore.getState().user?._id;
-        this.socket.emit('typing', { conversationId, senderId: userId, isTyping });
+        this.socket?.emit('send:message', { conversationId, content, senderId: userId });
     }
 
     markAsRead(conversationId) {
-        if (!this.socket?.connected) return;
+        if (this.socket?.connected) {
+            this.socket.emit('mark:read', conversationId);
+        }
+    }
 
-        this.socket.emit('mark:read', conversationId);
-        useChatStore.getState().markAsRead(conversationId);
+    sendTyping(conversationId, isTyping) {
+        const userId = useAuthStore.getState().user?._id;
+        this.socket?.emit('typing', { conversationId, senderId: userId, isTyping });
     }
 }
 
-export default new SocketService();
+const socketService = new SocketService();
+export default socketService;

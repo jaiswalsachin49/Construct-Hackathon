@@ -18,13 +18,14 @@ exports.createWave = async (req, res) => {
             });
             mediaUrl = uploadedFile.secure_url;
 
-            // Delete local file after upload
+            // --- FIX: Use req.file instead of file ---
             try {
-                if (file?.path) fs.unlinkSync(file.path);
+                const fs = require('fs');
+                if (req.file.path) fs.unlinkSync(req.file.path);
             } catch (e) {
                 console.error('Failed to delete local file:', e.message);
             }
-
+            // ----------------------------------------
         }
 
         const wave = new Wave({
@@ -38,9 +39,17 @@ exports.createWave = async (req, res) => {
         });
 
         await wave.save();
+        
+        // Populate user details so frontend can display it immediately
+        await wave.populate('userId', 'name profilePhoto');
 
         res.status(201).json({ success: true, wave });
     } catch (error) {
+        // Clean up file if error occurs
+        if (req.file && req.file.path) {
+             try { require('fs').unlinkSync(req.file.path); } catch(e){}
+        }
+        console.error("Wave upload error:", error);
         res.status(500).json({ error: error.message });
     }
 };

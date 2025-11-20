@@ -33,24 +33,26 @@ export const useWaves = () => {
         }
     };
 
-    const createWave = async (file, type, caption, textContent, backgroundColor) => {
+    const createWave = async (file, type, caption, textContent, backgroundColor, setProgress) => {
         try {
             const formData = new FormData();
 
             if (file) {
                 formData.append('file', file);
-                formData.append('type', type); // 'photo' or 'video'
+                formData.append('type', type); 
             } else if (textContent) {
-                formData.append('text', textContent);
+                formData.append('textContent', textContent); // Fix key name if needed
                 formData.append('backgroundColor', backgroundColor || '#3B82F6');
                 formData.append('type', 'text');
             }
 
-            if (caption) {
-                formData.append('caption', caption);
-            }
+            if (caption) formData.append('caption', caption);
 
-            const data = await waveService.createWave(formData);
+            // Pass the setProgress callback to the service
+            const data = await waveService.createWave(formData, (percent) => {
+                if (setProgress) setProgress(percent);
+            });
+            
             store.addMyWave(data.wave || data);
             return data;
         } catch (error) {

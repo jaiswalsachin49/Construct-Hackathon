@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, Sparkles } from 'lucide-react';
 import Button from '../common/Button';
 
 const UserCard = ({ user, onConnect, onViewProfile }) => {
     const [isConnecting, setIsConnecting] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
+    
+    // State to track the button status: 'none', 'pending', 'connected'
+    const [status, setStatus] = useState('none');
 
-    const handleConnect = async () => {
+    const handleConnect = async (e) => {
+        e.stopPropagation(); // Prevent card click
         setIsConnecting(true);
         try {
             await onConnect(user._id);
-            setIsConnected(true);
+            setStatus('pending'); // Change button to "Request Sent"
         } catch (error) {
             console.error('Failed to connect:', error);
         } finally {
@@ -20,145 +23,108 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
     };
 
     const getInitials = (name) => {
-        return name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
+        if (!name) return 'U';
+        return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
     };
 
     const formatDistance = (distance) => {
-        if (distance < 1) {
-            return `${Math.round(distance * 1000)}m away`;
-        }
+        if (!distance) return 'Nearby';
+        if (distance < 1) return `${Math.round(distance * 1000)}m away`;
         return `${distance.toFixed(1)} km away`;
     };
 
     const getMatchColor = (score) => {
-        if (score >= 80) return 'text-green-600 bg-green-50';
-        if (score >= 60) return 'text-yellow-600 bg-yellow-50';
-        return 'text-gray-600 bg-gray-50';
+        if (score >= 80) return 'text-green-700 bg-green-50 border-green-200';
+        if (score >= 60) return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+        return 'text-gray-700 bg-gray-50 border-gray-200';
     };
+
+    const matchReason = user.matchReason || (user.matchScore >= 80 ? "High compatibility!" : null);
 
     return (
         <div
-            className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden"
+            className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full"
             onClick={() => onViewProfile(user._id)}
         >
-            <div className="p-6">
-                {/* Profile Photo */}
-                <div className="flex justify-center mb-4">
-                    {user.profilePhoto ? (
-                        <img
-                            src={user.profilePhoto}
-                            alt={user.name}
-                            className="h-24 w-24 rounded-full object-cover border-2 border-white shadow-lg"
-                        />
-                    ) : (
-                        <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-white shadow-lg">
-                            <span className="text-3xl font-bold text-white">
+            <div className="p-5 flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0">
+                        {user.profilePhoto ? (
+                            <img
+                                src={user.profilePhoto}
+                                alt={user.name}
+                                className="h-16 w-16 rounded-full object-cover border border-gray-200"
+                            />
+                        ) : (
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
                                 {getInitials(user.name)}
-                            </span>
-                        </div>
-                    )}
-                </div>
-
-                {/* User Info */}
-                <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">{user.name}</h3>
-                    <div className="flex items-center justify-center gap-1 text-sm text-gray-600 mb-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{user.distance ? formatDistance(user.distance) : 'Nearby'}</span>
+                            </div>
+                        )}
                     </div>
-                    {user.areaLabel && (
-                        <p className="text-sm text-gray-500">{user.areaLabel}</p>
-                    )}
+                    
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold text-gray-900 truncate">{user.name}</h3>
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span className="truncate">{user.areaLabel || formatDistance(user.distance)}</span>
+                        </div>
+                        {user.rating && user.rating.count > 0 && (
+                            <div className="flex items-center gap-1 mt-1">
+                                <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
+                                <span className="text-sm font-medium text-gray-700">{user.rating.average}</span>
+                                <span className="text-xs text-gray-400">({user.rating.count})</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Match Score */}
-                {user.matchScore !== undefined && (
-                    <div className="mb-4 flex justify-center">
-                        <span
-                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getMatchColor(
-                                user.matchScore
-                            )}`}
-                        >
-                            {user.matchScore}% Match
-                        </span>
+                {/* Match Reason */}
+                {matchReason && (
+                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                        <p className="text-xs font-medium text-blue-700 line-clamp-1">
+                            {matchReason}
+                        </p>
                     </div>
                 )}
 
-                {/* Skills - Can Teach */}
-                {user.teachTags && user.teachTags.length > 0 && (
-                    <div className="mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Can Teach:</p>
-                        <div className="flex flex-wrap gap-1.5">
-                            {user.teachTags.slice(0, 3).map((tag) => (
-                                <span
-                                    key={tag._id}
-                                    className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium"
-                                >
-                                    {tag.name}
-                                </span>
-                            ))}
-                            {user.teachTags.length > 3 && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                                    +{user.teachTags.length - 3} more
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Skills - Wants to Learn */}
-                {user.learnTags && user.learnTags.length > 0 && (
+                {/* Score Badge */}
+                {user.matchScore !== undefined && !matchReason && (
                     <div className="mb-4">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Wants to Learn:</p>
-                        <div className="flex flex-wrap gap-1.5">
-                            {user.learnTags.slice(0, 3).map((tag) => (
-                                <span
-                                    key={tag._id}
-                                    className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium"
-                                >
-                                    {tag.name}
-                                </span>
-                            ))}
-                            {user.learnTags.length > 3 && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                                    +{user.learnTags.length - 3} more
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Rating */}
-                {user.rating && (
-                    <div className="flex items-center justify-center gap-2 mb-4 text-sm">
-                        <div className="flex items-center gap-1 text-yellow-500">
-                            <Star className="h-4 w-4 fill-current" />
-                            <span className="font-semibold text-gray-900">
-                                {user.rating.average || 0}
-                            </span>
-                        </div>
-                        <span className="text-gray-500">
-                            ({user.rating.count || 0} reviews)
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getMatchColor(user.matchScore)}`}>
+                            {Math.round(user.matchScore)}% Match
                         </span>
                     </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                {/* Skills */}
+                <div className="flex-1 space-y-3 mb-4">
+                    {user.teachTags?.length > 0 && (
+                        <div>
+                            <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1.5">Teaches</p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {user.teachTags.slice(0, 3).map((tag, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs font-medium">
+                                        {tag.name || tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-auto" onClick={(e) => e.stopPropagation()}>
                     <Button
-                        variant={isConnected ? 'secondary' : 'primary'}
+                        variant={status === 'none' ? 'primary' : 'secondary'}
                         size="sm"
                         className="flex-1"
                         onClick={handleConnect}
                         isLoading={isConnecting}
-                        disabled={isConnected || isConnecting}
+                        disabled={status !== 'none' || isConnecting}
                     >
-                        {isConnected ? 'Connected ✓' : 'Connect'}
+                        {status === 'pending' ? 'Request Sent' : status === 'connected' ? 'Connected' : 'Connect'}
                     </Button>
                     <Button
                         variant="ghost"
@@ -166,7 +132,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                         className="flex-1"
                         onClick={() => onViewProfile(user._id)}
                     >
-                        View
+                        Profile
                     </Button>
                 </div>
             </div>
@@ -175,32 +141,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
 };
 
 UserCard.propTypes = {
-    user: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        profilePhoto: PropTypes.string,
-        distance: PropTypes.number,
-        areaLabel: PropTypes.string,
-        teachTags: PropTypes.arrayOf(
-            PropTypes.shape({
-                _id: PropTypes.string,
-                name: PropTypes.string,
-                slug: PropTypes.string,
-            })
-        ),
-        learnTags: PropTypes.arrayOf(
-            PropTypes.shape({
-                _id: PropTypes.string,
-                name: PropTypes.string,
-                slug: PropTypes.string,
-            })
-        ),
-        rating: PropTypes.shape({
-            average: PropTypes.number,
-            count: PropTypes.number,
-        }),
-        matchScore: PropTypes.number,
-    }).isRequired,
+    user: PropTypes.object.isRequired,
     onConnect: PropTypes.func.isRequired,
     onViewProfile: PropTypes.func.isRequired,
 };
