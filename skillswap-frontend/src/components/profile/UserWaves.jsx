@@ -1,44 +1,65 @@
 import React, { useState, useEffect } from 'react';
+import {
+  getMyWaves,
+  getUserWaves,
+  viewWave as apiViewWave,
+  deleteWave as apiDeleteWave,
+} from '../../services/waveService';
 
 const UserWaves = ({ userId, isOwnProfile }) => {
   const [waves, setWaves] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      setWaves([
-        {
-          _id: '1',
-          content: 'Quick guitar tips!',
-          thumbnail: null,
-          expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
-          views: 45
-        },
-        {
-          _id: '2',
-          content: 'Morning yoga routine',
-          thumbnail: null,
-          expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
-          views: 32
-        }
-      ]);
-      setIsLoading(false);
-    }, 500);
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const res = isOwnProfile ? await getMyWaves() : await getUserWaves(userId);
+        // response shape may vary: be defensive
+        const extract = (d) => {
+          if (!d) return [];
+          if (Array.isArray(d)) return d;
+          if (Array.isArray(d.waves)) return d.waves;
+          if (Array.isArray(d.data)) return d.data;
+          return [];
+        };
+        const list = extract(res);
+        // normalize expiresAt to Date
+        const normalized = list.map((w) => ({ ...w, expiresAt: w.expiresAt ? new Date(w.expiresAt) : null }));
+        setWaves(normalized);
+      } catch (err) {
+        console.error('Failed to load waves', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isOwnProfile || userId) load();
   }, [userId]);
 
-  const handleDelete = (waveId) => {
-    if (window.confirm('Delete this wave?')) {
-      setWaves(waves.filter(w => w._id !== waveId));
+  const handleDelete = async (waveId) => {
+    if (!window.confirm('Delete this wave?')) return;
+    try {
+      await apiDeleteWave(waveId);
+      setWaves((prev) => prev.filter((w) => w._id !== waveId));
+    } catch (err) {
+      console.error('Failed to delete wave', err);
+      alert('Could not delete wave.');
     }
   };
 
-  const handleView = (waveId) => {
-    // Open wave viewer
+  const handleView = async (waveId) => {
+    try {
+      await apiViewWave(waveId);
+    } catch (err) {
+      console.warn('Failed to mark wave viewed', err);
+    }
+    // TODO: open wave viewer modal or route; for now log
     console.log('View wave:', waveId);
   };
 
   const getTimeRemaining = (expiresAt) => {
+    if (!expiresAt) return '';
     const hours = Math.floor((expiresAt - Date.now()) / (1000 * 60 * 60));
     return `${hours}h remaining`;
   };

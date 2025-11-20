@@ -178,7 +178,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                             className="h-10 w-10 rounded-full object-cover"
                         />
                     ) : (
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
                             <span className="text-white font-semibold text-sm">
                                 {getInitials(user?.name)}
                             </span>
@@ -201,7 +201,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                         rows={5}
                         maxLength={maxContentLength}
                         autoFocus
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
                     />
                     <p className="text-sm text-gray-500 text-right mt-1">
                         {remainingChars} characters remaining
@@ -215,7 +215,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                         disabled={isPosting || mediaFiles.some((f) => f.type.startsWith('video/'))}
                         className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <ImageIcon className="h-5 w-5 text-blue-600" />
+                        <ImageIcon className="h-5 w-5 text-pink-600" />
                         <span className="text-sm font-medium">Add Photos</span>
                     </button>
 
@@ -291,12 +291,12 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                                 }
                             }}
                             placeholder="Add tags..."
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                         <button
                             onClick={() => addTag(tagInput)}
                             disabled={!tagInput.trim()}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                         >
                             Add
                         </button>
@@ -307,12 +307,12 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                             {tags.map((tag) => (
                                 <span
                                     key={tag}
-                                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm"
                                 >
                                     #{tag}
                                     <button
                                         onClick={() => removeTag(tag)}
-                                        className="hover:bg-blue-200 rounded-full p-0.5"
+                                        className="hover:bg-pink-200 rounded-full p-0.5"
                                     >
                                         <X className="h-3 w-3" />
                                     </button>
@@ -371,7 +371,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                         Cancel
                     </Button>
                     <Button
-                        variant="primary"
+                        variant="warm"
                         onClick={handlePost}
                         isLoading={isPosting}
                         disabled={!canPost}

@@ -22,7 +22,11 @@ export const getCommunity = async (communityId) => {
 
 // Create community
 export const createCommunity = async (data) => {
-  const response = await api.post('/api/communities', data);
+  const config = {};
+  if (typeof FormData !== 'undefined' && data instanceof FormData) {
+    config.headers = { 'Content-Type': 'multipart/form-data' };
+  }
+  const response = await api.post('/api/communities', data, config);
   return response.data;
 };
 

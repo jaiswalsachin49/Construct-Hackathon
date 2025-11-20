@@ -31,7 +31,7 @@ const DashboardLayout = () => {
 
             <div className="flex">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-4rem)] sticky top-16">
+                <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 h-screen sticky top-16">
                     <nav className="p-4 space-y-1">
                         {navItems.map((item) => (
                             <NavLink
@@ -39,7 +39,7 @@ const DashboardLayout = () => {
                                 to={item.to}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-blue-50 text-blue-600'
+                                        ? 'bg-pink-50 text-pink-600'
                                         : 'text-gray-700 hover:bg-gray-100'
                                     }`
                                 }
@@ -60,14 +60,14 @@ const DashboardLayout = () => {
             </div>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-pink border-t border-pink-200 z-40">
                 <div className="flex justify-around items-center h-16">
                     {navItems.slice(0, 5).map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-blue-600' : 'text-gray-600'
+                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-pink-600' : 'text-gray-600'
                                 }`
                             }
                         >

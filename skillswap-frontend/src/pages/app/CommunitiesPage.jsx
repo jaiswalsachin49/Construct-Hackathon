@@ -8,7 +8,7 @@ const CommunitiesPage = () => {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-gray-900">Communities</h1>
-                <Button variant="primary">
+                <Button variant="warm">
                     <Plus className="h-5 w-5 mr-2" />
                     Create Community
                 </Button>
