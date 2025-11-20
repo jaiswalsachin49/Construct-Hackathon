@@ -82,55 +82,39 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
     };
 
     const handleSubmit = async () => {
+        // Basic validation
+        if (activeTab === 'text' && !textContent.trim()) return;
+        if ((activeTab === 'photo' || activeTab === 'video') && !file) return;
+
+        setIsUploading(true);
+        setUploadProgress(0);
         setError('');
 
-        // Validation
-        if (activeTab !== 'text' && !file) {
-            setError('Please select a file');
-            return;
-        }
-
-        if (activeTab === 'text' && !textContent.trim()) {
-            setError('Please enter some text');
-            return;
-        }
-
-        if (caption.length > 100) {
-            setError('Caption must be 100 characters or less');
-            return;
-        }
-
         try {
-            setIsUploading(true);
-            setUploadProgress(20);
-
+            // Pass setUploadProgress as the last argument
             await createWave(
-                file,
-                activeTab,
-                caption,
-                textContent,
-                backgroundColor
+                file, 
+                activeTab, 
+                caption, 
+                textContent, 
+                backgroundColor, 
+                (percent) => setUploadProgress(percent) 
             );
-
-            setUploadProgress(100);
-
-            // Reset form
+            
+            onClose();
+            // Reset state
             setFile(null);
             setPreview(null);
             setTextContent('');
             setCaption('');
-            setActiveTab('photo');
-
-            onClose();
         } catch (err) {
-            console.error('Failed to create wave:', err);
-            setError(err.response?.data?.message || 'Failed to create wave');
+            setError('Failed to create wave. Please try again.');
+            console.error(err);
         } finally {
             setIsUploading(false);
-            setUploadProgress(0);
         }
     };
-
+    
     const handleClose = () => {
         if (!isUploading) {
             setFile(null);

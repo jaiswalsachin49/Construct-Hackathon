@@ -7,6 +7,30 @@ const extractArray = (res) => {
     return [];
 };
 
+// Send Request
+export const sendConnectionRequest = async (userId) => {
+    const response = await api.post(`/api/users/request/${userId}`);
+    return response.data;
+};
+
+// Accept Request
+export const acceptConnectionRequest = async (userId) => {
+    const response = await api.post(`/api/users/request/${userId}/accept`);
+    return response.data;
+};
+
+// Reject Request
+export const rejectConnectionRequest = async (userId) => {
+    const response = await api.post(`/api/users/request/${userId}/reject`);
+    return response.data;
+};
+
+// Get Pending Requests
+export const getPendingRequests = async () => {
+    const response = await api.get('/api/users/requests/pending');
+    return response.data.requests || [];
+};
+
 // Get nearby users
 export const getNearbyUsers = async (lat, lng, radius) => {
     const response = await api.get('/api/users/nearby', {
@@ -37,11 +61,7 @@ export const getUserById = async (userId) => {
     return response.data.user || response.data;
 };
 
-// Add user as ally
-export const addAlly = async (userId) => {
-    const response = await api.post(`/api/users/allies/${userId}`);
-    return response.data;
-};
+
 
 // Start chat with user
 export const startChat = async (userId) => {

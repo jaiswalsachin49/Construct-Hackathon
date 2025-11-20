@@ -3,11 +3,11 @@ import { create } from 'zustand';
 const useChatStore = create((set, get) => ({
     conversations: [],
     currentConversation: null,
-    messages: {}, 
-    unreadCounts: {},
+    messages: {},     // { conversationId: [messages] }
+    unreadCounts: {}, // { conversationId: count }
     onlineUsers: [],
     isConnected: false,
-    isTyping: {},
+    isTyping: {},     // { conversationId: { userId: boolean } }
 
     setConversations: (conversations) => set({ conversations }),
 
@@ -18,17 +18,19 @@ const useChatStore = create((set, get) => ({
 
     setCurrentConversation: (id) => set({ currentConversation: id }),
 
-    // ===== replace temp + remove duplicate _id =====
+    // 1. ADD/UPDATE MESSAGES
     updateMessage: (conversationId, realMessage) =>
         set((state) => {
             const msgs = state.messages[conversationId] || [];
 
+            // Replace temp message with real one
             const replaced = msgs.map((msg) =>
-                msg._id === realMessage._id || msg._id.startsWith("temp")
+                msg._id === realMessage._id || msg._id === realMessage.tempId || (msg.pending && msg.content === realMessage.content)
                     ? realMessage
                     : msg
             );
 
+            // Deduplicate just in case
             const unique = [];
             const map = {};
             replaced.forEach((m) => {
@@ -49,8 +51,7 @@ const useChatStore = create((set, get) => ({
     addMessage: (conversationId, message) =>
         set((state) => {
             const msgs = state.messages[conversationId] || [];
-
-            // prevent duplicate _id
+            // Prevent duplicates
             if (msgs.some((m) => m._id === message._id)) return {};
 
             return {
@@ -69,6 +70,8 @@ const useChatStore = create((set, get) => ({
             },
         })),
 
+    // 2. NOTIFICATIONS (RED BADGE)
+    // This fixes "store.markAsRead is not a function"
     markAsRead: (conversationId) =>
         set((state) => ({
             unreadCounts: {
@@ -84,6 +87,19 @@ const useChatStore = create((set, get) => ({
                 [conversationId]: count,
             },
         })),
+
+    // 3. READ RECEIPTS (BLUE TICKS)
+    // This updates the messages to show they are read
+    markMessagesAsRead: (conversationId) =>
+        set((state) => {
+            const msgs = state.messages[conversationId] || [];
+            return {
+                messages: {
+                    ...state.messages,
+                    [conversationId]: msgs.map(m => ({ ...m, read: true }))
+                }
+            };
+        }),
 
     setOnlineUsers: (list) => set({ onlineUsers: list }),
 

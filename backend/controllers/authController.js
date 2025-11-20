@@ -166,7 +166,9 @@ const getCurrentUser = async (req, res) => {
     const user = await User.findById(req.user.userId)
       .select('-password')
       .populate('allies', 'name profilePhoto');
-
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.json({ success: true, user });
   } catch (error) {
     res.status(500).json({ error: error.message });

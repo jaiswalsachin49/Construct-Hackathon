@@ -14,20 +14,34 @@ export const useChat = () => {
         socketService.connect();
         fetchConversations();
 
-        // ===== SOCKET MESSAGE LISTENER =====
-        socketService.onMessage((message) => {
+        const removeMessageListener = socketService.onMessage((message) => {
             const convId = message.conversationId;
             if (!convId) return;
 
-            // replace temp + old version
             store.updateMessage(convId, message);
 
-            // if still missing add cleanly
             const exist = store.messages[convId] || [];
             if (!exist.some((m) => m._id === message._id)) {
                 store.addMessage(convId, message);
             }
         });
+
+        const handleReadReceipt = ({ conversationId }) => {
+            if (conversationId) {
+                store.markMessagesAsRead(conversationId);
+            }
+        };
+
+        if (socketService.socket) {
+            socketService.socket.on('messages:read', handleReadReceipt);
+        }
+
+        return () => {
+            if (removeMessageListener) removeMessageListener();
+            if (socketService.socket) {
+                socketService.socket.off('messages:read', handleReadReceipt);
+            }
+        };
 
     }, [user]);
 
@@ -49,30 +63,27 @@ export const useChat = () => {
         }
     };
 
-    // ===== SEND MESSAGE =====
     const sendMessage = (content) => {
         const convId = store.currentConversation;
         if (!convId || !content.trim()) return;
 
         const tempId = "temp-" + Date.now();
-
         const tempMessage = {
             _id: tempId,
             conversationId: convId,
             senderId: user._id,
             content: content.trim(),
             timestamp: new Date().toISOString(),
-
             pending: true,
             delivered: false,
             read: false,
         };
 
         store.addMessage(convId, tempMessage);
-
         socketService.sendMessage(convId, content.trim());
     };
 
+    // --- FIX IS HERE ---
     const setCurrentConversation = (id) => {
         if (store.currentConversation)
             socketService.leaveConversation(store.currentConversation);
@@ -83,13 +94,21 @@ export const useChat = () => {
         }
 
         store.setCurrentConversation(id);
+        
+        // 1. Join Socket Room
         socketService.joinConversation(id);
+        
+        // 2. Tell Backend "I read this"
         socketService.markAsRead(id);
+        
+        // 3. Tell Frontend "Clear the Red Badge" (This was missing)
+        store.markAsRead(id); 
 
         if (!store.messages[id]) {
             fetchMessages(id);
         }
     };
+    // -------------------
 
     return {
         conversations: store.conversations,

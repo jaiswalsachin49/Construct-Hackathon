@@ -1,9 +1,17 @@
 import api from './api';
 
 // Create wave
-export const createWave = async (formData) => {
+export const createWave = async (formData, onProgress) => {
     const response = await api.post('/api/waves', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+            if (onProgress) {
+                const percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                );
+                onProgress(percentCompleted);
+            }
+        },
     });
     return response.data;
 };

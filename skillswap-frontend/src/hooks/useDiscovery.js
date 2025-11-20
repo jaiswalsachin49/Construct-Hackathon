@@ -1,3 +1,5 @@
+// frontend/src/hooks/useDiscovery.js
+
 import { useEffect } from 'react';
 import useDiscoveryStore from '../store/discoveryStore';
 import useAuthStore from '../store/authStore';
@@ -8,7 +10,12 @@ export const useDiscovery = () => {
     const { user } = useAuthStore();
 
     const fetchNearbyUsers = async () => {
-        if (!user?.location) return;
+        // 1. Check for location existence
+        if (!user?.location?.lat || !user?.location?.lng) {
+            store.setError("Please update your location in your Profile to find people nearby.");
+            store.setLoading(false);
+            return;
+        }
 
         try {
             store.setLoading(true);
@@ -16,8 +23,8 @@ export const useDiscovery = () => {
 
             let users;
 
+            // 2. Search Logic
             if (store.filters.search) {
-                // searchUsers RETURNS AN ARRAY
                 users = await searchUsers(
                     store.filters.search,
                     user.location.lat,
@@ -25,7 +32,6 @@ export const useDiscovery = () => {
                     store.filters.radius
                 );
             } else {
-                // getNearbyUsers RETURNS AN ARRAY
                 users = await getNearbyUsers(
                     user.location.lat,
                     user.location.lng,
@@ -33,24 +39,13 @@ export const useDiscovery = () => {
                 );
             }
 
-            // Always keep array safe
+            // 3. Safety Check: Ensure users is an array
             let filteredUsers = Array.isArray(users) ? users : [];
 
-            // Filter by availability
+            // 4. Frontend Filtering (Optional extra layer)
             if (store.filters.availability) {
                 filteredUsers = filteredUsers.filter(
                     (u) => u.availability === store.filters.availability
-                );
-            }
-
-            // Filter by tags
-            if (store.filters.tags.length > 0) {
-                filteredUsers = filteredUsers.filter((u) =>
-                    store.filters.tags.some(
-                        (tag) =>
-                            u.teachTags?.some((t) => t.name === tag) ||
-                            u.learnTags?.some((t) => t.name === tag)
-                    )
                 );
             }
 
@@ -64,25 +59,33 @@ export const useDiscovery = () => {
     };
 
     const fetchMatches = async () => {
-    try {
-        store.setLoading(true);
-        store.setError(null);
+        if (!user?.location) {
+             store.setError("Please update your location to see matches.");
+             return;
+        }
+        
+        try {
+            store.setLoading(true);
+            store.setError(null);
 
-        const users = await getBestMatches(); // returns array
-        const clean = users.map(m => ({
-            ...m.user,
-            matchScore: m.matchScore,
-            distance: m.distance
-        }));
+            const matches = await getBestMatches();
+            
+            // Map backend structure if needed
+            const cleanMatches = matches.map(m => ({
+                ...m.user,
+                matchScore: m.matchScore,
+                matchReason: m.matchReason, // Pass reason to UI
+                distance: m.distance
+            }));
 
-        store.setMatchedUsers(clean);
-    } catch (error) {
-        store.setError("Failed to load matches");
-    } finally {
-        store.setLoading(false);
-    }
-};
-
+            store.setMatchedUsers(cleanMatches);
+        } catch (error) {
+            console.error("Failed to fetch matches:", error);
+            store.setError("Failed to load matches");
+        } finally {
+            store.setLoading(false);
+        }
+    };
 
     return {
         nearbyUsers: store.nearbyUsers,

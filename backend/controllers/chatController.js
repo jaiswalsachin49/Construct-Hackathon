@@ -5,80 +5,88 @@ exports.getConversations = async (req, res) => {
     try {
         const currentUserId = req.user.userId.toString();
 
+        // 1. Fetch conversations and populate participants
         const conversations = await Conversation.find({
             participants: currentUserId,
         })
-            .populate('participants', 'name profilePhoto')
-            .sort({ lastMessageTime: -1 })
-            .lean();
+        .populate('participants', 'name profilePhoto')
+        .sort({ lastMessageTime: -1 })
+        .lean();
 
-        // Shape data for frontend
-        const shaped = await Promise.all(
-            conversations.map(async (conv) => {
-                const otherUser =
-                    (conv.participants || []).find(
-                        (p) => p._id.toString() !== currentUserId
-                    ) || null;
+        // 2. Shape data WITHOUT extra DB queries
+        const shaped = conversations.map((conv) => {
+            const otherUser = (conv.participants || []).find(
+                (p) => p._id.toString() !== currentUserId
+            ) || null;
 
-                const lastMsgDoc = await Message.findOne({
-                    conversationId: conv._id,
-                })
-                    .sort({ createdAt: -1 })
-                    .lean();
+            // Use the data already in the Conversation model
+            const lastMessage = conv.lastMessage ? {
+                content: conv.lastMessage,
+                timestamp: conv.lastMessageTime,
+                // Note: You might miss senderId here with this optimization, 
+                // but it's a worthy trade-off for the list view.
+            } : null;
 
-                const lastMessage = lastMsgDoc
-                    ? {
-                        content: lastMsgDoc.content,
-                        senderId: lastMsgDoc.senderId.toString(),
-                        timestamp: lastMsgDoc.createdAt,
-                    }
-                    : null;
+            const unreadCount = (conv.unreadCounts && conv.unreadCounts[currentUserId]) || 0;
 
-                const unreadCount =
-                    (conv.unreadCounts &&
-                        conv.unreadCounts.get &&
-                        conv.unreadCounts.get(currentUserId)) ||
-                    0;
-
-                return {
-                    _id: conv._id.toString(),
-                    otherUser,
-                    lastMessage,
-                    unreadCount,
-                };
-            })
-        );
+            return {
+                _id: conv._id,
+                otherUser,
+                lastMessage,
+                unreadCount,
+            };
+        });
 
         res.json({ success: true, conversations: shaped });
     } catch (error) {
-        console.error('getConversations error:', error);
         res.status(500).json({ error: error.message });
     }
 };
 
 exports.startConversation = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.body; // The ID of the person we want to chat with
         const currentUserId = req.user.userId;
 
-        // Check if conversation already exists
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        // 1. Check if conversation already exists
         let conversation = await Conversation.findOne({
             participants: { $all: [currentUserId, userId] }
         });
 
-        if (!conversation) {
-            conversation = new Conversation({
-                participants: [currentUserId, userId],
-                unreadCounts: new Map([
-                    [currentUserId, 0],
-                    [userId, 0]
-                ])
+        // 2. If found, return it
+        if (conversation) {
+            return res.json({ 
+                success: true, 
+                conversation: { 
+                    _id: conversation._id,
+                    // Add any other needed fields
+                }
             });
-            await conversation.save();
         }
 
-        res.json({ success: true, conversationId: conversation._id });
+        // 3. If not found, CREATE it
+        conversation = new Conversation({
+            participants: [currentUserId, userId],
+            unreadCounts: new Map(), // Initialize empty map
+            lastMessage: "New conversation started",
+            lastMessageTime: new Date()
+        });
+
+        await conversation.save();
+
+        res.status(201).json({ 
+            success: true, 
+            conversation: { 
+                _id: conversation._id 
+            } 
+        });
+
     } catch (error) {
+        console.error("Start conversation error:", error);
         res.status(500).json({ error: error.message });
     }
 };

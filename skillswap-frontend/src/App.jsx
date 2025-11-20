@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import NotFound from "./pages/NotFound";
+import SettingsPage from "./pages/app/SettingsPage";
 
 import DiscoveryPage from "./pages/app/DiscoveryPage";
 import MatchesPage from "./pages/app/MatchesPage";
@@ -118,6 +119,7 @@ function App() {
           <Route path="chat/:conversationId" element={<ChatPage />} />
           <Route path="waves" element={<WavesPage />} />
           <Route path="feed" element={<FeedPage />} />
+          <Route path="settings" element={<SettingsPage />} />
 
           {/* Combined communities */}
           <Route path="communities" element={<CommunitiesPage />} />

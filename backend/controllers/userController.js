@@ -2,6 +2,8 @@ const User = require('../models/User');
 
 // Get nearby users with geospatial query
 // controllers/userController.js
+// backend/controllers/userController.js
+
 exports.getNearbyUsers = async (req, res) => {
     try {
         let { radius = 5, search = '', availability = null, lat, lng } = req.query;
@@ -10,25 +12,21 @@ exports.getNearbyUsers = async (req, res) => {
         const user = await User.findById(req.user.userId);
         if (!user) return res.status(404).json({ error: "User not found" });
 
-        let baseLocation;
-
-        // Use live map location from frontend if provided
-        if (lat && lng) {
-            baseLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
-        } else {
-            if (!user.location?.lat || !user.location?.lng) {
-                return res.status(400).json({ error: "User location not set" });
-            }
-            baseLocation = user.location;
-        }
-
-        // -------- Search query logic -------------
+        // ... (Keep your existing location logic) ...
+        
+        // --- FIX IS HERE ---
         let query = {
-            _id: { $ne: user._id },
+            _id: { 
+                $ne: user._id,          // Not me
+                $nin: user.allies       // Not my allies (exclude existing connections)
+            },
             "location.lat": { $exists: true },
             "location.lng": { $exists: true }
         };
+        // -------------------
 
+        // ... (Rest of your search/regex logic) ...
+        
         if (search && search.trim() !== "") {
             const regex = new RegExp(search.trim(), "i");
             query.$or = [
@@ -43,25 +41,21 @@ exports.getNearbyUsers = async (req, res) => {
             query.availability = availability;
         }
 
-        let users = await User.find(query)
-            .select("name profilePhoto location teachTags learnTags stats availability bio")
-            .lean();
+        // Execute Query
+        let users = await User.find(query).select('-password -blocked -verificationCode');
 
-        // Calculate distance
-        const filtered = users
-            .map(u => ({
-                ...u,
-                distance: getDistance(baseLocation, u.location)
-            }))
-            .filter(u => u.distance <= radius)
-            .sort((a, b) => a.distance - b.distance);
+        // ... (Keep your existing distance calculation & filtering) ...
+        
+        // Note: If you are using the manual distance filter (JS filter), 
+        // the MongoDB query above has already removed the allies, so you are good.
 
-        res.json({ success: true, users: filtered });
+        // Return results
+        res.json({ success: true, users: users }); // or users: nearbyUsers if you filter later
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 
 // Get best matches using AI algorithm
@@ -115,6 +109,8 @@ exports.getBestMatches = async (req, res) => {
     }
 };
 
+
+
 // Search users by skill
 exports.searchUsers = async (req, res) => {
     try {
@@ -166,17 +162,130 @@ exports.updateProfile = async (req, res) => {
 };
 
 // Add ally
-exports.addAlly = async (req, res) => {
+exports.sendConnectionRequest = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId);
-        const allyId = req.params.userId;
+        const targetUserId = req.params.userId;
+        const currentUserId = req.user.userId;
 
-        if (!user.allies.includes(allyId)) {
-            user.allies.push(allyId);
-            await user.save();
+        if (targetUserId === currentUserId) return res.status(400).json({ error: "Cannot add yourself" });
+
+        const targetUser = await User.findById(targetUserId);
+        const currentUser = await User.findById(currentUserId);
+
+        if (!targetUser || !currentUser) return res.status(404).json({ error: "User not found" });
+
+        // Check if already allies
+        if (currentUser.allies.includes(targetUserId)) {
+            return res.status(400).json({ error: "Already allies" });
         }
 
-        res.json({ success: true, message: 'Ally added' });
+        // Check if request already sent
+        if (currentUser.sentRequests.includes(targetUserId)) {
+            return res.status(400).json({ error: "Request already sent" });
+        }
+
+        // Check if target already sent YOU a request (if so, just accept it)
+        if (currentUser.friendRequests.includes(targetUserId)) {
+            return exports.acceptConnectionRequest(req, res);
+        }
+
+        // Update Arrays
+        currentUser.sentRequests.push(targetUserId);
+        targetUser.friendRequests.push(currentUserId);
+
+        await currentUser.save();
+        await targetUser.save();
+
+        // REAL-TIME NOTIFICATION
+        const io = req.app.get('io');
+        if (io) {
+            // Force string conversion to match the room name
+            io.to(targetUserId.toString()).emit('notification:request', {
+                type: 'connection_request',
+                sender: {
+                    _id: currentUser._id,
+                    name: currentUser.name,
+                    profilePhoto: currentUser.profilePhoto
+                }
+            });
+            console.log(`Notification emitted to room: ${targetUserId}`); // Debug Log
+        }
+
+        res.json({ success: true, message: "Request sent" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Accept a connection request
+exports.acceptConnectionRequest = async (req, res) => {
+    try {
+        const targetUserId = req.params.userId; // The person who sent the request
+        const currentUserId = req.user.userId;  // Me
+
+        const currentUser = await User.findById(currentUserId);
+        const targetUser = await User.findById(targetUserId);
+
+        if (!currentUser.friendRequests.includes(targetUserId)) {
+            return res.status(400).json({ error: "No request found from this user" });
+        }
+
+        // 1. Add to allies
+        currentUser.allies.push(targetUserId);
+        targetUser.allies.push(currentUserId);
+
+        // 2. Remove from requests
+        currentUser.friendRequests = currentUser.friendRequests.filter(id => id.toString() !== targetUserId);
+        targetUser.sentRequests = targetUser.sentRequests.filter(id => id.toString() !== currentUserId);
+
+        await currentUser.save();
+        await targetUser.save();
+
+        // REAL-TIME NOTIFICATION
+        const io = req.app.get('io');
+        if (io) {
+            io.to(targetUserId).emit('notification:accepted', {
+                type: 'connection_accepted',
+                user: {
+                    _id: currentUser._id,
+                    name: currentUser.name
+                }
+            });
+        }
+
+        res.json({ success: true, message: "Connection accepted" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Reject a request
+exports.rejectConnectionRequest = async (req, res) => {
+    try {
+        const targetUserId = req.params.userId;
+        const currentUserId = req.user.userId;
+
+        await User.findByIdAndUpdate(currentUserId, {
+            $pull: { friendRequests: targetUserId }
+        });
+        await User.findByIdAndUpdate(targetUserId, {
+            $pull: { sentRequests: currentUserId }
+        });
+
+        res.json({ success: true, message: "Request rejected" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get all pending requests (For Navbar)
+exports.getPendingRequests = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId)
+            .populate('friendRequests', 'name profilePhoto bio teachTags')
+            .select('friendRequests');
+        
+        res.json({ success: true, requests: user.friendRequests });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

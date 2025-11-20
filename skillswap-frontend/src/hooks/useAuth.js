@@ -63,9 +63,17 @@ export const useAuth = () => {
 
     const refreshUser = async () => {
         try {
-            const userData = await getCurrentUser();
-            setUser(userData);
-            return userData;
+            // 1. Get fresh data from backend
+            const response = await getCurrentUser();
+            
+            // 2. FIX: Extract the 'user' object from the response wrapper
+            // Backend returns { success: true, user: {...} }
+            const freshUserData = response.user || response;
+            
+            // 3. Update store with the user object ONLY
+            setUser(freshUserData);
+            
+            return freshUserData;
         } catch (error) {
             console.error('Failed to refresh user:', error);
             return null;

@@ -1,127 +1,169 @@
+const jwt = require('jsonwebtoken');
+
 module.exports = (io) => {
     const Conversation = require('../models/Conversation');
     const Message = require('../models/Message');
     const User = require('../models/User');
 
+    // 1. AUTH MIDDLEWARE: Identify who is connecting
+    io.use((socket, next) => {
+        const token = socket.handshake.auth.token;
+        if (token) {
+            jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+                if (err) return next(new Error('Authentication error'));
+                socket.decoded = decoded; // Store user info in socket
+                next();
+            });
+        } else {
+            next(new Error('Authentication error'));
+        }
+    });
+
     io.on('connection', (socket) => {
-        console.log('User connected:', socket.id);
+        const userId = socket.decoded?.userId;
+        console.log(`User connected: ${userId}`);
+
+        // 2. JOIN PERSONAL ROOM (For global notifications)
+        if (userId) {
+            socket.join(userId); 
+            socket.broadcast.emit('users:online', Array.from(io.sockets.adapter.rooms.keys()));
+        }
 
         // ========== PRIVATE CHAT ==========
 
-        // Join conversation room
+        socket.on('setup', (userData) => {
+            if (userData && userData._id) {
+                socket.join(userData._id);
+                console.log(`User joined personal room: ${userData._id}`);
+                socket.emit('connected');
+            }
+        });
         socket.on('conversation:join', (conversationId) => {
             socket.join(`conversation:${conversationId}`);
-            console.log(`User ${socket.id} joined conversation:${conversationId}`);
         });
 
-        // Leave conversation room
         socket.on('conversation:leave', (conversationId) => {
             socket.leave(`conversation:${conversationId}`);
-            console.log(`User ${socket.id} left conversation:${conversationId}`);
         });
 
-        // Send message
         socket.on('send:message', async (data) => {
             try {
                 const { conversationId, content, senderId } = data;
 
+                // Save Message
                 const message = new Message({
                     conversationId,
                     senderId,
                     content,
                 });
-
                 await message.save();
 
-                await Conversation.findByIdAndUpdate(conversationId, {
-                    lastMessage: content,
-                    lastMessageTime: new Date(),
-                });
+                // 3. UPDATE CONVERSATION (Last message + Unread Counts)
+                const conversation = await Conversation.findById(conversationId);
+                if (conversation) {
+                    conversation.lastMessage = content;
+                    conversation.lastMessageTime = new Date();
 
-                io.to(`conversation:${conversationId}`).emit('receive:message', {
-                    _id: message._id,
-                    conversationId,            // ✅ include this
-                    content,
-                    senderId,
-                    timestamp: message.createdAt,
-                });
+                    // Increment unread count for ALL other participants
+                    conversation.participants.forEach(p => {
+                        if (p.toString() !== senderId) {
+                            const current = conversation.unreadCounts.get(p.toString()) || 0;
+                            conversation.unreadCounts.set(p.toString(), current + 1);
+                        }
+                    });
+                    await conversation.save();
+                    
+                    // Prepare payload
+                    const messagePayload = {
+                        _id: message._id,
+                        conversationId,
+                        senderId,
+                        content,
+                        timestamp: message.createdAt,
+                        read: false
+                    };
+
+                    // 4. EMIT TO CONVERSATION (For open chat windows)
+                    io.to(`conversation:${conversationId}`).emit('receive:message', messagePayload);
+
+                    // 5. EMIT TO RECIPIENTS (For Notifications everywhere)
+                    conversation.participants.forEach(p => {
+                        if (p.toString() !== senderId) {
+                            io.to(p.toString()).emit('receive:message', messagePayload);
+                        }
+                    });
+                }
             } catch (error) {
-                console.error('Message error:', error);
+                console.error('Send message error:', error);
             }
         });
 
-        // Typing indicator
+        socket.on('mark:read', async (conversationId) => {
+            if (!userId) return;
+            try {
+                // 1. Reset unread count for this user
+                const conversation = await Conversation.findById(conversationId);
+                if (conversation) {
+                    conversation.unreadCounts.set(userId, 0);
+                    await conversation.save();
+                }
+
+                // 2. Mark messages as READ in MongoDB
+                // (Update all messages in this chat that are NOT sent by me)
+                await Message.updateMany(
+                    { conversationId, senderId: { $ne: userId }, read: false },
+                    { $set: { read: true, readAt: new Date() } }
+                );
+
+                // 3. EMIT EVENT: Tell the room "Messages were read"
+                // The sender's frontend will catch this and turn ticks blue
+                io.to(`conversation:${conversationId}`).emit('messages:read', {
+                    conversationId,
+                    readBy: userId
+                });
+
+            } catch (error) {
+                console.error('Mark read error:', error);
+            }
+        });
+
         socket.on('typing', (data) => {
             const { conversationId, senderId, isTyping } = data;
-            io.to(`conversation:${conversationId}`).emit('user:typing', {
+            socket.to(`conversation:${conversationId}`).emit('user:typing', {
                 conversationId,
                 senderId,
-                isTyping,
+                isTyping
             });
         });
 
-        // Mark as read
-        socket.on('mark:read', async (conversationId) => {
-            try {
-                await Message.updateMany(
-                    {
-                        conversationId,
-                        senderId: { $ne: socket.userId },   // ❗ only mark messages from the other user
-                        read: false
-                    },
-                    { read: true }
-                );
-
-        io.to(`conversation:${conversationId}`).emit('messages:read');
-    } catch (error) {
-        console.error('Mark read error:', error);
-    }
-});
-
-// ========== COMMUNITY GROUP CHAT ==========
-
-// Join community room
-socket.on('community:join', (communityId) => {
-    socket.join(`community:${communityId}`);
-    console.log(`User ${socket.id} joined community:${communityId}`);
-});
-
-// Leave community room
-socket.on('community:leave', (communityId) => {
-    socket.leave(`community:${communityId}`);
-    console.log(`User ${socket.id} left community:${communityId}`);
-});
-
-// Send community message
-socket.on('send:community:message', async (data) => {
-    try {
-        const { communityId, content, senderId, senderName, senderPhoto } = data;
-
-        // Broadcast to all members in the community room
-        io.to(`community:${communityId}`).emit('receive:community:message', {
-            content,
-            senderId,
-            senderName,
-            senderPhoto,
-            timestamp: new Date()
+        // ========== COMMUNITY CHAT ==========
+        
+        socket.on('community:join', (communityId) => {
+            socket.join(`community:${communityId}`);
         });
-    } catch (error) {
-        console.error('Community message error:', error);
-    }
-});
 
-// Community typing indicator
-socket.on('community:typing', (data) => {
-    const { communityId, senderId, senderName, isTyping } = data;
-    io.to(`community:${communityId}`).emit('community:user:typing', {
-        senderId,
-        senderName,
-        isTyping
-    });
-});
+        socket.on('community:leave', (communityId) => {
+            socket.leave(`community:${communityId}`);
+        });
 
-socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-});
+        socket.on('send:community:message', async (data) => {
+            try {
+                const { communityId, content, senderId, senderName, senderPhoto } = data;
+                io.to(`community:${communityId}`).emit('receive:community:message', {
+                    content,
+                    senderId,
+                    senderName,
+                    senderPhoto,
+                    communityId, // Add this so frontend can filter
+                    timestamp: new Date()
+                });
+            } catch (error) {
+                console.error('Community message error:', error);
+            }
+        });
+
+        socket.on('disconnect', () => {
+            console.log('User disconnected:', userId);
+        });
     });
 };

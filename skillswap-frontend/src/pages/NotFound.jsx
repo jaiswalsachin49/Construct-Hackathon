@@ -18,7 +18,7 @@ const NotFound = () => {
                 </p>
                 <Button
                     variant="primary"
-                    onClick={() => navigate('/discover')}
+                    onClick={() => navigate('/app/discover')}
                     className="inline-flex items-center gap-2"
                 >
                     <Home className="h-5 w-5" />

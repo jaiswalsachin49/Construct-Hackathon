@@ -48,6 +48,8 @@ const userSchema = new mongoose.Schema({
     verificationCode: String,
 
     allies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Incoming
+    sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     blocked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
     badges: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Badge' }],
