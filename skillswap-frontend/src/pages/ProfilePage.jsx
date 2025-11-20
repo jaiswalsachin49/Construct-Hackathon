@@ -67,7 +67,7 @@ const ProfilePage = () => {
             </div>
             <h2 className="text-xl font-bold text-gray-900">User Not Found</h2>
             <p className="text-gray-500 mt-2 mb-6">The user you are looking for doesn't exist or has been removed.</p>
-            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
                 Back to Discovery
             </button>
         </div>
@@ -83,7 +83,7 @@ const ProfilePage = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-6">
                 
                 {/* Cover Photo with Fallback Gradient */}
-                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' : ''}`}>
+                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-pink-600 via-orange-400 to-pink-400' : ''}`}>
                     {displayUser.coverPhoto && (
                         <img 
                             src={displayUser.coverPhoto} 
@@ -127,7 +127,7 @@ const ProfilePage = () => {
                                 <>
                                     <button 
                                         onClick={() => navigate(`/app/chat/${displayUser._id}`)}
-                                        className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all"
+                                        className="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg shadow-sm transition-all"
                                     >
                                         <MessageCircle size={18} /> Message
                                     </button>
@@ -154,7 +154,7 @@ const ProfilePage = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                             {displayUser.name}
-                            {displayUser.isVerified && <span className="text-blue-500" title="Verified">✓</span>}
+                            {displayUser.isVerified && <span className="text-pink-500" title="Verified">✓</span>}
                         </h1>
                         
                         {/* Meta Info */}
@@ -181,7 +181,7 @@ const ProfilePage = () => {
                                 <div className="flex flex-wrap gap-2">
                                     {displayUser.teachTags?.length > 0 ? (
                                         displayUser.teachTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100">
+                                            <span key={i} className="px-3 py-1 bg-pink-50 text-pink-700 rounded-full text-sm font-medium border border-blue-100">
                                                 {tag.name || tag}
                                             </span>
                                         ))

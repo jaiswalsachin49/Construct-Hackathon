@@ -81,7 +81,7 @@ const CommunitiesPage = () => {
             <button
               data-testid="create-community-button"
               onClick={() => navigate('/app/communities/create')}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
               <Plus className="w-5 h-5" />
               Create
@@ -119,7 +119,7 @@ const CommunitiesPage = () => {
               <p className="text-gray-500 mb-4">You haven't joined any communities yet</p>
               <button
                 onClick={() => document.getElementById('discover-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-blue-500 hover:text-blue-600 font-medium"
+                className="text-pink-500 hover:text-pink-600 font-medium"
               >
                 Discover communities →
               </button>
@@ -145,7 +145,7 @@ const CommunitiesPage = () => {
                   placeholder="Search communities..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 />
               </div>
 
@@ -155,7 +155,7 @@ const CommunitiesPage = () => {
                   data-testid="category-select"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 >
                   <option value="">All Categories</option>
                   <option value="tech">Technology</option>
@@ -223,7 +223,7 @@ const CommunitiesPage = () => {
                     setSearch('');
                     setCategory('');
                   }}
-                  className="mt-4 text-blue-500 hover:text-blue-600 font-medium"
+                  className="mt-4 text-pink-500 hover:text-pink-600 font-medium"
                 >
                   Clear filters
                 </button>
@@ -246,14 +246,14 @@ const CommunitiesPage = () => {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #3B82F6;
+          background: #ec4899;
           cursor: pointer;
         }
         .slider::-moz-range-thumb {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #3B82F6;
+          background: #ec4899;
           cursor: pointer;
           border: none;
         }

@@ -66,7 +66,7 @@ const FeedPage = () => {
                             className="h-10 w-10 rounded-full object-cover"
                         />
                     ) : (
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
                             <span className="text-white font-semibold text-sm">
                                 {getInitials(user?.name)}
                             </span>
@@ -82,7 +82,7 @@ const FeedPage = () => {
 
                 <div className="flex items-center justify-around pt-3 border-t border-gray-200">
                     <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Image className="h-5 w-5 text-blue-600" />
+                        <Image className="h-5 w-5 text-pink-600" />
                         <span className="text-sm font-medium text-gray-700">Photo</span>
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -151,8 +151,8 @@ const FeedPage = () => {
             {/* Empty State */}
             {!isLoading && feedPosts.length === 0 && !error && (
                 <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                        <FileText className="h-8 w-8 text-blue-600" />
+                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-pink-100 mb-4">
+                        <FileText className="h-8 w-8 text-pink-600" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
                         No posts yet
@@ -162,7 +162,7 @@ const FeedPage = () => {
                     </p>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
                     >
                         Create Post
                     </button>

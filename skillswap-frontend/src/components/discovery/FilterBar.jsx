@@ -81,7 +81,7 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
                         <select
                             value={filters.availability || ''}
                             onChange={handleAvailabilityChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                         >
                             <option value="">All</option>
                             <option value="morning">Morning</option>

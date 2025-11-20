@@ -101,7 +101,14 @@ const AlliesList = ({ userId, isOwnProfile }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {allies.map((ally) => (
-        <div key={ally._id} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all">
+        <div
+          key={ally._id}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate(`/app/profile/${ally._id}`)}
+          onKeyPress={(e) => { if (e.key === 'Enter') navigate(`/app/profile/${ally._id}`); }}
+          className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
+        >
           <img
             src={ally.profilePhoto || `https://ui-avatars.com/api/?name=${ally.name}&background=random`}
             className="w-12 h-12 rounded-full object-cover bg-gray-100"
@@ -114,7 +121,7 @@ const AlliesList = ({ userId, isOwnProfile }) => {
           <div className="flex gap-2">
             {isOwnProfile ? (
               <button
-                onClick={() => handleRemove(ally._id)}
+                onClick={(e) => { e.stopPropagation(); handleRemove(ally._id); }}
                 className="p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
                 title="Remove Ally"
               >
@@ -122,7 +129,7 @@ const AlliesList = ({ userId, isOwnProfile }) => {
               </button>
             ) : (
               <button
-                onClick={() => handleMessage(ally._id)}
+                onClick={(e) => { e.stopPropagation(); handleMessage(ally._id); }}
                 className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
               >
                 <MessageCircle size={18} />

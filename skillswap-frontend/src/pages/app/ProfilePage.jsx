@@ -12,8 +12,8 @@ const ProfilePage = () => {
             {/* Profile Header */}
             <Card padding="lg" shadow="normal">
                 <div className="flex flex-col md:flex-row items-center gap-6">
-                    <div className="h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-4xl text-blue-600 font-bold">
+                    <div className="h-24 w-24 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-4xl text-pink-600 font-bold">
                             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                         </span>
                     </div>
@@ -58,7 +58,7 @@ const ProfilePage = () => {
                         {['Guitar', 'Cooking', 'Spanish', 'Web Development'].map((skill, i) => (
                             <span
                                 key={i}
-                                className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"
+                                className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
                             >
                                 {skill}
                             </span>
@@ -86,7 +86,7 @@ const ProfilePage = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Stats</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                        <p className="text-3xl font-bold text-blue-600">15</p>
+                        <p className="text-3xl font-bold text-pink-600">15</p>
                         <p className="text-sm text-gray-600">Connections</p>
                     </div>
                     <div className="text-center">

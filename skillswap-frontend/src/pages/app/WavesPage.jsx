@@ -69,7 +69,7 @@ const WavesPage = () => {
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <Zap className="text-yellow-500 fill-current" /> Waves
                 </h1>
-                <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                <Button variant="warm" onClick={() => setIsCreateModalOpen(true)}>
                     <Plus className="w-5 h-5 mr-2" />
                     New Wave
                 </Button>
@@ -83,8 +83,8 @@ const WavesPage = () => {
                         onClick={() => setIsCreateModalOpen(true)}
                         className="w-32 h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
                     >
-                        <div className="bg-blue-100 p-3 rounded-full mb-2">
-                            <Plus className="w-6 h-6 text-blue-600" />
+                        <div className="bg-pink-100 p-3 rounded-full mb-2">
+                            <Plus className="w-6 h-6 text-pink-600" />
                         </div>
                         <span className="text-sm font-medium text-gray-600">Add to Story</span>
                     </div>
@@ -113,7 +113,7 @@ const WavesPage = () => {
                             onClick={() => setIsCreateModalOpen(true)}
                             className="w-32 h-48 flex-shrink-0 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100"
                         >
-                             <Plus className="w-8 h-8 text-gray-400" />
+                            <Plus className="w-8 h-8 text-gray-400" />
                         </div>
                     </div>
                 )}
