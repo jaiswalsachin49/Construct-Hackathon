@@ -35,7 +35,7 @@ const MessageBubble = ({ message, isSent, showAvatar = false, otherUser }) => {
         if (!isSent) return null;
 
         if (message.read) {
-            return <CheckCheck className="h-4 w-4 text-blue-500" />;
+            return <CheckCheck className="h-4 w-4 text-pink-500" />;
         } else if (message.delivered) {
             return <CheckCheck className="h-4 w-4 text-gray-400" />;
         } else if (message.pending) {
@@ -75,7 +75,7 @@ const MessageBubble = ({ message, isSent, showAvatar = false, otherUser }) => {
                     className={`
             px-4 py-2 rounded-2xl break-words
             ${isSent
-                            ? 'bg-blue-600 text-white rounded-br-sm'
+                            ? 'bg-pink-600 text-white rounded-br-sm'
                             : 'bg-gray-200 text-gray-900 rounded-bl-sm'
                         }
             ${message.pending ? 'opacity-70' : ''}

@@ -26,6 +26,7 @@ import TestCommunities from "./pages/TestCommunities";
 import CommunitiesPage from "./pages/CommunitiesPage";
 import CommunitiesPageDemo from "./pages/CommunitiesPageDemo";
 import CommunityDetailPage from "./pages/CommunityDetailPage";
+import CreateCommunityPage from "./pages/app/CreateCommunityPage";
 import CommunityDetailPageDemo from "./pages/CommunityDetailPageDemo";
 import ProfilePage from "./pages/ProfilePage";
 import SafetyComponentsDemo from "./pages/SafetyComponentsDemo";
@@ -123,6 +124,7 @@ function App() {
 
           {/* Combined communities */}
           <Route path="communities" element={<CommunitiesPage />} />
+          <Route path="communities/create" element={<CreateCommunityPage />} />
           <Route path="communities/:communityId" element={<CommunityDetailPage />} />
 
           {/* Combined profile */}

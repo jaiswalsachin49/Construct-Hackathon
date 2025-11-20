@@ -107,7 +107,7 @@ const CommunitiesPage = () => {
           
           {myCommunities.length > 0 ? (
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-              {myCommunities.map((community) => (
+              {myCommunities.filter(c => c && c._id).map((community) => (
                 <CommunityPreview
                   key={community._id}
                   community={community}
@@ -202,7 +202,7 @@ const CommunitiesPage = () => {
             </div>
           ) : filteredCommunities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCommunities.map((community) => (
+              {filteredCommunities.filter(c => c && c._id).map((community) => (
                 <CommunityCard
                   key={community._id}
                   community={community}

@@ -65,7 +65,7 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
                             max={20}
                             value={filters.radius}
                             onChange={handleRadiusChange}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-600"
                         />
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
                             <span>1 km</span>

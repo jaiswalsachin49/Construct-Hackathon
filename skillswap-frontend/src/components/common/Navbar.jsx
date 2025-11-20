@@ -129,7 +129,7 @@ const Navbar = () => {
                     
                     {/* Logo */}
                     <Link to="/app/discover" className="flex items-center gap-2">
-                        <div className="bg-blue-600 p-1.5 rounded-lg">
+                        <div className="bg-pink-600 p-1.5 rounded-lg">
                             <div className="w-4 h-4 border-2 border-white rounded-full" />
                         </div>
                         <span className="text-2xl font-bold text-gray-900 tracking-tight">SkillSwap</span>
@@ -146,7 +146,7 @@ const Navbar = () => {
                             >
                                 <Bell className="h-6 w-6" />
                                 {totalNotifications > 0 && (
-                                    <span className="absolute top-1 right-1 h-5 w-5 bg-red-500 text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                                    <span className="absolute top-1 right-1 h-5 w-5 bg-pink-500 text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                                         {totalNotifications > 9 ? '9+' : totalNotifications}
                                     </span>
                                 )}
@@ -160,7 +160,7 @@ const Navbar = () => {
                                         <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                             <h3 className="font-semibold text-gray-900">Notifications</h3>
                                             {totalNotifications > 0 && (
-                                                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
+                                                <span className="bg-blue-100 text-pink-700 text-xs px-2 py-1 rounded-full font-medium">
                                                     {totalNotifications} new
                                                 </span>
                                             )}
@@ -171,7 +171,7 @@ const Navbar = () => {
                                             {/* --- SECTION 1: CONNECTION REQUESTS --- */}
                                             {requests.length > 0 && (
                                                 <div className="border-b border-gray-100">
-                                                    <div className="px-4 py-2 bg-blue-50/50 text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                                    <div className="px-4 py-2 bg-blue-50/50 text-xs font-bold text-pink-600 uppercase tracking-wider">
                                                         Connection Requests
                                                     </div>
                                                     {requests.map(req => (
@@ -188,14 +188,14 @@ const Navbar = () => {
                                                             <div className="flex gap-2">
                                                                 <button 
                                                                     onClick={(e) => { e.stopPropagation(); handleAccept(req._id); }}
-                                                                    className="p-1.5 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                                                    className="p-1.5 bg-blue-100 text-pink-600 rounded-full hover:bg-blue-200 transition-colors"
                                                                     title="Accept"
                                                                 >
                                                                     <Check size={16} />
                                                                 </button>
                                                                 <button 
                                                                     onClick={(e) => { e.stopPropagation(); handleReject(req._id); }}
-                                                                    className="p-1.5 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                                                                    className="p-1.5 bg-red-100 text-pink-600 rounded-full hover:bg-red-200 transition-colors"
                                                                     title="Reject"
                                                                 >
                                                                     <X size={16} />
@@ -235,7 +235,7 @@ const Navbar = () => {
                                                                     {conv.lastMessage?.content || 'New message'}
                                                                 </p>
                                                             </div>
-                                                            <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                                                            <div className="w-2 h-2 bg-pink-600 rounded-full flex-shrink-0"></div>
                                                         </div>
                                                     ))}
                                                 </>
@@ -250,7 +250,7 @@ const Navbar = () => {
                                         <div className="border-t border-gray-100 p-2 bg-gray-50/50">
                                             <Link 
                                                 to="/app/chat"
-                                                className="block text-center py-2 text-sm text-blue-600 hover:bg-blue-100 rounded-lg font-medium transition-colors"
+                                                className="block text-center py-2 text-sm text-pink-600 hover:bg-blue-100 rounded-lg font-medium transition-colors"
                                                 onClick={() => setIsNotificationsOpen(false)}
                                             >
                                                 View all messages
@@ -293,14 +293,14 @@ const Navbar = () => {
                                         
                                         <Link 
                                             to="/app/profile" 
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <UserIcon className="w-4 h-4" /> Your Profile
                                         </Link>
                                         <Link 
                                             to="/app/settings" 
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <Settings className="w-4 h-4" /> Settings

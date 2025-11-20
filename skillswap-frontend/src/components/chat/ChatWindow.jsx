@@ -142,7 +142,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
 
             {/* Input Area */}
             <div className="p-4 bg-white border-t border-gray-200">
-                <div className="flex items-end gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400 transition-all">
+                <div className="flex items-end gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400 transition-all">
                     <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-colors">
                         <Paperclip className="h-5 w-5" />
                     </button>
@@ -156,11 +156,11 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         placeholder="Type a message..."
                         className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 py-2.5 text-gray-900 placeholder-gray-500"
                         rows={1}
-                        style={{ minHeight: '44px' }}
+                        style={{ minHeight: '44px', outline: 'none' }}
                     />
                     
                     <Button 
-                        variant="primary" 
+                        variant="warm" 
                         onClick={handleSend} 
                         disabled={!messageInput.trim()}
                         className={`rounded-xl transition-all ${!messageInput.trim() ? 'opacity-50' : ''}`}

@@ -73,7 +73,7 @@ exports.createCommunity = async (req, res) => {
 
             // Delete local file after upload
             try {
-                if (file?.path) fs.unlinkSync(file.path);
+                if (req.file?.path) fs.unlinkSync(req.file.path);
             } catch (e) {
                 console.error('Failed to delete local file:', e.message);
             }

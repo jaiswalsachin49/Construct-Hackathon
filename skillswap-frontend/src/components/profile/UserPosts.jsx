@@ -12,6 +12,7 @@ const UserPosts = ({ userId }) => {
     const loadPosts = async () => {
       try {
         const data = await getUserPosts(userId);
+        console.log('User posts data:', data);
         setPosts(data.posts || []);
       } catch (error) {
         console.error('Error loading user posts', error);

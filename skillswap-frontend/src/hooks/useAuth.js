@@ -19,6 +19,8 @@ export const useAuth = () => {
 
             // INIT SOCKET
             socketService.connect();
+            // Ensure server-side setup (join personal room) if socket already connected
+            socketService.setupUser();
 
             navigate('/app/discover');
             return { success: true };
@@ -43,6 +45,8 @@ export const useAuth = () => {
 
             // INIT SOCKET
             socketService.connect();
+            // Ensure server-side setup (join personal room) if socket already connected
+            socketService.setupUser();
 
             navigate('/app/discover');
             return { success: true };

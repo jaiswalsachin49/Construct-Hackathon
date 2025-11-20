@@ -50,8 +50,8 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
             onClick={onClick}
             className={`
         flex items-center gap-3 p-4 cursor-pointer transition-colors
-        ${isActive ? 'bg-blue-50 border-l-4 border-blue-600' : 'hover:bg-gray-50'}
-        ${unreadCount > 0 ? 'bg-blue-50/30' : ''}
+        ${isActive ? 'bg-pink-50 border-l-4 border-pink-600' : 'hover:bg-gray-50'}
+        ${unreadCount > 0 ? 'bg-pink-50/30' : ''}
       `}
         >
             {/* Avatar */}
@@ -63,7 +63,7 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
                         className="h-12 w-12 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
                         <span className="text-white font-semibold">
                             {getInitials(otherUser?.name || 'U')}
                         </span>
@@ -94,7 +94,7 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
                     </p>
                     {/* Unread Badge */}
                     {unreadCount > 0 && (
-                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-pink-600 text-white text-xs font-bold rounded-full">
                             {unreadCount}
                         </span>
                     )}

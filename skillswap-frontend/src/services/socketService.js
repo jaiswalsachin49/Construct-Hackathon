@@ -9,9 +9,7 @@ class SocketService {
     notificationListeners = []; // <--- NEW: Array for notifications
 
     connect() {
-        const store = useAuthStore.getState();
-        const token = store.token;
-        const user = store.user; // Get user data
+        const token = useAuthStore.getState().token;
 
         if (!token || this.socket?.connected) return;
 
@@ -27,9 +25,10 @@ class SocketService {
             console.log('✅ Socket connected:', this.socket.id);
             useChatStore.getState().setConnected(true);
             
-            // --- FIX: Join Personal Room Immediately ---
-            if (user) {
-                this.socket.emit('setup', user);
+            // Emit setup with the latest user from the store (don't rely on earlier capture)
+            const latestUser = useAuthStore.getState().user;
+            if (latestUser) {
+                this.socket.emit('setup', latestUser);
             }
         });
 
@@ -55,6 +54,14 @@ class SocketService {
         this.socket.on('messages:read', (data) => {
             // You could add a listener array for this too if needed
         });
+    }
+
+    // Public helper to force emitting setup when user becomes available
+    setupUser() {
+        const user = useAuthStore.getState().user;
+        if (this.socket && this.socket.connected && user) {
+            this.socket.emit('setup', user);
+        }
     }
 
     disconnect() {
