@@ -5,10 +5,15 @@ import {
   viewWave as apiViewWave,
   deleteWave as apiDeleteWave,
 } from '../../services/waveService';
+import WaveViewerModal from '../waves/WaveViewerModal';
 
 const UserWaves = ({ userId, isOwnProfile }) => {
   const [waves, setWaves] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Viewer State
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [initialIndex, setInitialIndex] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -35,7 +40,7 @@ const UserWaves = ({ userId, isOwnProfile }) => {
     };
 
     if (isOwnProfile || userId) load();
-  }, [userId]);
+  }, [userId, isOwnProfile]);
 
   const handleDelete = async (waveId) => {
     if (!window.confirm('Delete this wave?')) return;
@@ -48,14 +53,12 @@ const UserWaves = ({ userId, isOwnProfile }) => {
     }
   };
 
-  const handleView = async (waveId) => {
-    try {
-      await apiViewWave(waveId);
-    } catch (err) {
-      console.warn('Failed to mark wave viewed', err);
+  const handleView = (waveId) => {
+    const index = waves.findIndex(w => w._id === waveId);
+    if (index !== -1) {
+      setInitialIndex(index);
+      setIsViewerOpen(true);
     }
-    // TODO: open wave viewer modal or route; for now log
-    console.log('View wave:', waveId);
   };
 
   const getTimeRemaining = (expiresAt) => {
@@ -130,6 +133,15 @@ const UserWaves = ({ userId, isOwnProfile }) => {
           </div>
         ))}
       </div>
+
+      {isViewerOpen && (
+        <WaveViewerModal
+          waves={waves}
+          initialIndex={initialIndex}
+          isOpen={isViewerOpen}
+          onClose={() => setIsViewerOpen(false)}
+        />
+      )}
     </div>
   );
 };

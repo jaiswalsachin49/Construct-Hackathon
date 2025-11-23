@@ -49,7 +49,7 @@ class SocketService {
 
         // 1. Chat Messages
         this.socket.on('receive:message', (message) => {
-            console.log('🔥 SOCKET RECEIVED MESSAGE:', message);
+            // console.log('🔥 SOCKET RECEIVED MESSAGE:', message);
             // Always update chat store so messages arrive instantly in the UI
             try {
                 const convId = message.conversationId || message.conversation || message.chatId;
@@ -105,7 +105,7 @@ class SocketService {
 
         // 2. Notifications (Connection Requests) <--- NEW
         this.socket.on('notification:request', (data) => {
-            console.log("🔔 Notification received:", data);
+            // console.log("🔔 Notification received:", data);
             this.notificationListeners.forEach(cb => cb(data));
         });
 

@@ -22,15 +22,19 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
     // --- FIX: Safely get User Data ---
     const getWaveUser = (wave) => {
-        if (!wave) return {};
-        // Handle both "populated userId" (Backend) and "user object" (Frontend optimistic)
-        return wave.userId || wave.user || {};
+        if (!wave) return { name: 'Unknown User' };
+        // If userId is populated (object), use it.
+        if (wave.userId && typeof wave.userId === 'object') return wave.userId;
+        // If user is directly on wave (optimistic), use it.
+        if (wave.user && typeof wave.user === 'object') return wave.user;
+        // Fallback if we only have an ID or nothing
+        return { name: 'Unknown User', _id: wave.userId };
     };
 
     const waveUser = getWaveUser(currentWave);
     // --------------------------------
 
-    const duration = currentWave?.type === 'video' ? null : 5000; 
+    const duration = currentWave?.type === 'video' ? null : 5000;
 
     useEffect(() => {
         if (isOpen && currentWave) {
@@ -46,7 +50,11 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
         if (currentWave.type === 'video') {
             if (videoRef.current) {
-                videoRef.current.play().catch(() => {});
+                if (isPaused) {
+                    videoRef.current.pause();
+                } else {
+                    videoRef.current.play().catch(() => { });
+                }
             }
             return;
         }
@@ -101,7 +109,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
     return (
         <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
             {/* Close Button */}
-            <button 
+            <button
                 onClick={onClose}
                 className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 p-2"
             >
@@ -109,16 +117,15 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
             </button>
 
             <div className="relative w-full max-w-md h-full md:h-[90vh] bg-gray-900 md:rounded-xl overflow-hidden flex flex-col">
-                
+
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 right-0 flex gap-1 p-2 z-20">
                     {waves.map((_, idx) => (
                         <div key={idx} className="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
-                            <div 
-                                className={`h-full bg-white transition-all duration-100 ${
-                                    idx < currentIndex ? 'w-full' : 
+                            <div
+                                className={`h-full bg-white transition-all duration-100 ${idx < currentIndex ? 'w-full' :
                                     idx === currentIndex ? 'w-[var(--progress)]' : 'w-0'
-                                }`}
+                                    }`}
                                 style={idx === currentIndex ? { width: `${progress}%` } : {}}
                             />
                         </div>
@@ -128,8 +135,8 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                 {/* User Info Header */}
                 <div className="absolute top-6 left-0 right-0 p-4 z-20 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
                     <div className="flex items-center gap-3">
-                        <img 
-                            src={waveUser.profilePhoto || `https://ui-avatars.com/api/?name=${waveUser.name}`} 
+                        <img
+                            src={waveUser.profilePhoto || `https://ui-avatars.com/api/?name=${waveUser.name}`}
                             className="w-10 h-10 rounded-full border-2 border-white/50 object-cover"
                             alt={waveUser.name}
                         />
@@ -143,21 +150,26 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                 </div>
 
                 {/* Content Area */}
-                <div 
-                    className="flex-1 bg-black relative flex items-center justify-center"
-                    onMouseDown={() => setIsPaused(true)}
-                    onMouseUp={() => setIsPaused(false)}
-                    onTouchStart={() => setIsPaused(true)}
-                    onTouchEnd={() => setIsPaused(false)}
+                <div
+                    className="flex-1 bg-black relative flex items-center justify-center cursor-pointer"
+                    onClick={() => setIsPaused(!isPaused)}
                 >
+                    {/* Pause/Play Indicator Overlay */}
+                    {isPaused && (
+                        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/10">
+                            <div className="bg-black/40 p-4 rounded-full">
+                                <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[20px] border-l-white border-b-[10px] border-b-transparent ml-1" />
+                            </div>
+                        </div>
+                    )}
                     {currentWave.type === 'photo' && (
-                        <img 
-                            src={currentWave.mediaUrl} 
+                        <img
+                            src={currentWave.mediaUrl}
                             className="w-full h-full object-contain"
                             alt="Wave content"
                         />
                     )}
-                    
+
                     {currentWave.type === 'video' && (
                         <video
                             ref={videoRef}
@@ -173,16 +185,16 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                             }}
                         />
                     )}
-                    
+
                     {currentWave.type === 'text' && (
-                        <div 
+                        <div
                             className="w-full h-full flex items-center justify-center p-8 text-center"
                             style={{ backgroundColor: currentWave.backgroundColor || '#3B82F6' }}
                         >
                             <p className="text-white text-2xl font-bold">{currentWave.textContent}</p>
                         </div>
                     )}
-                    
+
                     {/* Caption Overlay */}
                     {currentWave.caption && (
                         <div className="absolute bottom-20 left-0 right-0 p-4 text-center">
@@ -197,7 +209,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent z-20">
                     <div className="flex items-center gap-4">
                         {/* Reply Input (Fake button) */}
-                        <button 
+                        <button
                             onClick={handleReply}
                             className="flex-1 bg-white/10 hover:bg-white/20 text-white/90 rounded-full px-4 py-2 text-sm text-left border border-white/20 backdrop-blur-md transition-colors"
                         >
@@ -206,7 +218,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
                         {/* Likes */}
                         <div className="flex items-center gap-3">
-                            <button 
+                            <button
                                 onClick={() => {
                                     reactToWave(currentWave._id);
                                     setIsLiked(!isLiked);
@@ -215,7 +227,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                             >
                                 <Heart className={`h-7 w-7 ${isLiked ? 'fill-current' : ''}`} />
                             </button>
-                            
+
                             {/* Mute Toggle for Video */}
                             {currentWave.type === 'video' && (
                                 <button

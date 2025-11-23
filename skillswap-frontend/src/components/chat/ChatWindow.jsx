@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video, RefreshCw, Trash2, Ban } from 'lucide-react';
 import MessageBubble from './MessageBubble';
@@ -8,35 +9,28 @@ import socketService from '../../services/socketService';
 import { format, isToday, isYesterday } from 'date-fns';
 
 const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUserId, onBack, onlineUsers = [], onDeleteConversation, onBlockUser }) => {
+    const navigate = useNavigate();
     const [messageInput, setMessageInput] = useState('');
     const [showMenu, setShowMenu] = useState(false);
-    const messagesEndRef = useRef(null);
+    const messageContainerRef = useRef(null);
     const textareaRef = useRef(null);
     const typingTimeoutRef = useRef(null);
 
+    // ... (rest of the component)
+
+
+
     // --- FIX: Safe Scroll Logic ---
     const scrollToBottom = () => {
-        // Use requestAnimationFrame to wait for DOM render
-        requestAnimationFrame(() => {
-            if (messagesEndRef.current) {
-                try {
-                    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                } catch (error) {
-                    // Fallback if smooth scroll fails (e.g. detached node)
-                    console.warn("Scroll failed, using fallback", error);
-                    if (messagesEndRef.current) {
-                        messagesEndRef.current.scrollIntoView();
-                    }
-                }
-            }
-        });
+        if (messageContainerRef.current) {
+            const { scrollHeight, clientHeight } = messageContainerRef.current;
+            messageContainerRef.current.scrollTop = scrollHeight - clientHeight;
+        }
     };
 
     // Scroll on new messages
     useEffect(() => {
         scrollToBottom();
-        // console.log('isTyping', isTyping);
-        // console.log('messages', messages);
     }, [messages, isTyping]);
     // -----------------------------
 
@@ -89,11 +83,20 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                     )}
 
                     <div className="relative">
-                        <img
-                            src={conversation?.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conversation?.otherUser?.name}`}
-                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                            alt=""
-                        />
+                        <div
+                            onClick={() => {
+                                if (conversation?.otherUser?._id) {
+                                    navigate(`/app/profile/${conversation.otherUser._id}`);
+                                }
+                            }}
+                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                        >
+                            <img
+                                src={conversation?.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conversation?.otherUser?.name}`}
+                                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                alt=""
+                            />
+                        </div>
                         {/* Online indicator could go here */}
                     </div>
 
@@ -170,7 +173,10 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <div
+                ref={messageContainerRef}
+                className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+            >
                 {messages.map((msg, index) => {
                     // Date Separators
                     const showDate = index === 0 || !isSameDay(new Date(messages[index - 1].timestamp), new Date(msg.timestamp));
@@ -195,9 +201,6 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                 {otherIsTyping && conversation?.otherUser?.name && (
                     <TypingIndicator userName={conversation.otherUser.name} />
                 )}
-
-                {/* Invisible anchor for scrolling */}
-                <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}
