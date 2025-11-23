@@ -3,6 +3,7 @@ import { Edit, MapPin, Star, Award } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import useAuthStore from '../../store/authStore';
+import UserWaves from '../../components/profile/UserWaves';
 
 const ProfilePage = () => {
     const { user } = useAuthStore();
@@ -48,6 +49,11 @@ const ProfilePage = () => {
                     Passionate about learning and teaching. Love connecting with people and sharing knowledge.
                     Always eager to explore new skills and help others grow.
                 </p>
+            </Card>
+
+            {/* User Waves */}
+            <Card padding="lg" shadow="normal">
+                <UserWaves userId={user?._id} isOwnProfile={true} />
             </Card>
 
             {/* Skills */}

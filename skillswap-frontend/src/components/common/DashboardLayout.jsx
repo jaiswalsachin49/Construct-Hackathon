@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import  useAuthStore  from '../../store/authStore';
-import  socketService  from '../../services/socketService';
+import useAuthStore from '../../store/authStore';
+import socketService from '../../services/socketService';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Home, Users, MessageCircle, Zap, FileText, UsersRound, User } from 'lucide-react';
 import Navbar from './Navbar';
@@ -31,7 +31,7 @@ const DashboardLayout = () => {
 
             <div className="flex">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 h-screen sticky top-16">
+                <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
                     <nav className="p-4 space-y-1">
                         {navItems.map((item) => (
                             <NavLink

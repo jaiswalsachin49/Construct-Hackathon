@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
+import { useNavigate } from 'react-router-dom';
+
 const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, currentUserId }) => {
+    const navigate = useNavigate();
+
     const getInitials = (name) => {
         return name
             .split(' ')
@@ -55,23 +59,38 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
       `}
         >
             {/* Avatar */}
-            <div className="relative flex-shrink-0">
-                {otherUser?.profilePhoto ? (
-                    <img
-                        src={otherUser.profilePhoto}
-                        alt={otherUser.name}
-                        className="h-12 w-12 rounded-full object-cover"
-                    />
-                ) : (
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
-                        <span className="text-white font-semibold">
-                            {getInitials(otherUser?.name || 'U')}
-                        </span>
-                    </div>
-                )}
+            <div
+                className="relative flex-shrink-0 z-10"
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (otherUser?._id) {
+                            navigate(`/app/profile/${otherUser._id}`);
+                        }
+                    }}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                    {otherUser?.profilePhoto ? (
+                        <img
+                            src={otherUser.profilePhoto}
+                            alt={otherUser.name}
+                            className="h-12 w-12 rounded-full object-cover"
+                        />
+                    ) : (
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
+                            <span className="text-white font-semibold">
+                                {getInitials(otherUser?.name || 'U')}
+                            </span>
+                        </div>
+                    )}
+                </div>
                 {/* Online Indicator */}
                 {isOnline && (
-                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-white rounded-full" />
+                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-white rounded-full pointer-events-none" />
                 )}
             </div>
 

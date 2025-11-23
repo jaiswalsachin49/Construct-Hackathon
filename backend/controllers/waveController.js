@@ -39,7 +39,7 @@ exports.createWave = async (req, res) => {
         });
 
         await wave.save();
-        
+
         // Populate user details so frontend can display it immediately
         await wave.populate('userId', 'name profilePhoto');
 
@@ -47,7 +47,7 @@ exports.createWave = async (req, res) => {
     } catch (error) {
         // Clean up file if error occurs
         if (req.file && req.file.path) {
-             try { require('fs').unlinkSync(req.file.path); } catch(e){}
+            try { require('fs').unlinkSync(req.file.path); } catch (e) { }
         }
         console.error("Wave upload error:", error);
         res.status(500).json({ error: error.message });
@@ -59,7 +59,9 @@ exports.getMyWaves = async (req, res) => {
         const waves = await Wave.find({
             userId: req.user.userId,
             expiresAt: { $gt: new Date() }
-        }).sort({ createdAt: -1 });
+        })
+            .populate('userId', 'name profilePhoto')
+            .sort({ createdAt: -1 });
 
         res.json({ success: true, waves });
     } catch (error) {
@@ -101,6 +103,21 @@ exports.viewWave = async (req, res) => {
         }
 
         res.json({ success: true, wave });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getUserWaves = async (req, res) => {
+    try {
+        const waves = await Wave.find({
+            userId: req.params.userId,
+            expiresAt: { $gt: new Date() }
+        })
+            .populate('userId', 'name profilePhoto')
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, waves });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
