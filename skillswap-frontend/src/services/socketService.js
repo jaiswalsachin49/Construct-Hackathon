@@ -188,6 +188,37 @@ class SocketService {
         const userId = useAuthStore.getState().user?._id;
         this.socket?.emit('typing', { conversationId, senderId: userId, isTyping });
     }
+
+    // --- COMMUNITY METHODS ---
+
+    joinCommunityRoom(communityId) {
+        this.socket?.emit('community:join', communityId);
+    }
+
+    leaveCommunityRoom(communityId) {
+        this.socket?.emit('community:leave', communityId);
+    }
+
+    sendCommunityMessage(communityId, content) {
+        const user = useAuthStore.getState().user;
+        if (user) {
+            this.socket?.emit('send:community:message', {
+                communityId,
+                content,
+                senderId: user._id,
+                senderName: user.name,
+                senderPhoto: user.profilePhoto
+            });
+        }
+    }
+
+    on(event, callback) {
+        this.socket?.on(event, callback);
+    }
+
+    off(event, callback) {
+        this.socket?.off(event, callback);
+    }
 }
 
 const socketService = new SocketService();

@@ -73,12 +73,12 @@ const CommunityCard = ({ community, onJoin }) => {
           {community.distance !== undefined && (
             <div className="flex items-center text-sm text-gray-600">
               <MapPin className="w-4 h-4 mr-2" />
-              <span>{community.distance} km away</span>
+              <span>{community.distance.toFixed(2)} km away</span>
             </div>
           )}
           <div className="flex items-center text-sm text-gray-600">
             <Users className="w-4 h-4 mr-2" />
-            <span>{community.memberCount || 0} members</span>
+            <span>{community.members.length || 0} members</span>
           </div>
           {community.postCount !== undefined && (
             <div className="flex items-center text-sm text-gray-600">

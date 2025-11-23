@@ -8,6 +8,7 @@ const postController = require('../controllers/postController');
 router.get('/nearby', authenticateToken, communityController.getNearbyCommunities);
 router.get('/my', authenticateToken, communityController.getMyCommunities);
 router.post('/', authenticateToken, upload.single('coverImage'), communityController.createCommunity);
+router.get('/search', authenticateToken, communityController.searchCommunities);
 router.get('/:communityId', communityController.getCommunity);
 router.post('/:communityId/join', authenticateToken, communityController.joinCommunity);
 router.post('/:communityId/leave', authenticateToken, communityController.leaveCommunity);
@@ -16,6 +17,5 @@ router.post('/:communityId/kick/:userId', authenticateToken, communityController
 
 router.get('/:communityId/posts', authenticateToken, postController.getCommunityPosts);
 router.post('/:communityId/posts', authenticateToken, postController.createCommunityPost);
-router.get('/search', authenticateToken, communityController.searchCommunities);
 
 module.exports = router;

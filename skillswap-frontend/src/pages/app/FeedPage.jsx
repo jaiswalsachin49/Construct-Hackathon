@@ -18,6 +18,14 @@ const FeedPage = () => {
 
     useEffect(() => {
         fetchFeed(1);
+
+        // Auto-refresh every 5 minutes
+        const refreshInterval = setInterval(() => {
+            fetchFeed(1);
+        }, 5 * 60 * 1000); // 5 minutes
+
+        return () => clearInterval(refreshInterval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -141,8 +149,17 @@ const FeedPage = () => {
                     )}
 
                     {!hasMore && feedPosts.length > 0 && (
-                        <div className="py-8 text-center text-gray-500">
-                            <p>You've reached the end of the feed</p>
+                        <div className="py-8 text-center">
+                            <p className="text-[#8A90A2] mb-4">You've reached the end of the feed</p>
+                            <button
+                                onClick={() => {
+                                    setPage(1);
+                                    fetchFeed(1);
+                                }}
+                                className="px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
+                            >
+                                Refresh Feed
+                            </button>
                         </div>
                     )}
                 </>

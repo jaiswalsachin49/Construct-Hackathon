@@ -20,6 +20,7 @@ exports.getFeed = async (req, res) => {
         })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
+            .populate('communityId', 'name')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -94,7 +95,7 @@ exports.createPost = async (req, res) => {
                         if (Array.isArray(parsed)) return parsed.map(f => (typeof f === 'string' ? { url: f, type: 'photo' } : f));
                     } catch (e2) {
                         // Last resort: extract any URLs from the string
-                            const urls = Array.from(field.matchAll(/https?:\/\/[^\s'\)"]+/g)).map(m => ({ url: m[0], type: 'photo' }));
+                        const urls = Array.from(field.matchAll(/https?:\/\/[^\s'\)"]+/g)).map(m => ({ url: m[0], type: 'photo' }));
                         if (urls.length) return urls;
                     }
                 }
@@ -282,15 +283,19 @@ exports.sharePost = async (req, res) => {
 };
 
 
+
 exports.getCommunityPosts = async (req, res) => {
     try {
         const { communityId } = req.params;
         const posts = await Post.find({ communityId })
             .populate('userId', 'name profilePhoto')
+            .populate('comments.userId', 'name profilePhoto')
+            .populate('communityId', 'name')
             .sort({ createdAt: -1 });
 
         res.json({ success: true, posts });
     } catch (error) {
+        console.error('Get community posts error:', error);
         res.status(500).json({ error: error.message });
     }
 };
