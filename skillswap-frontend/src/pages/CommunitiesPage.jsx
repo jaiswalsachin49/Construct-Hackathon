@@ -70,7 +70,7 @@ const CommunitiesPage = () => {
       console.error('Error joining community:', err);
     }
   };
-
+  console.log(filteredCommunities)
   return (
     <div className="min-h-screen bg-transparent">
       {/* Header */}
@@ -202,7 +202,8 @@ const CommunitiesPage = () => {
             </div>
           ) : filteredCommunities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCommunities.filter(c => c && c._id).map((community) => (
+              {filteredCommunities.filter(c => c && c._id).map((community) =>
+              (
                 <CommunityCard
                   key={community._id}
                   community={community}
