@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import socketService from '../../services/socketService';
 import useCommunityStore from '../../store/communityStore';
 
 const CommunityChat = ({ communityId }) => {
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
-  
+
   const { communityMessages, addCommunityMessage } = useCommunityStore();
   const messages = communityMessages[communityId] || [];
 
@@ -18,7 +20,7 @@ const CommunityChat = ({ communityId }) => {
     setIsConnected(true);
 
     // Listen for new messages
-    socketService.on('community:message', (newMessage) => {
+    socketService.on('receive:community:message', (newMessage) => {
       if (newMessage.communityId === communityId) {
         addCommunityMessage(communityId, newMessage);
       }
@@ -26,7 +28,7 @@ const CommunityChat = ({ communityId }) => {
 
     return () => {
       socketService.leaveCommunityRoom(communityId);
-      socketService.off('community:message');
+      socketService.off('receive:community:message');
     };
   }, [communityId]);
 
@@ -44,11 +46,11 @@ const CommunityChat = ({ communityId }) => {
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-white rounded-lg border border-gray-200">
+    <div className="flex flex-col h-[600px] bg-[#0A0F1F] rounded-lg border border-white/10 backdrop-blur-sm">
       {/* Chat Header */}
-      <div className="px-4 py-3 border-b border-gray-200">
-        <h3 className="font-semibold text-gray-900">Community Buzz</h3>
-        <p className="text-xs text-gray-500">
+      <div className="px-4 py-3 border-b border-white/10">
+        <h3 className="font-semibold text-white">Community Buzz</h3>
+        <p className="text-xs text-[#00F5A0]">
           {isConnected ? 'Connected' : 'Connecting...'}
         </p>
       </div>
@@ -56,26 +58,32 @@ const CommunityChat = ({ communityId }) => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div className="flex items-center justify-center h-full text-[#8A90A2]">
             <p>No messages yet. Start the conversation!</p>
           </div>
         ) : (
           messages.map((msg, index) => (
             <div key={index} className="space-y-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                  {msg.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                <div
+                  className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => navigate(`/app/profile/${msg.senderId || msg.user?._id}`)}
+                >
+                  {msg.user?.name?.charAt(0)?.toUpperCase() || msg.senderName?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-medium text-sm text-gray-900">
-                      {msg.user?.name || 'Unknown User'}
+                    <span
+                      className="font-medium text-sm text-white hover:text-[#00C4FF] cursor-pointer transition-colors"
+                      onClick={() => navigate(`/app/profile/${msg.senderId || msg.user?._id}`)}
+                    >
+                      {msg.user?.name || msg.senderName || 'Unknown User'}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-[#8A90A2]">
                       {new Date(msg.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">{msg.content}</p>
+                  <p className="text-sm text-[#E6E9EF] mt-1">{msg.content}</p>
                 </div>
               </div>
             </div>
@@ -85,7 +93,7 @@ const CommunityChat = ({ communityId }) => {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSend} className="p-4 border-t border-gray-200">
+      <form onSubmit={handleSend} className="p-4 border-t border-white/10">
         <div className="flex gap-2">
           <input
             data-testid="chat-input"
@@ -93,14 +101,14 @@ const CommunityChat = ({ communityId }) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type message..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
             disabled={!isConnected}
           />
           <button
             data-testid="send-button"
             type="submit"
             disabled={!message.trim() || !isConnected}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg transition-colors"
           >
             <Send className="w-5 h-5" />
           </button>

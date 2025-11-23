@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCommunities } from '../../hooks/useCommunities';
 import { Search, Crown, Shield } from 'lucide-react';
 
 const MembersList = ({ communityId }) => {
+  const navigate = useNavigate();
   const { fetchCommunityMembers } = useCommunities();
   const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,27 +26,19 @@ const MembersList = ({ communityId }) => {
   }, [communityId]);
 
   const filteredMembers = members.filter(member =>
-    member.userID?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    member.userId?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  let admins = [];
-  let moderators = [];
-  let regularMembers = [];
-
-useEffect(() => {
-  admins =searchQuery.length>0? filteredMembers.filter(m => m.role == 'admin') :members.filter(m => m.role == 'admin');
-  moderators = searchQuery.length>0? filteredMembers.filter(m => m.role == 'moderator') :members.filter(m => m.role == 'moderator');
-  regularMembers = searchQuery.length>0? filteredMembers.filter(m => m.role == 'member' || !m.role) :members.filter(m => m.role == 'member' || !m.role);
-
-}, [searchQuery]);
-
-  console.log(regularMembers)
+  const admins = filteredMembers.filter(m => m.role === 'admin');
+  const moderators = filteredMembers.filter(m => m.role === 'moderator');
+  const regularMembers = filteredMembers.filter(m => m.role === 'member' || !m.role);
   const MemberItem = ({ member }) => (
     <div
       data-testid={`member-${member._id}`}
-      className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+      onClick={() => navigate(`/app/profile/${member.userId?._id}`)}
+      className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-white/5"
     >
-      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+      <div className="w-12 h-12 bg-gradient-to-br from-[#00F5A0] to-[#00C4FF] rounded-full flex items-center justify-center text-black font-semibold">
         {member.userId?.profilePhoto ? (
           <img src={member.userId?.profilePhoto} alt={member.userId?.name} className="w-full h-full rounded-full object-cover" />
         ) : (
@@ -53,15 +47,15 @@ useEffect(() => {
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h4 className="font-medium text-gray-900">{member.userId?.name}</h4>
+          <h4 className="font-medium text-white">{member.userId?.name}</h4>
           {member.role === 'admin' && (
             <Crown className="w-4 h-4 text-yellow-500" title="Admin" />
           )}
           {member.role === 'moderator' && (
-            <Shield className="w-4 h-4 text-blue-500" title="Moderator" />
+            <Shield className="w-4 h-4 text-[#00C4FF]" title="Moderator" />
           )}
         </div>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[#8A90A2]">
           {member.role === 'admin' ? 'Admin' : member.role === 'moderator' ? 'Moderator' : 'Member'}
           {member.joinedAt && ` • Joined ${new Date(member.joinedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
         </p>
@@ -74,10 +68,10 @@ useEffect(() => {
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex items-center gap-3 p-3 animate-pulse">
-            <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div className="w-12 h-12 bg-white/10 rounded-full"></div>
             <div className="flex-1 space-y-2">
-              <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-4 bg-white/10 rounded w-1/3"></div>
+              <div className="h-3 bg-white/10 rounded w-1/4"></div>
             </div>
           </div>
         ))}
@@ -89,26 +83,26 @@ useEffect(() => {
     <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8A90A2] w-5 h-5" />
         <input
           data-testid="members-search"
           type="text"
           placeholder="Search members..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
         />
       </div>
 
       {/* Total Count */}
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-[#8A90A2]">
         {filteredMembers.length} {filteredMembers.length === 1 ? 'member' : 'members'}
       </div>
 
       {/* Admins */}
       {admins.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Admins ({admins.length})</h3>
+          <h3 className="font-semibold text-white mb-2">Admins ({admins.length})</h3>
           <div className="space-y-1">
             {admins.map((member) => (
               <MemberItem key={member._id} member={member} />
@@ -120,7 +114,7 @@ useEffect(() => {
       {/* Moderators */}
       {moderators.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Moderators ({moderators.length})</h3>
+          <h3 className="font-semibold text-white mb-2">Moderators ({moderators.length})</h3>
           <div className="space-y-1">
             {moderators.map((member) => (
               <MemberItem key={member._id} member={member} />
@@ -132,7 +126,7 @@ useEffect(() => {
       {/* Regular Members */}
       {regularMembers.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Members ({regularMembers.length})</h3>
+          <h3 className="font-semibold text-white mb-2">Members ({regularMembers.length})</h3>
           <div className="space-y-1">
             {regularMembers.map((member) => (
               <MemberItem key={member._id} member={member} />
@@ -142,7 +136,7 @@ useEffect(() => {
       )}
 
       {filteredMembers.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-[#8A90A2]">
           No members found
         </div>
       )}

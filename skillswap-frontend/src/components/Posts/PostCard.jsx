@@ -117,10 +117,18 @@ const PostCard = ({ post }) => {
                         </h4>
                         <div className="flex items-center gap-1 text-sm text-[#8A90A2]">
                             <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
-                            {post.community && (
+                            {post.communityId && (
                                 <>
                                     <span>•</span>
-                                    <span className="text-[#00C4FF]">in {post.community.name}</span>
+                                    <span
+                                        className="text-[#00C4FF] hover:text-[#00F5A0] cursor-pointer transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/app/communities/${post.communityId._id}`);
+                                        }}
+                                    >
+                                        in {post.communityId.name}
+                                    </span>
                                 </>
                             )}
                         </div>

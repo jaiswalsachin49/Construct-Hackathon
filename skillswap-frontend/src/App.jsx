@@ -28,6 +28,7 @@ import CommunitiesPageDemo from "./pages/CommunitiesPageDemo";
 import CommunityDetailPage from "./pages/CommunityDetailPage";
 import CreateCommunityPage from "./pages/app/CreateCommunityPage";
 import CommunityDetailPageDemo from "./pages/CommunityDetailPageDemo";
+import CommunitySettingsPage from "./pages/app/CommunitySettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import SafetyComponentsDemo from "./pages/SafetyComponentsDemo";
 // import OptimizationDemo from "./pages/OptimizationDemo";
@@ -126,6 +127,7 @@ function App() {
           <Route path="communities" element={<CommunitiesPage />} />
           <Route path="communities/create" element={<CreateCommunityPage />} />
           <Route path="communities/:communityId" element={<CommunityDetailPage />} />
+          <Route path="communities/:communityId/settings" element={<CommunitySettingsPage />} />
 
           {/* Combined profile */}
           <Route path="profile" element={<ProfilePage />} />
