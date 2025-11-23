@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, Upload } from 'lucide-react';
 import { useCommunities } from '../../hooks/useCommunities';
+import { searchPlaces } from '../../services/locationService';
 
 const CreateCommunityModal = ({ isOpen, onClose }) => {
   const { createNewCommunity, isLoading } = useCommunities();
@@ -15,6 +16,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [locationInput, setLocationInput] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isPublic, setIsPublic] = useState(true);
 
@@ -51,14 +53,28 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const selectLocation = (location) => {
-    setSelectedLocation(location);
+  const selectLocation = (place) => {
+    setSelectedLocation({
+      lat: place.lat,
+      lng: place.lng,
+      areaLabel: place.display_name
+    });
     setLocationInput('');
+    setLocationSuggestions([]);
+  };
+
+  const handleLocationSearch = async (query) => {
+    if (query.length > 2) {
+      const results = await searchPlaces(query);
+      setLocationSuggestions(results);
+    } else {
+      setLocationSuggestions([]);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const formData = new FormData();
       if (coverImage) formData.append('coverImage', coverImage);
@@ -242,7 +258,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Location */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Location *
             </label>
@@ -250,40 +266,43 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               data-testid="location-input"
               type="text"
               value={locationInput}
-              onChange={(e) => setLocationInput(e.target.value)}
+              onChange={(e) => {
+                setLocationInput(e.target.value);
+                handleLocationSearch(e.target.value);
+              }}
               placeholder="Search for location..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            {/* Mock location suggestions */}
-            {locationInput && (
-              <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => selectLocation({
-                    lat: 12.9716,
-                    lng: 77.5946,
-                    areaLabel: 'Koramangala, Bangalore'
-                  })}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
-                >
-                  📍 Koramangala, Bangalore
-                </button>
-                <button
-                  type="button"
-                  onClick={() => selectLocation({
-                    lat: 12.9352,
-                    lng: 77.6245,
-                    areaLabel: 'Indiranagar, Bangalore'
-                  })}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
-                >
-                  📍 Indiranagar, Bangalore
-                </button>
+
+            {/* Location Suggestions */}
+            {locationSuggestions.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {locationSuggestions.map((place) => (
+                  <button
+                    key={place.place_id}
+                    type="button"
+                    onClick={() => selectLocation(place)}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 last:border-0"
+                  >
+                    📍 <span className="truncate">{place.display_name}</span>
+                  </button>
+                ))}
               </div>
             )}
+
             {selectedLocation && (
               <div className="mt-2 p-3 bg-blue-50 rounded-lg flex items-center gap-2">
                 📍 <span className="text-blue-900 font-medium">{selectedLocation.areaLabel}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedLocation(null);
+                    setLocationInput('');
+                  }}
+                  className="ml-auto text-blue-400 hover:text-blue-600"
+                >
+                  ×
+                </button>
               </div>
             )}
           </div>
