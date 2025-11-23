@@ -15,6 +15,7 @@ import Button from '../../components/common/Button';
 import TagInput from '../../components/auth/TagInput';
 import PasswordStrength from '../../components/auth/PasswordStrength';
 import { useAuth } from '../../hooks/useAuth';
+import useAuthStore from '../../store/authStore';
 
 const POPULAR_SKILLS = [
     'Guitar','Piano','Cooking','Baking','Yoga','Fitness','Photography',
@@ -97,6 +98,11 @@ const RegisterPage = () => {
         }
         setFormData((prev) => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+        // Clear global auth error when user edits email so banner doesn't persist
+        if (name === 'email') {
+            const clear = useAuthStore.getState().setError;
+            if (typeof clear === 'function') clear(null);
+        }
     };
 
     const handleNext = () => {
@@ -148,7 +154,16 @@ const RegisterPage = () => {
         e.preventDefault();
         if (!validateStep4()) return;
 
-        await registerUser({ ...formData });
+        const result = await registerUser({ ...formData });
+
+        // If the backend returned a known validation error, map it to field-level errors
+        if (result && result.success === false && result.error) {
+            const msg = result.error.toLowerCase();
+            if (msg.includes('email') && msg.includes('exists')) {
+                setErrors((prev) => ({ ...prev, email: 'Email already exists' }));
+            }
+            // Other server errors will be shown via `authError` from the auth hook
+        }
     };
 
     // ------------------------------ STEP COMPONENTS ------------------------------ //
@@ -432,7 +447,7 @@ const RegisterPage = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6
-            bg-gradient-to-br from-orange-50 via-pink-50 to-rose-100 relative">
+            bg-linear-to-br from-orange-50 via-pink-50 to-rose-100 relative">
 
             {/* Violet Subtle Glow */}
             <div className="absolute right-20 bottom-20 w-72 h-72 bg-purple-300/40 blur-3xl rounded-full opacity-60"></div>
@@ -473,6 +488,22 @@ const RegisterPage = () => {
                 </div>
 
                 {/* Form */}
+                {/* Server / auth errors banner */}
+                {authError && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                        <div className="flex items-start justify-between">
+                            <div className="text-sm">{authError}</div>
+                            <button
+                                type="button"
+                                onClick={() => useAuthStore.getState().setError(null)}
+                                className="text-sm font-semibold text-red-600 ml-3"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                     {currentStep === 1 && renderStep1()}
                     {currentStep === 2 && renderStep2()}

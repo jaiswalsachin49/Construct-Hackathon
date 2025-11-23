@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import React from 'react';
 import useAuthStore from '../store/authStore';
 import { loginUser, registerUser, getCurrentUser } from '../services/authService';
 import socketService from '../services/socketService';
@@ -6,6 +8,15 @@ import socketService from '../services/socketService';
 export const useAuth = () => {
     const { user, isAuthenticated, token, isLoading, error, setUser, setToken, setLoading, setError, logout: logoutStore } = useAuthStore();
     const navigate = useNavigate();
+    const location = useLocation();
+    // Clear global auth error when the route changes so error banners don't persist across pages
+    useEffect(() => {
+        if (error) {
+            setError(null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.pathname]);
+
 
     const login = async (email, password) => {
         try {
@@ -25,7 +36,8 @@ export const useAuth = () => {
             navigate('/app/discover');
             return { success: true };
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Invalid email or password';
+            // Prefer backend `error` field (backend uses { error: '...' })
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Invalid email or password';
             setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {
@@ -51,7 +63,9 @@ export const useAuth = () => {
             navigate('/app/discover');
             return { success: true };
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+            // Backend returns { error: '...' } on validation / conflict
+            // console.log('Registration error:', error.response.data.error);
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.';
             setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {

@@ -13,12 +13,12 @@ exports.getNearbyUsers = async (req, res) => {
         if (!user) return res.status(404).json({ error: "User not found" });
 
         // ... (Keep your existing location logic) ...
-        
+
         // --- FIX IS HERE ---
         let query = {
-            _id: { 
+            _id: {
                 $ne: user._id,          // Not me
-                $nin: user.allies       // Not my allies (exclude existing connections)
+                $nin: [...user.allies, ...user.sentRequests, ...user.friendRequests, ...user.blocked] // Exclude connections, pending, and blocked
             },
             "location.lat": { $exists: true },
             "location.lng": { $exists: true }
@@ -26,7 +26,7 @@ exports.getNearbyUsers = async (req, res) => {
         // -------------------
 
         // ... (Rest of your search/regex logic) ...
-        
+
         if (search && search.trim() !== "") {
             const regex = new RegExp(search.trim(), "i");
             query.$or = [
@@ -45,7 +45,7 @@ exports.getNearbyUsers = async (req, res) => {
         let users = await User.find(query).select('-password -blocked -verificationCode');
 
         // ... (Keep your existing distance calculation & filtering) ...
-        
+
         // Note: If you are using the manual distance filter (JS filter), 
         // the MongoDB query above has already removed the allies, so you are good.
 
@@ -63,8 +63,10 @@ exports.getBestMatches = async (req, res) => {
     try {
         const user = await User.findById(req.user.userId);
         const nearbyUsers = await User.find({
-            _id: { $ne: user._id },
-            blocked: { $nin: [user._id] }
+            _id: {
+                $ne: user._id,
+                $nin: [...user.allies, ...user.sentRequests, ...user.friendRequests, ...user.blocked]
+            }
         }).select('name profilePhoto location teachTags learnTags stats availability');
 
         // Score each user
@@ -230,7 +232,7 @@ exports.updateProfile = async (req, res) => {
                 } catch (err) {
                     console.error('Cloudinary upload failed for profilePhoto:', err.message);
                 } finally {
-                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) {}
+                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) { }
                 }
             }
 
@@ -245,7 +247,7 @@ exports.updateProfile = async (req, res) => {
                 } catch (err) {
                     console.error('Cloudinary upload failed for coverPhoto:', err.message);
                 } finally {
-                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) {}
+                    try { if (file && file.path) fs.unlinkSync(file.path); } catch (e) { }
                 }
             }
         }
@@ -386,7 +388,7 @@ exports.getPendingRequests = async (req, res) => {
         const user = await User.findById(req.user.userId)
             .populate('friendRequests', 'name profilePhoto bio teachTags')
             .select('friendRequests');
-        
+
         res.json({ success: true, requests: user.friendRequests });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -396,9 +398,18 @@ exports.getPendingRequests = async (req, res) => {
 // Remove ally
 exports.removeAlly = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId);
-        user.allies = user.allies.filter(id => id.toString() !== req.params.userId);
-        await user.save();
+        const currentUserId = req.user.userId;
+        const targetUserId = req.params.userId;
+
+        // Remove target from current user's allies
+        await User.findByIdAndUpdate(currentUserId, {
+            $pull: { allies: targetUserId }
+        });
+
+        // Remove current user from target's allies
+        await User.findByIdAndUpdate(targetUserId, {
+            $pull: { allies: currentUserId }
+        });
 
         res.json({ success: true, message: 'Ally removed' });
     } catch (error) {

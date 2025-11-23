@@ -88,6 +88,25 @@ const useChatStore = create((set, get) => ({
             },
         })),
 
+    // Update conversation preview (lastMessage) and move it to top of list
+    bumpConversationWithMessage: (conversationId, message) =>
+        set((state) => {
+            const convs = state.conversations.slice();
+            const idx = convs.findIndex(c => c._id === conversationId);
+
+            const updatedConv = idx > -1 ? { ...convs[idx], lastMessage: message } : { _id: conversationId, lastMessage: message };
+
+            // Remove existing and put at front
+            const filtered = convs.filter(c => c._id !== conversationId);
+            return {
+                conversations: [updatedConv, ...filtered],
+                unreadCounts: {
+                    ...state.unreadCounts,
+                    [conversationId]: (state.unreadCounts[conversationId] || 0),
+                },
+            };
+        }),
+
     // 3. READ RECEIPTS (BLUE TICKS)
     // This updates the messages to show they are read
     markMessagesAsRead: (conversationId) =>

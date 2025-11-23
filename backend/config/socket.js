@@ -25,8 +25,9 @@ module.exports = (io) => {
 
         // 2. JOIN PERSONAL ROOM (For global notifications)
         if (userId) {
-            socket.join(userId); 
-            socket.broadcast.emit('users:online', Array.from(io.sockets.adapter.rooms.keys()));
+            socket.join(userId);
+            // Emit to all clients (including the newly connected socket) the current online rooms
+            io.emit('users:online', Array.from(io.sockets.adapter.rooms.keys()));
         }
 
         // ========== PRIVATE CHAT ==========
@@ -164,6 +165,8 @@ module.exports = (io) => {
 
         socket.on('disconnect', () => {
             console.log('User disconnected:', userId);
+            // Broadcast updated online list when someone disconnects
+            io.emit('users:online', Array.from(io.sockets.adapter.rooms.keys()));
         });
     });
 };

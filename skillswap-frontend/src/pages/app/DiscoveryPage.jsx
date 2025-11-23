@@ -99,8 +99,9 @@ const DiscoveryPage = () => {
                     {/* IMAGE POST */}
                     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
                         <img
-                            src="/mnt/data/Screenshot 2025-11-20 at 7.19.35 PM.png"
+                            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"
                             className="w-full h-52 rounded-lg object-cover"
+                            alt="Post preview"
                         />
                         <p className="text-gray-700 text-sm mt-2">
                             Example image-based post preview.

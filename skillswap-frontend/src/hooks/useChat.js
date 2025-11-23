@@ -35,50 +35,44 @@ export const useChat = () => {
         // Only fetch conversations once on mount/user change
         fetchConversations();
 
-        const handleNewMessage = (message) => {
-            const convId = message.conversationId;
-            if (!convId) return;
+        // NOTE: We rely on socketService to update the store globally.
+        // We do NOT register a local listener here to avoid stale closures and double updates.
 
-            console.log("📩 New Message:", message);
-
-            // Try to merge with any optimistic/pending message first
-            // This will replace a temp message if content/tempId matches
-            store.updateMessage(convId, message);
-
-            // If updateMessage didn't add the message (no matching temp), ensure it's appended
-            const existing = useChatStore.getState().messages[convId] || [];
-            if (!existing.some(m => m._id === message._id)) {
-                store.addMessage(convId, message);
-            }
-
-            // 2. Sync if active
-            const currentId = useChatStore.getState().currentConversation;
-            if (currentId === convId) {
-                socketService.markAsRead(convId);
-                store.markAsRead(convId);
-            }
-        };
-
-        const handleReadReceipt = ({ conversationId }) => {
-            if (conversationId) store.markMessagesAsRead(conversationId);
-        };
-
-        const removeMsgListener = socketService.onMessage(handleNewMessage);
-        
-        if (socketService.socket) {
-            socketService.socket.on('messages:read', handleReadReceipt);
-        }
-
-        return () => {
-            removeMsgListener();
-            if (socketService.socket) {
-                socketService.socket.off('messages:read', handleReadReceipt);
-            }
-        };
-    // REMOVED fetchMessages from dependencies to keep listener stable
-    }, [user]);
+    }, [user, fetchConversations]);
 
     // ===== ACTIONS =====
+
+    const deleteConversation = async (conversationId) => {
+        try {
+            const token = useAuthStore.getState().token;
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chat/${conversationId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Remove from store
+            const currentConvs = store.conversations;
+            store.setConversations(currentConvs.filter(c => c._id !== conversationId));
+            if (store.currentConversation === conversationId) {
+                store.setCurrentConversation(null);
+            }
+        } catch (err) {
+            console.error('Failed to delete conversation:', err);
+        }
+    };
+
+    const blockUser = async (userId) => {
+        try {
+            const token = useAuthStore.getState().token;
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/block/${userId}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Ideally, we should also remove the conversation or mark it as blocked
+            // For now, just a success action
+        } catch (err) {
+            console.error('Failed to block user:', err);
+        }
+    };
 
     const sendMessage = (content) => {
         const convId = store.currentConversation;
@@ -121,7 +115,7 @@ export const useChat = () => {
 
         store.setCurrentConversation(id);
         socketService.joinConversation(id);
-        
+
         // Mark read immediately
         socketService.markAsRead(id);
         store.markAsRead(id);
@@ -142,5 +136,7 @@ export const useChat = () => {
         setCurrentConversation,
         fetchConversations,
         fetchMessages,
+        deleteConversation,
+        blockUser,
     };
 };

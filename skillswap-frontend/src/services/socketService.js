@@ -24,7 +24,7 @@ class SocketService {
         this.socket.on('connect', () => {
             console.log('✅ Socket connected:', this.socket.id);
             useChatStore.getState().setConnected(true);
-            
+
             // Emit setup with the latest user from the store (don't rely on earlier capture)
             const latestUser = useAuthStore.getState().user;
             if (latestUser) {
@@ -32,10 +32,74 @@ class SocketService {
             }
         });
 
+        // Server broadcasts online users list; update store when received
+        this.socket.on('users:online', (rooms) => {
+            try {
+                // Server sends an array of room keys; personal rooms are userId strings (24-hex)
+                const onlineUserIds = Array.isArray(rooms)
+                    ? rooms.filter(r => typeof r === 'string' && /^[0-9a-fA-F]{24}$/.test(r))
+                    : [];
+                useChatStore.getState().setOnlineUsers(onlineUserIds);
+            } catch (err) {
+                console.warn('Failed to set online users:', err);
+            }
+        });
+
         // --- EVENT LISTENERS ---
 
         // 1. Chat Messages
         this.socket.on('receive:message', (message) => {
+            console.log('🔥 SOCKET RECEIVED MESSAGE:', message);
+            // Always update chat store so messages arrive instantly in the UI
+            try {
+                const convId = message.conversationId || message.conversation || message.chatId;
+                if (convId) {
+                    // First try to replace any pending temp message
+                    useChatStore.getState().updateMessage(convId, message);
+
+                    // Ensure the message is present (addMessage prevents duplicates)
+                    const msgs = useChatStore.getState().messages[convId] || [];
+                    if (!msgs.some(m => m._id === message._id)) {
+                        useChatStore.getState().addMessage(convId, message);
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to sync incoming message to store:', err);
+            }
+
+            // Update unread counts if needed and update conversation preview
+            try {
+                const convId = message.conversationId || message.conversation || message.chatId;
+                const activeConversationId = useChatStore.getState().currentConversation;
+
+                if (convId && activeConversationId !== convId) {
+                    // increment unread count
+                    const current = useChatStore.getState().unreadCounts[convId] || 0;
+                    useChatStore.getState().setUnreadCount(convId, current + 1);
+
+                    // Update conversation preview and ordering immediately
+                    useChatStore.getState().bumpConversationWithMessage(convId, {
+                        content: message.content,
+                        senderId: message.senderId,
+                        timestamp: message.timestamp || new Date().toISOString(),
+                        _id: message._id,
+                    });
+                } else if (convId && activeConversationId === convId) {
+                    // If user is active in this conversation, mark read immediately
+                    useChatStore.getState().markAsRead(convId);
+                    // Also bump preview with last message so the left panel updates
+                    useChatStore.getState().bumpConversationWithMessage(convId, {
+                        content: message.content,
+                        senderId: message.senderId,
+                        timestamp: message.timestamp || new Date().toISOString(),
+                        _id: message._id,
+                    });
+                }
+            } catch (err) {
+                console.warn('Failed to update unread counts for incoming message:', err);
+            }
+
+            // Notify any registered listeners as well
             this.messageListeners.forEach(cb => cb(message));
         });
 
@@ -47,9 +111,19 @@ class SocketService {
 
         // 3. Typing
         this.socket.on('user:typing', (data) => {
+            try {
+                const { conversationId, senderId, isTyping } = data || {};
+                if (conversationId && senderId !== undefined) {
+                    useChatStore.getState().setTyping(conversationId, senderId, !!isTyping);
+                }
+            } catch (err) {
+                console.warn('Failed to update typing in store:', err);
+            }
+
+            // Notify any registered listeners too
             this.typingListeners.forEach(cb => cb(data));
         });
-        
+
         // 4. Read Receipts
         this.socket.on('messages:read', (data) => {
             // You could add a listener array for this too if needed
@@ -98,7 +172,7 @@ class SocketService {
     // ... (Keep your existing joinConversation, sendMessage, markAsRead methods) ...
     joinConversation(id) { this.socket?.emit('conversation:join', id); }
     leaveConversation(id) { this.socket?.emit('conversation:leave', id); }
-    
+
     sendMessage(conversationId, content) {
         const userId = useAuthStore.getState().user?._id;
         this.socket?.emit('send:message', { conversationId, content, senderId: userId });

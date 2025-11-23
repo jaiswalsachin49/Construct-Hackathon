@@ -13,6 +13,7 @@ import BlockConfirmModal from '../components/safety/BlockConfirmModal';
 import Loading from '../components/common/Loading';
 import useAuthStore from '../store/authStore';
 import { getUserById } from '../services/discoveryService';
+import { startConversation } from '../services/chatService';
 
 const ProfilePage = () => {
     const { userId } = useParams();
@@ -126,7 +127,20 @@ const ProfilePage = () => {
                             ) : (
                                 <>
                                     <button 
-                                        onClick={() => navigate(`/app/chat/${displayUser._id}`)}
+                                        onClick={async () => {
+                                            try {
+                                                // Ensure a conversation exists (server returns existing or new conv)
+                                                const res = await startConversation(displayUser._id);
+                                                const conv = res.conversation || res;
+                                                const convId = conv?._id || conv?.id || conv;
+                                                if (convId) navigate(`/app/chat/${convId}`);
+                                                else navigate(`/app/chat`);
+                                            } catch (err) {
+                                                console.error('Failed to start conversation', err);
+                                                // fallback to opening the chat list
+                                                navigate('/app/chat');
+                                            }
+                                        }}
                                         className="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg shadow-sm transition-all"
                                     >
                                         <MessageCircle size={18} /> Message
@@ -212,7 +226,18 @@ const ProfilePage = () => {
                         {isOwnProfile ? (
                             <button onClick={() => setShowEditModal(true)} className="flex-1 py-2 bg-gray-100 text-gray-800 rounded-lg font-medium">Edit Profile</button>
                         ) : (
-                            <button onClick={() => navigate(`/app/chat/${displayUser._id}`)} className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium">Message</button>
+                            <button onClick={async () => {
+                                try {
+                                    const res = await startConversation(displayUser._id);
+                                    const conv = res.conversation || res;
+                                    const convId = conv?._id || conv?.id || conv;
+                                    if (convId) navigate(`/app/chat/${convId}`);
+                                    else navigate(`/app/chat`);
+                                } catch (err) {
+                                    console.error('Failed to start conversation', err);
+                                    navigate('/app/chat');
+                                }
+                            }} className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium">Message</button>
                         )}
                     </div>
                 </div>
