@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video } from 'lucide-react';
+import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video, RefreshCw, Trash2, Ban } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import Button from '../common/Button';
 import socketService from '../../services/socketService';
 import { format, isToday, isYesterday } from 'date-fns';
 
-const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUserId, onBack }) => {
+const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUserId, onBack, onlineUsers = [], onDeleteConversation, onBlockUser }) => {
     const [messageInput, setMessageInput] = useState('');
+    const [showMenu, setShowMenu] = useState(false);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
 
     // --- FIX: Safe Scroll Logic ---
     const scrollToBottom = () => {
@@ -33,6 +35,8 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     // Scroll on new messages
     useEffect(() => {
         scrollToBottom();
+        // console.log('isTyping', isTyping);
+        // console.log('messages', messages);
     }, [messages, isTyping]);
     // -----------------------------
 
@@ -40,7 +44,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
         if (!messageInput.trim()) return;
         onSendMessage(messageInput);
         setMessageInput('');
-        
+
         // Reset height
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
@@ -49,7 +53,14 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
 
     const handleTyping = () => {
         socketService.sendTyping(conversation._id, true);
-        // Debounce logic is handled in socketService or backend usually
+
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+
+        typingTimeoutRef.current = setTimeout(() => {
+            socketService.sendTyping(conversation._id, false);
+        }, 2000);
     };
 
     const handleKeyPress = (e) => {
@@ -62,6 +73,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     // Determine if the other user in this conversation is typing.
     const otherUserId = conversation?.otherUser?._id || conversation?.otherUser?.id;
     const otherIsTyping = Boolean(otherUserId && isTyping && (isTyping[otherUserId] === true));
+    const isOnline = onlineUsers.includes(otherUserId);
 
     // ... (Keep your existing header helpers) ...
 
@@ -75,37 +87,85 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                             <ArrowLeft className="h-5 w-5" />
                         </button>
                     )}
-                    
+
                     <div className="relative">
-                        <img 
-                            src={conversation?.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conversation?.otherUser?.name}`} 
+                        <img
+                            src={conversation?.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conversation?.otherUser?.name}`}
                             className="w-10 h-10 rounded-full object-cover border border-gray-200"
                             alt=""
                         />
                         {/* Online indicator could go here */}
                     </div>
-                    
+
                     <div>
                         <h3 className="font-bold text-gray-900 leading-none">
                             {conversation?.otherUser?.name || 'Unknown User'}
                         </h3>
-                        <p className="text-xs text-green-600 font-medium mt-1">
-                            {/* Placeholder for online status */}
-                            Online
+                        <p className={`text-xs font-medium mt-1 ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                            {isOnline ? 'Online' : 'Offline'}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1">
-                    <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                    <button
+                        onClick={() => alert("Audio calls coming soon!")}
+                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        title="Audio Call"
+                    >
                         <Phone className="h-5 w-5" />
                     </button>
-                    <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                    <button
+                        onClick={() => alert("Video calls coming soon!")}
+                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        title="Video Call"
+                    >
                         <Video className="h-5 w-5" />
                     </button>
-                    <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-                        <MoreVertical className="h-5 w-5" />
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        title="Refresh Chat"
+                    >
+                        <RefreshCw className="h-5 w-5" />
                     </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                            <MoreVertical className="h-5 w-5" />
+                        </button>
+
+                        {showMenu && (
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('Are you sure you want to delete this conversation?')) {
+                                            onDeleteConversation(conversation._id);
+                                        }
+                                        setShowMenu(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Conversation
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('Block this user?')) {
+                                            onBlockUser(conversation.otherUser._id);
+                                        }
+                                        setShowMenu(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                >
+                                    <Ban className="h-4 w-4" />
+                                    Block User
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -114,7 +174,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                 {messages.map((msg, index) => {
                     // Date Separators
                     const showDate = index === 0 || !isSameDay(new Date(messages[index - 1].timestamp), new Date(msg.timestamp));
-                    
+
                     return (
                         <React.Fragment key={msg._id || index}>
                             {showDate && (
@@ -124,18 +184,18 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                                     </span>
                                 </div>
                             )}
-                            <MessageBubble 
-                                message={msg} 
-                                isSent={msg.senderId === currentUserId} 
+                            <MessageBubble
+                                message={msg}
+                                isSent={msg.senderId === currentUserId}
                             />
                         </React.Fragment>
                     );
                 })}
-                
+
                 {otherIsTyping && conversation?.otherUser?.name && (
                     <TypingIndicator userName={conversation.otherUser.name} />
                 )}
-                
+
                 {/* Invisible anchor for scrolling */}
                 <div ref={messagesEndRef} />
             </div>
@@ -146,7 +206,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                     <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-colors">
                         <Paperclip className="h-5 w-5" />
                     </button>
-                    
+
                     <textarea
                         ref={textareaRef}
                         value={messageInput}
@@ -158,10 +218,10 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         rows={1}
                         style={{ minHeight: '44px', outline: 'none' }}
                     />
-                    
-                    <Button 
-                        variant="warm" 
-                        onClick={handleSend} 
+
+                    <Button
+                        variant="warm"
+                        onClick={handleSend}
                         disabled={!messageInput.trim()}
                         className={`rounded-xl transition-all ${!messageInput.trim() ? 'opacity-50' : ''}`}
                     >
@@ -191,7 +251,12 @@ ChatWindow.propTypes = {
     onSendMessage: PropTypes.func.isRequired,
     isTyping: PropTypes.bool,
     currentUserId: PropTypes.string,
-    onBack: PropTypes.func
+    currentUserId: PropTypes.string,
+    currentUserId: PropTypes.string,
+    onBack: PropTypes.func,
+    onlineUsers: PropTypes.array,
+    onDeleteConversation: PropTypes.func,
+    onBlockUser: PropTypes.func
 };
 
 export default ChatWindow;

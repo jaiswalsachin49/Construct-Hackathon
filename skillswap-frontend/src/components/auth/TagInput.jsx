@@ -8,27 +8,36 @@ const TagInput = ({
     suggestions = [],
     placeholder,
     maxTags = 10,
-    theme = "pink",
+    theme = "blue",   // NEW
 }) => {
-
     const [input, setInput] = useState('');
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
-    // Theme styles
-    const styles = {
-        pink: {
-            chip: "bg-pink-100 text-pink-700 hover:bg-pink-200",
-            inputFocus: "focus:ring-pink-400",
-            suggestionHover: "hover:bg-pink-50",
+    // THEME STYLES -------------------------
+    const themeStyles = {
+        blue: {
+            tagBg: "bg-[#00C4FF]/15",
+            tagBorder: "border-[#00C4FF]/40",
+            tagText: "text-[#59FFC8]",
+            tagGlow: "shadow-[0_0_10px_rgba(0,196,255,0.25)]",
+            hoverBg: "hover:bg-[#00C4FF]/20",
+            inputRing: "focus:ring-[#00F5A0]",
+            suggestionHover: "hover:bg-[#00C4FF]/20",
         },
         purple: {
-            chip: "bg-purple-100 text-purple-700 hover:bg-purple-200",
-            inputFocus: "focus:ring-purple-400",
-            suggestionHover: "hover:bg-purple-50",
+            tagBg: "bg-[#7A3EF9]/15",
+            tagBorder: "border-[#7A3EF9]/40",
+            tagText: "text-[#C8A4FF]",
+            tagGlow: "shadow-[0_0_10px_rgba(122,62,249,0.25)]",
+            hoverBg: "hover:bg-[#7A3EF9]/20",
+            inputRing: "focus:ring-[#7A3EF9]",
+            suggestionHover: "hover:bg-[#7A3EF9]/20",
         },
     };
 
-    const current = styles[theme];
+    const T = themeStyles[theme];
+
+    // --------------------------------------
 
     const handleInputChange = (e) => {
         const value = e.target.value;
@@ -36,9 +45,9 @@ const TagInput = ({
 
         if (value.trim()) {
             const filtered = suggestions.filter(
-                s =>
-                    s.toLowerCase().includes(value.toLowerCase()) &&
-                    !tags.includes(s.toLowerCase())
+                (suggestion) =>
+                    suggestion.toLowerCase().includes(value.toLowerCase()) &&
+                    !tags.includes(suggestion.toLowerCase())
             );
             setFilteredSuggestions(filtered.slice(0, 10));
         } else {
@@ -55,18 +64,17 @@ const TagInput = ({
         }
     };
 
-    const removeTag = (index) => {
-        setTags(tags.filter((_, i) => i !== index));
-    };
-
     const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
             e.preventDefault();
             if (input.trim()) addTag(input);
-        }
-        if (e.key === "Backspace" && !input && tags.length > 0) {
+        } else if (e.key === 'Backspace' && !input && tags.length > 0) {
             removeTag(tags.length - 1);
         }
+    };
+
+    const removeTag = (index) => {
+        setTags(tags.filter((_, i) => i !== index));
     };
 
     return (
@@ -81,23 +89,33 @@ const TagInput = ({
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
                     className={`
-                        w-full px-4 py-3 rounded-xl border border-gray-300
-                        focus:outline-none focus:ring-2 focus:border-transparent
-                        ${current.inputFocus}
+                        w-full px-4 py-2.5 rounded-lg 
+                        bg-white/5 border border-white/20 
+                        text-[#E6E9EF] placeholder-gray-400
+                        focus:outline-none
+                        ${T.inputRing}
                     `}
                 />
 
-                {/* Suggestions */}
+                {/* Suggestions Dropdown */}
                 {filteredSuggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-2 bg-white rounded-xl border border-gray-200 shadow-lg max-h-48 overflow-y-auto">
+                    <div className="
+                        absolute z-20 w-full mt-1 
+                        bg-[#0A0F1F]/90 backdrop-blur-xl 
+                        border border-white/10 
+                        rounded-lg shadow-xl
+                        max-h-48 overflow-y-auto
+                    ">
                         {filteredSuggestions.map((suggestion, index) => (
                             <button
                                 key={index}
                                 type="button"
                                 onClick={() => addTag(suggestion)}
                                 className={`
-                                    w-full px-4 py-2 text-left transition
-                                    ${current.suggestionHover}
+                                    w-full px-4 py-2 text-left
+                                    text-[#E6E9EF]
+                                    transition
+                                    ${T.suggestionHover}
                                 `}
                             >
                                 {suggestion}
@@ -114,24 +132,34 @@ const TagInput = ({
                         <span
                             key={index}
                             className={`
-                                inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full
-                                ${current.chip}
+                                inline-flex items-center gap-2
+                                px-3 py-1.5 rounded-full 
+                                text-sm font-medium
+                                ${T.tagBg} 
+                                ${T.tagBorder}
+                                ${T.tagText}
+                                ${T.tagGlow}
                             `}
                         >
                             {tag}
+
                             <button
                                 type="button"
                                 onClick={() => removeTag(index)}
-                                className="rounded-full p-0.5 hover:bg-white/30"
+                                className={`
+                                    rounded-full p-0.5 transition
+                                    ${T.hoverBg}
+                                `}
                             >
-                                <X className="h-3 w-3" />
+                                <X className={`h-3 w-3 ${T.tagText}`} />
                             </button>
                         </span>
                     ))}
                 </div>
             )}
 
-            <p className="text-sm text-gray-500">
+            {/* Counter */}
+            <p className="text-sm text-[#8A90A2]">
                 {tags.length} / {maxTags} skills selected
             </p>
         </div>
@@ -144,7 +172,7 @@ TagInput.propTypes = {
     suggestions: PropTypes.array,
     placeholder: PropTypes.string,
     maxTags: PropTypes.number,
-    theme: PropTypes.oneOf(["pink", "purple"]),
+    theme: PropTypes.string,
 };
 
 export default TagInput;

@@ -48,9 +48,9 @@ export const getBestMatches = async () => {
 
 
 // Search users by skill
-export const searchUsers = async (query, lat, lng) => {
+export const searchUsers = async (search, lat, lng, radius) => {
     const response = await api.get('/api/users/nearby', {
-        params: { query, lat, lng },
+        params: { search, lat, lng, radius },
     });
     return extractArray(response.data.users);
 };

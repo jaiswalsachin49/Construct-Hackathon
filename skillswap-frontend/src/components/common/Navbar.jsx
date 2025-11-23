@@ -11,7 +11,7 @@ const Navbar = () => {
     // 1. Hooks & Store Access (MUST be at the top)
     const navigate = useNavigate();
     const { user, logout: storeLogout } = useAuthStore();
-    
+
     const unreadCounts = useChatStore(state => state.unreadCounts);
     const conversations = useChatStore(state => state.conversations);
     const setConversations = useChatStore(state => state.setConversations);
@@ -68,7 +68,7 @@ const Navbar = () => {
 
                 const currentCount = useChatStore.getState().unreadCounts[message.conversationId] || 0;
                 setUnreadCount(message.conversationId, currentCount + 1);
-                
+
                 // Refresh list to show preview
                 getConversations().then(data => setConversations(data.conversations || []));
             }
@@ -76,12 +76,13 @@ const Navbar = () => {
 
         // B. Handle Friend Requests (FIXED)
         const handleNewRequest = (data) => {
+            console.log("🔔 Navbar received notification:", data);
             // Backend sends: { type: 'connection_request', sender: { ... } }
             if (data && data.sender) {
                 setRequests(prev => {
                     // Avoid duplicates
                     if (prev.some(r => r._id === data.sender._id)) return prev;
-                    return [...prev, data.sender];
+                    return [data.sender, ...prev]; // Add to front
                 });
             }
         };
@@ -89,7 +90,7 @@ const Navbar = () => {
         // Subscribe using the service methods (Clean & Robust)
         const removeMsgListener = socketService.onMessage(handleNewMessage);
         const removeNotifListener = socketService.onNotification(handleNewRequest); // <--- USES NEW METHOD
-        
+
         return () => {
             removeMsgListener();
             removeNotifListener();
@@ -126,7 +127,7 @@ const Navbar = () => {
         <nav className="sticky top-0 z-40 bg-white border-b border-gray-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
-                    
+
                     {/* Logo */}
                     <Link to="/app/discover" className="flex items-center gap-2">
                         <div className="bg-pink-600 p-1.5 rounded-lg">
@@ -137,10 +138,10 @@ const Navbar = () => {
 
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center gap-6">
-                        
+
                         {/* --- NOTIFICATION BELL --- */}
                         <div className="relative">
-                            <button 
+                            <button
                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                                 className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-all focus:outline-none"
                             >
@@ -167,7 +168,7 @@ const Navbar = () => {
                                         </div>
 
                                         <div className="max-h-[400px] overflow-y-auto">
-                                            
+
                                             {/* --- SECTION 1: CONNECTION REQUESTS --- */}
                                             {requests.length > 0 && (
                                                 <div className="border-b border-gray-100">
@@ -176,8 +177,8 @@ const Navbar = () => {
                                                     </div>
                                                     {requests.map(req => (
                                                         <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors">
-                                                            <img 
-                                                                src={req.profilePhoto || `https://ui-avatars.com/api/?name=${req.name}`} 
+                                                            <img
+                                                                src={req.profilePhoto || `https://ui-avatars.com/api/?name=${req.name}`}
                                                                 className="w-10 h-10 rounded-full object-cover bg-gray-200 border border-gray-200"
                                                                 alt={req.name}
                                                             />
@@ -186,14 +187,14 @@ const Navbar = () => {
                                                                 <p className="text-xs text-gray-500 truncate">wants to connect</p>
                                                             </div>
                                                             <div className="flex gap-2">
-                                                                <button 
+                                                                <button
                                                                     onClick={(e) => { e.stopPropagation(); handleAccept(req._id); }}
                                                                     className="p-1.5 bg-blue-100 text-pink-600 rounded-full hover:bg-blue-200 transition-colors"
                                                                     title="Accept"
                                                                 >
                                                                     <Check size={16} />
                                                                 </button>
-                                                                <button 
+                                                                <button
                                                                     onClick={(e) => { e.stopPropagation(); handleReject(req._id); }}
                                                                     className="p-1.5 bg-red-100 text-pink-600 rounded-full hover:bg-red-200 transition-colors"
                                                                     title="Reject"
@@ -213,7 +214,7 @@ const Navbar = () => {
                                                         Messages
                                                     </div>
                                                     {unreadConversations.map(conv => (
-                                                        <div 
+                                                        <div
                                                             key={conv._id}
                                                             onClick={() => {
                                                                 navigate(`/app/chat/${conv._id}`);
@@ -222,7 +223,7 @@ const Navbar = () => {
                                                             }}
                                                             className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50 last:border-none"
                                                         >
-                                                            <img 
+                                                            <img
                                                                 src={conv.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conv.otherUser?.name}`}
                                                                 className="w-10 h-10 rounded-full object-cover bg-gray-200"
                                                                 alt=""
@@ -246,9 +247,9 @@ const Navbar = () => {
                                                 </div>
                                             )}
                                         </div>
-                                        
+
                                         <div className="border-t border-gray-100 p-2 bg-gray-50/50">
-                                            <Link 
+                                            <Link
                                                 to="/app/chat"
                                                 className="block text-center py-2 text-sm text-pink-600 hover:bg-blue-100 rounded-lg font-medium transition-colors"
                                                 onClick={() => setIsNotificationsOpen(false)}
@@ -263,7 +264,7 @@ const Navbar = () => {
 
                         {/* Profile Dropdown */}
                         <div className="relative">
-                            <button 
+                            <button
                                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                                 className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-gray-50 rounded-full border border-transparent hover:border-gray-200 transition-all focus:outline-none"
                             >
@@ -271,7 +272,7 @@ const Navbar = () => {
                                     <p className="text-sm font-semibold text-gray-700 leading-none">{user?.name}</p>
                                     <p className="text-xs text-gray-500 mt-0.5">Available</p>
                                 </div>
-                                
+
                                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold border-2 border-white shadow-sm overflow-hidden">
                                     {user?.profilePhoto ? (
                                         <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
@@ -290,25 +291,25 @@ const Navbar = () => {
                                             <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
                                             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                                         </div>
-                                        
-                                        <Link 
-                                            to="/app/profile" 
+
+                                        <Link
+                                            to="/app/profile"
                                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <UserIcon className="w-4 h-4" /> Your Profile
                                         </Link>
-                                        <Link 
-                                            to="/app/settings" 
+                                        <Link
+                                            to="/app/settings"
                                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <Settings className="w-4 h-4" /> Settings
                                         </Link>
-                                        
+
                                         <div className="h-px bg-gray-100 my-2" />
-                                        
-                                        <button 
+
+                                        <button
                                             onClick={handleLogout}
                                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                         >
@@ -322,7 +323,7 @@ const Navbar = () => {
 
                     {/* Mobile Menu Button */}
                     <div className="flex items-center gap-4 md:hidden">
-                        <button 
+                        <button
                             className="relative p-2 text-gray-600"
                             onClick={() => navigate('/app/chat')}
                         >
@@ -331,7 +332,7 @@ const Navbar = () => {
                                 <span className="absolute top-1 right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white" />
                             )}
                         </button>
-                        <button 
+                        <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
                         >
@@ -346,7 +347,7 @@ const Navbar = () => {
                 <div className="md:hidden border-t border-gray-200 bg-white absolute w-full shadow-lg z-50">
                     <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 overflow-hidden">
-                             {user?.profilePhoto ? (
+                            {user?.profilePhoto ? (
                                 <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
                             ) : (
                                 getInitials(user?.name)

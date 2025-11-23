@@ -18,6 +18,8 @@ const ChatPage = () => {
         isTyping,
         sendMessage,
         setCurrentConversation,
+        deleteConversation,
+        blockUser,
     } = useChat();
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -70,6 +72,9 @@ const ChatPage = () => {
                         isTyping={isTyping}
                         currentUserId={user?._id}
                         onBack={handleBack}
+                        onlineUsers={onlineUsers}
+                        onDeleteConversation={deleteConversation}
+                        onBlockUser={blockUser}
                     />
                 </div>
             );
@@ -110,6 +115,9 @@ const ChatPage = () => {
                     onSendMessage={sendMessage}
                     isTyping={isTyping}
                     currentUserId={user?._id}
+                    onlineUsers={onlineUsers}
+                    onDeleteConversation={deleteConversation}
+                    onBlockUser={blockUser}
                 />
             </div>
         </div>
