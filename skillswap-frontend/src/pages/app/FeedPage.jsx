@@ -56,7 +56,7 @@ const FeedPage = () => {
             {/* Create Post Prompt Bar */}
             <div
                 onClick={() => setIsCreateModalOpen(true)}
-                className="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow"
+                className="bg-white/5 rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow border border-white/10 backdrop-blur-xl"
             >
                 <div className="flex items-center gap-3 mb-3">
                     {user?.profilePhoto ? (
@@ -76,22 +76,22 @@ const FeedPage = () => {
                         type="text"
                         placeholder="What's on your mind?"
                         readOnly
-                        className="flex-1 px-4 py-2 bg-gray-100 rounded-full cursor-pointer"
+                        className="flex-1 px-4 py-2 bg-[#101726] rounded-full cursor-pointer text-white placeholder-[#8A90A2]"
                     />
                 </div>
 
-                <div className="flex items-center justify-around pt-3 border-t border-gray-200">
-                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Image className="h-5 w-5 text-pink-600" />
-                        <span className="text-sm font-medium text-gray-700">Photo</span>
+                <div className="flex items-center justify-around pt-3 border-t border-white/10">
+                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <Image className="h-5 w-5 text-[#00C4FF]" />
+                        <span className="text-sm font-medium text-[#E6E9EF]">Photo</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Video className="h-5 w-5 text-purple-600" />
-                        <span className="text-sm font-medium text-gray-700">Video</span>
+                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <Video className="h-5 w-5 text-[#7A3EF9]" />
+                        <span className="text-sm font-medium text-[#E6E9EF]">Video</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <FileText className="h-5 w-5 text-green-600" />
-                        <span className="text-sm font-medium text-gray-700">Post</span>
+                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <FileText className="h-5 w-5 text-[#00F5A0]" />
+                        <span className="text-sm font-medium text-[#E6E9EF]">Post</span>
                     </button>
                 </div>
             </div>
@@ -150,19 +150,19 @@ const FeedPage = () => {
 
             {/* Empty State */}
             {!isLoading && feedPosts.length === 0 && !error && (
-                <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-pink-100 mb-4">
-                        <FileText className="h-8 w-8 text-pink-600" />
+                <div className="bg-white/5 rounded-lg shadow-md p-12 text-center border border-white/10 backdrop-blur-xl">
+                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#00C4FF]/10 mb-4">
+                        <FileText className="h-8 w-8 text-[#00C4FF]" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-xl font-semibold text-white mb-2">
                         No posts yet
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-[#8A90A2] mb-6">
                         Be the first to share something with your allies!
                     </p>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+                        className="px-6 py-3 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
                     >
                         Create Post
                     </button>

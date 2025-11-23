@@ -185,9 +185,9 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                         </div>
                     )}
                     <div>
-                        <p className="font-semibold text-gray-900">{user?.name}</p>
+                        <p className="font-semibold text-white">{user?.name}</p>
                         {communityId && (
-                            <p className="text-sm text-gray-600">Posting to community</p>
+                            <p className="text-sm text-[#8A90A2]">Posting to community</p>
                         )}
                     </div>
                 </div>
@@ -201,9 +201,9 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                         rows={5}
                         maxLength={maxContentLength}
                         autoFocus
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                        className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF] resize-none"
                     />
-                    <p className="text-sm text-gray-500 text-right mt-1">
+                    <p className="text-sm text-[#8A90A2] text-right mt-1">
                         {remainingChars} characters remaining
                     </p>
                 </div>
@@ -213,19 +213,19 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                     <button
                         onClick={() => imageInputRef.current?.click()}
                         disabled={isPosting || mediaFiles.some((f) => f.type.startsWith('video/'))}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 border border-white/10 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <ImageIcon className="h-5 w-5 text-pink-600" />
-                        <span className="text-sm font-medium">Add Photos</span>
+                        <ImageIcon className="h-5 w-5 text-[#00C4FF]" />
+                        <span className="text-sm font-medium text-[#E6E9EF]">Add Photos</span>
                     </button>
 
                     <button
                         onClick={() => videoInputRef.current?.click()}
                         disabled={isPosting || mediaFiles.length > 0}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 border border-white/10 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Video className="h-5 w-5 text-purple-600" />
-                        <span className="text-sm font-medium">Add Video</span>
+                        <Video className="h-5 w-5 text-[#7A3EF9]" />
+                        <span className="text-sm font-medium text-[#E6E9EF]">Add Video</span>
                     </button>
 
                     <input
@@ -276,7 +276,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
 
                 {/* Tags Input */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
                         Tags (Optional)
                     </label>
                     <div className="flex gap-2 mb-2">
@@ -291,7 +291,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                                 }
                             }}
                             placeholder="Add tags..."
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            className="flex-1 px-3 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
                         />
                         <button
                             onClick={() => addTag(tagInput)}
@@ -324,7 +324,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
 
                 {/* Visibility Selector */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
                         Visibility
                     </label>
                     <div className="flex gap-4">
@@ -337,7 +337,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                                 onChange={(e) => setVisibility(e.target.value)}
                                 className="mr-2"
                             />
-                            <span className="text-sm">Public</span>
+                            <span className="text-sm text-[#E6E9EF]">Public</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
                             <input
@@ -348,7 +348,7 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                                 onChange={(e) => setVisibility(e.target.value)}
                                 className="mr-2"
                             />
-                            <span className="text-sm">Allies Only</span>
+                            <span className="text-sm text-[#E6E9EF]">Allies Only</span>
                         </label>
                     </div>
                 </div>

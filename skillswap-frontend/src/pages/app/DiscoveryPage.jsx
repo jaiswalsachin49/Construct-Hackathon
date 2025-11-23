@@ -85,43 +85,43 @@ const DiscoveryPage = () => {
     const displayUsers = view === "nearby" ? nearbyUsers : matchedUsers;
 
     return (
-        <div className="h-screen w-full bg-gray-50 overflow-hidden">
+        <div className="h-screen w-full bg-transparent overflow-hidden">
             {/* MAIN 2:1 LAYOUT */}
             <div className="flex h-full">
                 {/* ----------------------------------------------------------- */}
                 {/* LEFT SECTION (2 PARTS) — POST FEED SCROLLABLE               */}
                 {/* ----------------------------------------------------------- */}
-                <div className="w-[60%] h-full overflow-y-auto border-r border-gray-200 p-6 space-y-6">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                <div className="w-[60%] h-full overflow-y-auto border-r border-white/10 p-6 space-y-6">
+                    <h2 className="text-2xl font-semibold text-white mb-4">
                         Latest Posts
                     </h2>
 
                     {/* IMAGE POST */}
-                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
                         <img
                             src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"
                             className="w-full h-52 rounded-lg object-cover"
                             alt="Post preview"
                         />
-                        <p className="text-gray-700 text-sm mt-2">
+                        <p className="text-[#E6E9EF] text-sm mt-2">
                             Example image-based post preview.
                         </p>
                     </div>
 
                     {/* VIDEO POST */}
-                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
-                        <div className="w-full h-52 rounded-lg bg-gray-100 flex items-center justify-center">
-                            <span className="text-gray-500 text-sm">Video Preview</span>
+                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
+                        <div className="w-full h-52 rounded-lg bg-white/5 flex items-center justify-center">
+                            <span className="text-[#8A90A2] text-sm">Video Preview</span>
                         </div>
-                        <p className="text-gray-700 text-sm mt-2">
+                        <p className="text-[#E6E9EF] text-sm mt-2">
                             Sample tutorial video post preview.
                         </p>
                     </div>
 
                     {/* TEXT POST */}
-                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
-                        <div className="w-full h-52 rounded-lg bg-gray-100 p-4">
-                            <p className="text-gray-700 text-sm">
+                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
+                        <div className="w-full h-52 rounded-lg bg-white/5 p-4">
+                            <p className="text-[#E6E9EF] text-sm">
                                 Text-only post — clean, minimal, perfect for updates & ideas.
                             </p>
                         </div>
@@ -141,11 +141,11 @@ const DiscoveryPage = () => {
 
                     {/* Error */}
                     {error && (
-                        <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center justify-between">
+                        <div className="mb-6 bg-red-500/10 border border-red-500/40 text-red-400 px-4 py-3 rounded-lg flex items-center justify-between">
                             <span>{error}</span>
                             <button
                                 onClick={() => fetchNearbyUsers()}
-                                className="text-sm underline hover:text-red-800"
+                                className="text-sm underline hover:text-red-300"
                             >
                                 Retry
                             </button>
@@ -179,13 +179,13 @@ const DiscoveryPage = () => {
                     {/* Empty State */}
                     {!isLoading && displayUsers.length === 0 && !error && (
                         <div className="text-center py-16">
-                            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gray-100 mb-4">
-                                <Search className="h-10 w-10 text-gray-400" />
+                            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-white/10 mb-4">
+                                <Search className="h-10 w-10 text-[#8A90A2]" />
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                            <h3 className="text-xl font-semibold text-white mb-2">
                                 No users found
                             </h3>
-                            <p className="text-gray-600 mb-6">Try adjusting your filters</p>
+                            <p className="text-[#8A90A2] mb-6">Try adjusting your filters</p>
                             <Button
                                 variant="warm"
                                 onClick={() =>

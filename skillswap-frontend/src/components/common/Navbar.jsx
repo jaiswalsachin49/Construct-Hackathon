@@ -124,16 +124,18 @@ const Navbar = () => {
     const getInitials = (name) => name ? name.charAt(0).toUpperCase() : 'U';
 
     return (
-        <nav className="sticky top-0 z-40 bg-white border-b border-gray-200">
+        <nav className="sticky top-0 z-40 bg-white/5 border-b border-white/10 backdrop-blur-xl">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
                     {/* Logo */}
                     <Link to="/app/discover" className="flex items-center gap-2">
-                        <div className="bg-pink-600 p-1.5 rounded-lg">
-                            <div className="w-4 h-4 border-2 border-white rounded-full" />
+                        <div className="bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] p-1.5 rounded-lg shadow-lg shadow-[#00C4FF]/20">
+                            <div className="w-4 h-4 border-2 border-black rounded-full" />
                         </div>
-                        <span className="text-2xl font-bold text-gray-900 tracking-tight">SkillSwap</span>
+                        <span className="text-2xl font-bold bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight">
+                            SkillSwap
+                        </span>
                     </Link>
 
                     {/* Desktop Actions */}
@@ -143,11 +145,11 @@ const Navbar = () => {
                         <div className="relative">
                             <button
                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                                className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-all focus:outline-none"
+                                className="relative p-2 text-[#8A90A2] hover:bg-white/10 hover:text-white rounded-full transition-all focus:outline-none"
                             >
                                 <Bell className="h-6 w-6" />
                                 {totalNotifications > 0 && (
-                                    <span className="absolute top-1 right-1 h-5 w-5 bg-pink-500 text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                                    <span className="absolute top-1 right-1 h-5 w-5 bg-[#00C4FF] text-black text-xs font-bold flex items-center justify-center rounded-full border-2 border-[#101726] shadow-sm">
                                         {totalNotifications > 9 ? '9+' : totalNotifications}
                                     </span>
                                 )}
@@ -157,11 +159,11 @@ const Navbar = () => {
                             {isNotificationsOpen && (
                                 <>
                                     <div className="fixed inset-0 z-10" onClick={() => setIsNotificationsOpen(false)} />
-                                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
-                                        <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                            <h3 className="font-semibold text-gray-900">Notifications</h3>
+                                    <div className="absolute right-0 mt-2 w-80 bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden backdrop-blur-xl">
+                                        <div className="px-4 py-3 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                            <h3 className="font-semibold text-white">Notifications</h3>
                                             {totalNotifications > 0 && (
-                                                <span className="bg-blue-100 text-pink-700 text-xs px-2 py-1 rounded-full font-medium">
+                                                <span className="bg-[#00C4FF]/20 text-[#00C4FF] text-xs px-2 py-1 rounded-full font-medium border border-[#00C4FF]/30">
                                                     {totalNotifications} new
                                                 </span>
                                             )}
@@ -171,32 +173,32 @@ const Navbar = () => {
 
                                             {/* --- SECTION 1: CONNECTION REQUESTS --- */}
                                             {requests.length > 0 && (
-                                                <div className="border-b border-gray-100">
-                                                    <div className="px-4 py-2 bg-blue-50/50 text-xs font-bold text-pink-600 uppercase tracking-wider">
+                                                <div className="border-b border-white/10">
+                                                    <div className="px-4 py-2 bg-white/5 text-xs font-bold text-[#00C4FF] uppercase tracking-wider">
                                                         Connection Requests
                                                     </div>
                                                     {requests.map(req => (
-                                                        <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors">
+                                                        <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors">
                                                             <img
                                                                 src={req.profilePhoto || `https://ui-avatars.com/api/?name=${req.name}`}
-                                                                className="w-10 h-10 rounded-full object-cover bg-gray-200 border border-gray-200"
+                                                                className="w-10 h-10 rounded-full object-cover bg-white/10 border border-white/10"
                                                                 alt={req.name}
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-semibold text-gray-900 truncate">{req.name}</p>
-                                                                <p className="text-xs text-gray-500 truncate">wants to connect</p>
+                                                                <p className="text-sm font-semibold text-white truncate">{req.name}</p>
+                                                                <p className="text-xs text-[#8A90A2] truncate">wants to connect</p>
                                                             </div>
                                                             <div className="flex gap-2">
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); handleAccept(req._id); }}
-                                                                    className="p-1.5 bg-blue-100 text-pink-600 rounded-full hover:bg-blue-200 transition-colors"
+                                                                    className="p-1.5 bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors"
                                                                     title="Accept"
                                                                 >
                                                                     <Check size={16} />
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); handleReject(req._id); }}
-                                                                    className="p-1.5 bg-red-100 text-pink-600 rounded-full hover:bg-red-200 transition-colors"
+                                                                    className="p-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors"
                                                                     title="Reject"
                                                                 >
                                                                     <X size={16} />
@@ -210,7 +212,7 @@ const Navbar = () => {
                                             {/* --- SECTION 2: MESSAGES --- */}
                                             {unreadConversations.length > 0 ? (
                                                 <>
-                                                    <div className="px-4 py-2 bg-gray-50/50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                    <div className="px-4 py-2 bg-white/5 text-xs font-bold text-[#8A90A2] uppercase tracking-wider">
                                                         Messages
                                                     </div>
                                                     {unreadConversations.map(conv => (
@@ -221,37 +223,37 @@ const Navbar = () => {
                                                                 setUnreadCount(conv._id, 0);
                                                                 setIsNotificationsOpen(false);
                                                             }}
-                                                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50 last:border-none"
+                                                            className="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-b border-white/5 last:border-none"
                                                         >
                                                             <img
                                                                 src={conv.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conv.otherUser?.name}`}
-                                                                className="w-10 h-10 rounded-full object-cover bg-gray-200"
+                                                                className="w-10 h-10 rounded-full object-cover bg-white/10"
                                                                 alt=""
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                                <p className="text-sm font-medium text-white truncate">
                                                                     {conv.otherUser?.name || 'Unknown User'}
                                                                 </p>
-                                                                <p className="text-xs text-gray-500 truncate">
+                                                                <p className="text-xs text-[#8A90A2] truncate">
                                                                     {conv.lastMessage?.content || 'New message'}
                                                                 </p>
                                                             </div>
-                                                            <div className="w-2 h-2 bg-pink-600 rounded-full flex-shrink-0"></div>
+                                                            <div className="w-2 h-2 bg-[#00C4FF] rounded-full flex-shrink-0"></div>
                                                         </div>
                                                     ))}
                                                 </>
                                             ) : requests.length === 0 && (
-                                                <div className="p-8 text-center text-gray-500 text-sm">
-                                                    <Bell className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+                                                <div className="p-8 text-center text-[#8A90A2] text-sm">
+                                                    <Bell className="h-8 w-8 text-white/20 mx-auto mb-2" />
                                                     No new notifications
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="border-t border-gray-100 p-2 bg-gray-50/50">
+                                        <div className="border-t border-white/10 p-2 bg-white/5">
                                             <Link
                                                 to="/app/chat"
-                                                className="block text-center py-2 text-sm text-pink-600 hover:bg-blue-100 rounded-lg font-medium transition-colors"
+                                                className="block text-center py-2 text-sm text-[#00C4FF] hover:bg-white/10 rounded-lg font-medium transition-colors"
                                                 onClick={() => setIsNotificationsOpen(false)}
                                             >
                                                 View all messages
@@ -266,52 +268,52 @@ const Navbar = () => {
                         <div className="relative">
                             <button
                                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                                className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-gray-50 rounded-full border border-transparent hover:border-gray-200 transition-all focus:outline-none"
+                                className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-white/10 rounded-full border border-transparent hover:border-white/10 transition-all focus:outline-none"
                             >
                                 <div className="text-right hidden lg:block">
-                                    <p className="text-sm font-semibold text-gray-700 leading-none">{user?.name}</p>
-                                    <p className="text-xs text-gray-500 mt-0.5">Available</p>
+                                    <p className="text-sm font-semibold text-white leading-none">{user?.name}</p>
+                                    <p className="text-xs text-[#8A90A2] mt-0.5">Available</p>
                                 </div>
 
-                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold border-2 border-white shadow-sm overflow-hidden">
+                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#00C4FF] to-[#7A3EF9] flex items-center justify-center text-white font-bold border-2 border-[#101726] shadow-sm overflow-hidden">
                                     {user?.profilePhoto ? (
                                         <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
                                     ) : (
                                         getInitials(user?.name)
                                     )}
                                 </div>
-                                <ChevronDown className="w-4 h-4 text-gray-400" />
+                                <ChevronDown className="w-4 h-4 text-[#8A90A2]" />
                             </button>
 
                             {isProfileDropdownOpen && (
                                 <>
                                     <div className="fixed inset-0 z-10" onClick={() => setIsProfileDropdownOpen(false)} />
-                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <div className="px-4 py-3 border-b border-gray-100 lg:hidden">
-                                            <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-                                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                    <div className="absolute right-0 mt-2 w-56 bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 backdrop-blur-xl">
+                                        <div className="px-4 py-3 border-b border-white/10 lg:hidden">
+                                            <p className="text-sm font-semibold text-white">{user?.name}</p>
+                                            <p className="text-xs text-[#8A90A2] truncate">{user?.email}</p>
                                         </div>
 
                                         <Link
                                             to="/app/profile"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <UserIcon className="w-4 h-4" /> Your Profile
                                         </Link>
                                         <Link
                                             to="/app/settings"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600 transition-colors"
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
                                             <Settings className="w-4 h-4" /> Settings
                                         </Link>
 
-                                        <div className="h-px bg-gray-100 my-2" />
+                                        <div className="h-px bg-white/10 my-2" />
 
                                         <button
                                             onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                                         >
                                             <LogOut className="w-4 h-4" /> Sign Out
                                         </button>
@@ -344,9 +346,9 @@ const Navbar = () => {
 
             {/* Mobile Menu Drawer */}
             {isMenuOpen && (
-                <div className="md:hidden border-t border-gray-200 bg-white absolute w-full shadow-lg z-50">
-                    <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 overflow-hidden">
+                <div className="md:hidden border-t border-white/10 bg-[#101726] absolute w-full shadow-lg z-50">
+                    <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold border border-white/10 overflow-hidden">
                             {user?.profilePhoto ? (
                                 <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
                             ) : (
@@ -354,31 +356,31 @@ const Navbar = () => {
                             )}
                         </div>
                         <div>
-                            <p className="font-semibold text-gray-900">{user?.name}</p>
-                            <p className="text-xs text-gray-500">{user?.email}</p>
+                            <p className="font-semibold text-white">{user?.name}</p>
+                            <p className="text-xs text-[#8A90A2]">{user?.email}</p>
                         </div>
                     </div>
                     <div className="p-2 space-y-1">
                         <Link
                             to="/app/profile"
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
+                            className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
                             onClick={() => setIsMenuOpen(false)}
                         >
-                            <UserIcon className="w-5 h-5 text-gray-400" /> Profile
+                            <UserIcon className="w-5 h-5 text-[#8A90A2]" /> Profile
                         </Link>
                         <Link
                             to="/app/settings"
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
+                            className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
                             onClick={() => setIsMenuOpen(false)}
                         >
-                            <Settings className="w-5 h-5 text-gray-400" /> Settings
+                            <Settings className="w-5 h-5 text-[#8A90A2]" /> Settings
                         </Link>
                         <button
                             onClick={() => {
                                 handleLogout();
                                 setIsMenuOpen(false);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg"
+                            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg"
                         >
                             <LogOut className="w-5 h-5" /> Logout
                         </button>

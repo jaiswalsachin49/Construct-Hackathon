@@ -24,28 +24,36 @@ const MembersList = ({ communityId }) => {
   }, [communityId]);
 
   const filteredMembers = members.filter(member =>
-    member.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    member.userID?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const admins = filteredMembers.filter(m => m.role === 'admin');
-  const moderators = filteredMembers.filter(m => m.role === 'moderator');
-  const regularMembers = filteredMembers.filter(m => m.role === 'member' || !m.role);
+  let admins = [];
+  let moderators = [];
+  let regularMembers = [];
 
+useEffect(() => {
+  admins =searchQuery.length>0? filteredMembers.filter(m => m.role == 'admin') :members.filter(m => m.role == 'admin');
+  moderators = searchQuery.length>0? filteredMembers.filter(m => m.role == 'moderator') :members.filter(m => m.role == 'moderator');
+  regularMembers = searchQuery.length>0? filteredMembers.filter(m => m.role == 'member' || !m.role) :members.filter(m => m.role == 'member' || !m.role);
+
+}, [searchQuery]);
+
+  console.log(regularMembers)
   const MemberItem = ({ member }) => (
     <div
       data-testid={`member-${member._id}`}
       className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
     >
       <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-        {member.avatar ? (
-          <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full object-cover" />
+        {member.userId?.profilePhoto ? (
+          <img src={member.userId?.profilePhoto} alt={member.userId?.name} className="w-full h-full rounded-full object-cover" />
         ) : (
-          member.name?.charAt(0)?.toUpperCase() || 'U'
+          member.userId?.name?.charAt(0)?.toUpperCase() || 'U'
         )}
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h4 className="font-medium text-gray-900">{member.name}</h4>
+          <h4 className="font-medium text-gray-900">{member.userId?.name}</h4>
           {member.role === 'admin' && (
             <Crown className="w-4 h-4 text-yellow-500" title="Admin" />
           )}

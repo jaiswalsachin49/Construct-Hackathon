@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 import useAuthStore from '../../store/authStore';
@@ -23,6 +23,17 @@ const ChatPage = () => {
     } = useChat();
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const containerRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -95,9 +106,23 @@ const ChatPage = () => {
 
     // Desktop: show both panels
     return (
-        <div className="h-[calc(100vh-8rem)] flex bg-white rounded-lg shadow-md overflow-hidden">
+        <div
+            ref={containerRef}
+            onMouseMove={handleMouseMove}
+            className="h-[calc(100vh-8rem)] flex bg-white/5 rounded-lg shadow-md overflow-hidden border border-white/10 backdrop-blur-xl relative group"
+            style={{
+                background: `
+                    radial-gradient(
+                        400px circle at ${mousePosition.x}px ${mousePosition.y}px, 
+                        rgba(0, 196, 255, 0.08),
+                        transparent 40%
+                    ),
+                    rgba(255, 255, 255, 0.05)
+                `
+            }}
+        >
             {/* Conversations List */}
-            <div className="w-80 border-r border-gray-200">
+            <div className="w-80 border-r border-white/10">
                 <ConversationList
                     conversations={conversations}
                     currentConversationId={currentConversation}

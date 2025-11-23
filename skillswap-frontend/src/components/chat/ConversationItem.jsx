@@ -53,9 +53,9 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
         <div
             onClick={onClick}
             className={`
-        flex items-center gap-3 p-4 cursor-pointer transition-colors
-        ${isActive ? 'bg-pink-50 border-l-4 border-pink-600' : 'hover:bg-gray-50'}
-        ${unreadCount > 0 ? 'bg-pink-50/30' : ''}
+        flex items-center gap-3 p-4 cursor-pointer transition-colors border-b border-white/5
+        ${isActive ? 'bg-white/10 border-l-4 border-[#00C4FF]' : 'hover:bg-white/5 border-l-4 border-transparent'}
+        ${unreadCount > 0 ? 'bg-white/5' : ''}
       `}
         >
             {/* Avatar */}
@@ -90,36 +90,36 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
                 </div>
                 {/* Online Indicator */}
                 {isOnline && (
-                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-white rounded-full pointer-events-none" />
+                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-[#00F5A0] border-2 border-[#101726] rounded-full pointer-events-none" />
                 )}
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-                    <h3 className={`font-semibold text-gray-900 truncate ${unreadCount > 0 ? 'font-bold' : ''
+                    <h3 className={`font-semibold truncate ${unreadCount > 0 ? 'text-white font-bold' : 'text-[#E6E9EF]'
                         }`}>
                         {otherUser?.name || 'Unknown User'}
                     </h3>
-                    <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                    <span className="text-xs text-[#8A90A2] ml-2 flex-shrink-0">
                         {formatTimestamp(lastMessage?.timestamp)}
                     </span>
                 </div>
                 <div className="flex items-center justify-between">
-                    <p className={`text-sm truncate ${unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-600'
+                    <p className={`text-sm truncate ${unreadCount > 0 ? 'text-white font-medium' : 'text-[#8A90A2]'
                         }`}>
                         {isSentByMe && 'You: '}
                         {truncateText(lastMessage?.content || 'No messages yet')}
                     </p>
                     {/* Unread Badge */}
                     {unreadCount > 0 && (
-                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-pink-600 text-white text-xs font-bold rounded-full">
+                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-[#00C4FF] text-black text-xs font-bold rounded-full">
                             {unreadCount}
                         </span>
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

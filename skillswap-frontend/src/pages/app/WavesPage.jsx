@@ -24,7 +24,7 @@ const WavesPage = () => {
     const { user } = useAuthStore();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    
+
     // Viewer State
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [viewerWaves, setViewerWaves] = useState([]);
@@ -45,11 +45,11 @@ const WavesPage = () => {
     const handleViewWave = (wave, sourceList) => {
         // 1. Set the list of waves to view (so user can swipe next/prev)
         setViewerWaves(sourceList);
-        
+
         // 2. Find the index of the clicked wave
         const index = sourceList.findIndex(w => w._id === wave._id);
         setViewerInitialIndex(index !== -1 ? index : 0);
-        
+
         // 3. Open Modal
         setIsViewerOpen(true);
     };
@@ -66,8 +66,8 @@ const WavesPage = () => {
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <Zap className="text-yellow-500 fill-current" /> Waves
+                <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <Zap className="text-[#00C4FF] fill-current" /> Waves
                 </h1>
                 <Button variant="warm" onClick={() => setIsCreateModalOpen(true)}>
                     <Plus className="w-5 h-5 mr-2" />
@@ -77,16 +77,16 @@ const WavesPage = () => {
 
             {/* My Story Section */}
             <div>
-                <h2 className="text-lg font-semibold text-gray-700 mb-4">Your Story</h2>
+                <h2 className="text-lg font-semibold text-[#E6E9EF] mb-4">Your Story</h2>
                 {activeMyWaves.length === 0 ? (
-                    <div 
+                    <div
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="w-32 h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="w-32 h-48 bg-white/5 rounded-xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:bg-white/10 transition-colors"
                     >
-                        <div className="bg-pink-100 p-3 rounded-full mb-2">
-                            <Plus className="w-6 h-6 text-pink-600" />
+                        <div className="bg-[#00C4FF]/10 p-3 rounded-full mb-2">
+                            <Plus className="w-6 h-6 text-[#00C4FF]" />
                         </div>
-                        <span className="text-sm font-medium text-gray-600">Add to Story</span>
+                        <span className="text-sm font-medium text-[#8A90A2]">Add to Story</span>
                     </div>
                 ) : (
                     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -100,7 +100,7 @@ const WavesPage = () => {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if(window.confirm('Delete this wave?')) deleteWave(wave._id);
+                                        if (window.confirm('Delete this wave?')) deleteWave(wave._id);
                                     }}
                                     className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                                 >
@@ -109,11 +109,11 @@ const WavesPage = () => {
                             </div>
                         ))}
                         {/* Add More Button */}
-                        <div 
+                        <div
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="w-32 h-48 flex-shrink-0 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                            className="w-32 h-48 flex-shrink-0 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10"
                         >
-                            <Plus className="w-8 h-8 text-gray-400" />
+                            <Plus className="w-8 h-8 text-[#8A90A2]" />
                         </div>
                     </div>
                 )}
@@ -121,13 +121,13 @@ const WavesPage = () => {
 
             {/* Allies Waves */}
             <div>
-                <h2 className="text-lg font-semibold text-gray-700 mb-4">Updates from Allies</h2>
+                <h2 className="text-lg font-semibold text-[#E6E9EF] mb-4">Updates from Allies</h2>
                 {activeAlliesWaves.length === 0 ? (
-                    <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-                        <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Zap className="w-8 h-8 text-gray-300" />
+                    <div className="text-center py-12 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+                        <div className="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Zap className="w-8 h-8 text-[#8A90A2]" />
                         </div>
-                        <p className="text-gray-500">No recent updates from your allies.</p>
+                        <p className="text-[#8A90A2]">No recent updates from your allies.</p>
                     </div>
                 ) : (
                     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">

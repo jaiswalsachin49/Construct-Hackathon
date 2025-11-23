@@ -25,13 +25,13 @@ const DashboardLayout = () => {
     }, [isAuthenticated]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-[#0A0F1F] via-[#101726] to-[#0A0F1F] text-[#E6E9EF]">
             {/* Top Navbar */}
             <Navbar />
 
             <div className="flex">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+                <aside className="hidden lg:block w-64 bg-white/5 border-r border-white/10 backdrop-blur-xl sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
                     <nav className="p-4 space-y-1">
                         {navItems.map((item) => (
                             <NavLink
@@ -39,8 +39,8 @@ const DashboardLayout = () => {
                                 to={item.to}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-pink-50 text-pink-600'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        ? 'bg-white/10 text-[#00C4FF] border border-white/5'
+                                        : 'text-[#8A90A2] hover:bg-white/5 hover:text-[#E6E9EF]'
                                     }`
                                 }
                             >
@@ -60,14 +60,14 @@ const DashboardLayout = () => {
             </div>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-pink border-t border-pink-200 z-40">
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#101726]/90 backdrop-blur-xl border-t border-white/10 z-40">
                 <div className="flex justify-around items-center h-16">
                     {navItems.slice(0, 5).map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-pink-600' : 'text-gray-600'
+                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-[#00C4FF]' : 'text-[#8A90A2]'
                                 }`
                             }
                         >

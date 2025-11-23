@@ -19,7 +19,7 @@ const Input = ({
     return (
         <div className={`w-full ${className}`}>
             {label && (
-                <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor={name} className="block text-sm font-medium text-[#E6E9EF] mb-1">
                     {label}
                     {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
@@ -27,7 +27,7 @@ const Input = ({
             <div className="relative">
                 {Icon && iconPosition === 'left' && (
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon className="h-5 w-5 text-gray-400" />
+                        <Icon className="h-5 w-5 text-[#8A90A2]" />
                     </div>
                 )}
                 <input
@@ -40,19 +40,19 @@ const Input = ({
                     disabled={disabled}
                     required={required}
                     className={`
-            block w-full rounded-lg border
+            block w-full rounded-lg border bg-[#101726]
             ${Icon && iconPosition === 'left' ? 'pl-10' : 'pl-3'}
             ${Icon && iconPosition === 'right' ? 'pr-10' : 'pr-3'}
-            py-2 text-gray-900 placeholder-gray-400
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? 'border-red-500' : 'border-gray-300'}
+            py-2 text-white placeholder-[#8A90A2]
+            focus:outline-none focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent
+            disabled:bg-white/5 disabled:cursor-not-allowed
+            ${error ? 'border-red-500' : 'border-white/10'}
           `}
                     {...props}
                 />
                 {Icon && iconPosition === 'right' && (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <Icon className="h-5 w-5 text-gray-400" />
+                        <Icon className="h-5 w-5 text-[#8A90A2]" />
                     </div>
                 )}
             </div>

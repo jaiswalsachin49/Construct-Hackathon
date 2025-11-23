@@ -85,14 +85,14 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col animate-in zoom-in-95 duration-200 relative">
+            <div className="bg-[#0A0F1F] border border-white/10 rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col animate-in zoom-in-95 duration-200 relative">
 
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-gray-100 z-10 transition-colors"
+                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-white/10 rounded-full z-10 transition-colors text-white"
                 >
-                    <X className="w-5 h-5 text-gray-500" />
+                    <X className="w-5 h-5" />
                 </button>
 
                 {isLoading ? (
@@ -112,7 +112,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                         {/* Profile Info */}
                         <div className="px-6 pb-6 -mt-12 flex-1">
                             <div className="flex justify-between items-end mb-4">
-                                <div className="w-24 h-24 bg-white rounded-full p-1 shadow-lg">
+                                <div className="w-24 h-24 bg-[#0A0F1F] rounded-full p-1 shadow-lg border border-white/10">
                                     <img
                                         src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=random`}
                                         alt={user.name}
@@ -121,17 +121,17 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                 </div>
                                 <div className="flex items-center gap-1 mb-2">
                                     <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                                    <span className="font-bold text-gray-900">{user.stats?.averageRating || 'New'}</span>
-                                    <span className="text-sm text-gray-500">({user.stats?.reviewCount || 0})</span>
+                                    <span className="font-bold text-white">{user.stats?.averageRating || 'New'}</span>
+                                    <span className="text-sm text-[#8A90A2]">({user.stats?.reviewCount || 0})</span>
                                 </div>
                             </div>
 
-                            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                                 {user.name}
-                                {user.isVerified && <CheckCircle className="w-5 h-5 text-pink-200" />}
+                                {user.isVerified && <CheckCircle className="w-5 h-5 text-[#00C4FF]" />}
                             </h2>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1 mb-4">
+                            <div className="flex items-center gap-4 text-sm text-[#8A90A2] mt-1 mb-4">
                                 {user.location?.areaLabel && (
                                     <div className="flex items-center gap-1">
                                         <MapPin className="w-4 h-4" />
@@ -145,7 +145,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                             </div>
 
                             {user.bio && (
-                                <p className="text-gray-700 mb-6 leading-relaxed">
+                                <p className="text-[#E6E9EF] mb-6 leading-relaxed">
                                     {user.bio}
                                 </p>
                             )}
@@ -153,33 +153,33 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                             {/* Skills Section */}
                             <div className="space-y-4 mb-8">
                                 <div>
-                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                    <h3 className="text-xs font-semibold text-[#8A90A2] uppercase tracking-wider mb-2">
                                         Teaching
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.teachTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-pink-80 text-pink-300 rounded-full text-sm font-medium border border-pink-200">
+                                            <span key={i} className="px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm font-medium border border-[#00C4FF]/20">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}
                                         {(!user.teachTags || user.teachTags.length === 0) && (
-                                            <span className="text-sm text-gray-400 italic">No skills listed</span>
+                                            <span className="text-sm text-[#8A90A2] italic">No skills listed</span>
                                         )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                    <h3 className="text-xs font-semibold text-[#8A90A2] uppercase tracking-wider mb-2">
                                         Learning
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.learnTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-yellow-80 text-yellow-500 rounded-full text-sm font-medium border border-yellow-200">
+                                            <span key={i} className="px-3 py-1 bg-[#7A3EF9]/10 text-[#7A3EF9] rounded-full text-sm font-medium border border-[#7A3EF9]/20">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}
                                         {(!user.learnTags || user.learnTags.length === 0) && (
-                                            <span className="text-sm text-gray-400 italic">No interests listed</span>
+                                            <span className="text-sm text-[#8A90A2] italic">No interests listed</span>
                                         )}
                                     </div>
                                 </div>
