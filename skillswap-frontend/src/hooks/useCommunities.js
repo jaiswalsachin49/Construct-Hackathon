@@ -119,6 +119,7 @@ export const useCommunities = () => {
     try {
       store.setError(null);
       const data = await getCommunityMembers(communityId);
+      // console.log(data.members)
       return data.members || [];
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch members';

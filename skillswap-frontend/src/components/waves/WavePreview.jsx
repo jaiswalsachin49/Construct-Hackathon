@@ -55,8 +55,8 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
                 {/* Ring */}
                 <div
                     className={`absolute -inset-1 rounded-full ${isViewed
-                            ? "bg-gray-300"
-                            : "bg-gradient-to-tr from-pink-500 to-purple-500"
+                        ? "bg-gray-300"
+                        : "bg-gradient-to-tr from-pink-500 to-purple-500"
                         } p-[2px]`}
                 >
                     <div className="bg-white rounded-full w-full h-full" />
@@ -102,12 +102,12 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
             </div>
 
             {/* Name */}
-            <p className="text-xs font-medium text-gray-900 mt-2 text-center truncate w-20">
+            <p className="text-xs font-medium text-white mt-2 text-center truncate w-20">
                 {waveUser.name || "Unknown"}
             </p>
 
             {/* Time */}
-            <p className="text-[10px] text-gray-500 text-center">
+            <p className="text-[10px] text-[#8A90A2] text-center">
                 {getTimeRemaining(wave.createdAt)}
             </p>
         </div>

@@ -85,7 +85,7 @@ const PostCard = ({ post }) => {
         : post.content;
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+        <div className="bg-white/5 rounded-lg shadow-md overflow-hidden mb-4 border border-white/10 backdrop-blur-xl">
             {/* Header */}
             <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -111,16 +111,16 @@ const PostCard = ({ post }) => {
                     <div>
                         <h4
                             onClick={() => navigate(`/app/profile/${post.user?._id}`)}
-                            className="font-semibold text-gray-900 cursor-pointer hover:underline"
+                            className="font-semibold text-white cursor-pointer hover:underline"
                         >
                             {post.user?.name || 'Unknown User'}
                         </h4>
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <div className="flex items-center gap-1 text-sm text-[#8A90A2]">
                             <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
                             {post.community && (
                                 <>
                                     <span>•</span>
-                                    <span className="text-blue-600">in {post.community.name}</span>
+                                    <span className="text-[#00C4FF]">in {post.community.name}</span>
                                 </>
                             )}
                         </div>
@@ -130,9 +130,9 @@ const PostCard = ({ post }) => {
                 <div className="relative">
                     <button
                         onClick={() => setShowMore(!showMore)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 hover:bg-white/10 rounded-full transition-colors"
                     >
-                        <MoreVertical className="h-5 w-5 text-gray-600" />
+                        <MoreVertical className="h-5 w-5 text-[#8A90A2]" />
                     </button>
 
                     {showMore && (
@@ -186,7 +186,7 @@ const PostCard = ({ post }) => {
 
             {/* Content */}
             <div className="px-4 pb-3">
-                <p className="text-gray-900 whitespace-pre-wrap break-words">
+                <p className="text-[#E6E9EF] whitespace-pre-wrap break-words">
                     {displayContent}
                 </p>
                 {shouldTruncate && (
@@ -201,7 +201,7 @@ const PostCard = ({ post }) => {
                 {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                         {post.tags.map((tag, index) => (
-                            <span key={index} className="text-blue-600 text-sm">
+                            <span key={index} className="text-[#00C4FF] text-sm">
                                 #{tag}
                             </span>
                         ))}
@@ -235,7 +235,7 @@ const PostCard = ({ post }) => {
             )}
 
             {/* Stats */}
-            <div className="px-4 py-2 flex items-center justify-between text-sm text-gray-600 border-t border-gray-100">
+            <div className="px-4 py-2 flex items-center justify-between text-sm text-[#8A90A2] border-t border-white/10">
                 <span>{post.likes?.length || 0} likes</span>
                 <div className="flex gap-3">
                     <span>{post.comments?.length || 0} comments</span>
@@ -244,10 +244,10 @@ const PostCard = ({ post }) => {
             </div>
 
             {/* Actions */}
-            <div className="px-4 py-2 flex items-center justify-around border-t border-gray-100">
+            <div className="px-4 py-2 flex items-center justify-around border-t border-white/10">
                 <button
                     onClick={handleLike}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors ${isLiked ? 'text-red-600' : 'text-gray-600'
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors ${isLiked ? 'text-red-500' : 'text-[#8A90A2]'
                         }`}
                 >
                     <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
@@ -256,7 +256,7 @@ const PostCard = ({ post }) => {
 
                 <button
                     onClick={() => setShowComments(!showComments)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-[#8A90A2]"
                 >
                     <MessageCircle className="h-5 w-5" />
                     <span className="text-sm font-medium">Comment</span>
@@ -264,7 +264,7 @@ const PostCard = ({ post }) => {
 
                 <button
                     onClick={handleShare}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-[#8A90A2]"
                 >
                     <Share2 className="h-5 w-5" />
                     <span className="text-sm font-medium">Share</span>
@@ -273,7 +273,7 @@ const PostCard = ({ post }) => {
 
             {/* Comments Section */}
             {showComments && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 border-t border-white/10">
                     <div className="space-y-3 mt-3">
                         {post.comments?.slice(0, 2).map((comment) => (
                             <div key={comment._id} className="flex gap-2">
@@ -285,19 +285,19 @@ const PostCard = ({ post }) => {
                                             className="h-8 w-8 rounded-full object-cover"
                                         />
                                     ) : (
-                                        <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span className="text-xs font-semibold text-gray-600">
+                                        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
+                                            <span className="text-xs font-semibold text-[#E6E9EF]">
                                                 {getInitials(comment.user?.name)}
                                             </span>
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="bg-gray-100 rounded-lg px-3 py-2">
-                                        <p className="font-semibold text-sm">{comment.user?.name}</p>
-                                        <p className="text-sm text-gray-900">{comment.content}</p>
+                                    <div className="bg-white/5 rounded-lg px-3 py-2">
+                                        <p className="font-semibold text-sm text-white">{comment.user?.name}</p>
+                                        <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1 ml-3">
+                                    <p className="text-xs text-[#8A90A2] mt-1 ml-3">
                                         {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                                     </p>
                                 </div>
@@ -335,7 +335,7 @@ const PostCard = ({ post }) => {
                                 onChange={(e) => setCommentText(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                                 placeholder="Add a comment..."
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex-1 px-3 py-2 bg-[#101726] border border-white/10 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
                                 disabled={isAddingComment}
                             />
                             <button

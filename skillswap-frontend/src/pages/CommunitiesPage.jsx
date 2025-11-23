@@ -72,16 +72,16 @@ const CommunitiesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/5 border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Communities</h1>
+            <h1 className="text-3xl font-bold text-white">Communities</h1>
             <button
               data-testid="create-community-button"
               onClick={() => navigate('/app/communities/create')}
-              className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black px-4 py-2 rounded-lg font-semibold transition-all"
             >
               <Plus className="w-5 h-5" />
               Create
@@ -94,17 +94,17 @@ const CommunitiesPage = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-red-500/10 border border-red-500/40 text-red-400 px-4 py-3 rounded-lg">
             {error}
           </div>
         )}
 
         {/* My Communities Section */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             My Communities ({myCommunities.length})
           </h2>
-          
+
           {myCommunities.length > 0 ? (
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {myCommunities.filter(c => c && c._id).map((community) => (
@@ -115,11 +115,11 @@ const CommunitiesPage = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-              <p className="text-gray-500 mb-4">You haven't joined any communities yet</p>
+            <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center backdrop-blur-sm">
+              <p className="text-[#8A90A2] mb-4">You haven't joined any communities yet</p>
               <button
                 onClick={() => document.getElementById('discover-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-pink-500 hover:text-pink-600 font-medium"
+                className="text-[#00C4FF] hover:text-[#00F5A0] font-medium transition-colors"
               >
                 Discover communities →
               </button>
@@ -129,23 +129,23 @@ const CommunitiesPage = () => {
 
         {/* Discover Communities Section */}
         <div id="discover-section">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Discover Communities
           </h2>
 
           {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6 backdrop-blur-sm">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8A90A2] w-5 h-5" />
                 <input
                   data-testid="search-input"
                   type="text"
                   placeholder="Search communities..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent focus:outline-none"
                 />
               </div>
 
@@ -155,7 +155,7 @@ const CommunitiesPage = () => {
                   data-testid="category-select"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent focus:outline-none"
                 >
                   <option value="">All Categories</option>
                   <option value="tech">Technology</option>
@@ -170,7 +170,7 @@ const CommunitiesPage = () => {
 
               {/* Distance */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
                   Distance: {radius} km
                 </label>
                 <input
@@ -180,7 +180,7 @@ const CommunitiesPage = () => {
                   max={50}
                   value={radius}
                   onChange={(e) => setRadius(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  className="w-full h-2 bg-[#101726] rounded-lg appearance-none cursor-pointer slider"
                 />
               </div>
             </div>
@@ -190,12 +190,12 @@ const CommunitiesPage = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm h-80 animate-pulse">
-                  <div className="h-32 bg-gray-200"></div>
+                <div key={i} className="bg-white/5 rounded-lg shadow-sm h-80 animate-pulse border border-white/10">
+                  <div className="h-32 bg-white/10"></div>
                   <div className="p-4 space-y-3">
-                    <div className="h-6 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-6 bg-white/10 rounded"></div>
+                    <div className="h-4 bg-white/10 rounded w-3/4"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/2"></div>
                   </div>
                 </div>
               ))}
@@ -211,8 +211,8 @@ const CommunitiesPage = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <p className="text-gray-500 text-lg">
+            <div className="bg-white/5 border border-white/10 rounded-lg p-12 text-center backdrop-blur-sm">
+              <p className="text-[#8A90A2] text-lg">
                 {search || category
                   ? 'No communities found matching your filters'
                   : 'No nearby communities found'}
@@ -223,7 +223,7 @@ const CommunitiesPage = () => {
                     setSearch('');
                     setCategory('');
                   }}
-                  className="mt-4 text-pink-500 hover:text-pink-600 font-medium"
+                  className="mt-4 text-[#00C4FF] hover:text-[#00F5A0] font-medium transition-colors"
                 >
                   Clear filters
                 </button>
@@ -246,16 +246,18 @@ const CommunitiesPage = () => {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #ec4899;
+          background: #00C4FF;
           cursor: pointer;
+          box-shadow: 0 0 10px rgba(0, 196, 255, 0.5);
         }
         .slider::-moz-range-thumb {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #ec4899;
+          background: #00C4FF;
           cursor: pointer;
           border: none;
+          box-shadow: 0 0 10px rgba(0, 196, 255, 0.5);
         }
       `}</style>
     </div>

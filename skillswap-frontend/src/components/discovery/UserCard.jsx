@@ -5,7 +5,7 @@ import Button from '../common/Button';
 
 const UserCard = ({ user, onConnect, onViewProfile }) => {
     const [isConnecting, setIsConnecting] = useState(false);
-    
+
     // State to track the button status: 'none', 'pending', 'connected'
     const [status, setStatus] = useState('none');
 
@@ -34,16 +34,16 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
     };
 
     const getMatchColor = (score) => {
-        if (score >= 80) return 'text-green-700 bg-green-50 border-green-200';
-        if (score >= 60) return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-        return 'text-gray-700 bg-gray-50 border-gray-200';
+        if (score >= 80) return 'text-[#00F5A0] bg-[#00F5A0]/10 border-[#00F5A0]/20';
+        if (score >= 60) return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+        return 'text-[#8A90A2] bg-white/5 border-white/10';
     };
 
     const matchReason = user.matchReason || (user.matchScore >= 80 ? "High compatibility!" : null);
 
     return (
         <div
-            className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full"
+            className="bg-white/5 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border border-white/10 flex flex-col h-full backdrop-blur-sm"
             onClick={() => onViewProfile(user._id)}
         >
             <div className="p-5 flex flex-col h-full">
@@ -54,26 +54,26 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                             <img
                                 src={user.profilePhoto}
                                 alt={user.name}
-                                className="h-16 w-16 rounded-full object-cover border border-gray-200"
+                                className="h-16 w-16 rounded-full object-cover border border-white/10"
                             />
                         ) : (
-                            <div className="h-16 w-16 rounded-full bg-gradient-to-br  from-pink-200 to-orange-100  flex items-center justify-center text-white font-bold text-xl">
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] flex items-center justify-center text-white font-bold text-xl">
                                 {getInitials(user.name)}
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-gray-900 truncate">{user.name}</h3>
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <h3 className="text-lg font-bold text-white truncate">{user.name}</h3>
+                        <div className="flex items-center gap-1 text-sm text-[#8A90A2]">
                             <MapPin className="h-3.5 w-3.5" />
                             <span className="truncate">{user.areaLabel || formatDistance(user.distance)}</span>
                         </div>
                         {user.rating && user.rating.count > 0 && (
                             <div className="flex items-center gap-1 mt-1">
                                 <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
-                                <span className="text-sm font-medium text-gray-700">{user.rating.average}</span>
-                                <span className="text-xs text-gray-400">({user.rating.count})</span>
+                                <span className="text-sm font-medium text-[#E6E9EF]">{user.rating.average}</span>
+                                <span className="text-xs text-[#8A90A2]">({user.rating.count})</span>
                             </div>
                         )}
                     </div>
@@ -81,9 +81,9 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
 
                 {/* Match Reason */}
                 {matchReason && (
-                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-pink-50 to-orange-50 rounded-lg border border-pink-100 flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-pink-500 flex-shrink-0" />
-                        <p className="text-xs font-medium text-pink-700 line-clamp-1">
+                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#7A3EF9]/10 rounded-lg border border-[#00C4FF]/20 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-[#00C4FF] flex-shrink-0" />
+                        <p className="text-xs font-medium text-[#00C4FF] line-clamp-1">
                             {matchReason}
                         </p>
                     </div>
@@ -102,10 +102,10 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                 <div className="flex-1 space-y-3 mb-4">
                     {user.teachTags?.length > 0 && (
                         <div>
-                            <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1.5">Teaches</p>
+                            <p className="text-[10px] uppercase tracking-wider text-[#8A90A2] font-semibold mb-1.5">Teaches</p>
                             <div className="flex flex-wrap gap-1.5">
                                 {user.teachTags.slice(0, 3).map((tag, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-pink-50 text-pink-700 border border-pink-100 rounded text-xs font-medium">
+                                    <span key={i} className="px-2 py-0.5 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded text-xs font-medium">
                                         {tag.name || tag}
                                     </span>
                                 ))}

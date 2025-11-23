@@ -72,9 +72,9 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     // ... (Keep your existing header helpers) ...
 
     return (
-        <div className="flex flex-col h-full bg-gray-50">
+        <div className="flex flex-col h-full bg-transparent">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 shadow-sm z-10">
+            <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10 shadow-sm z-10 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
                     {onBack && (
                         <button onClick={onBack} className="lg:hidden p-2 hover:bg-gray-100 rounded-full text-gray-600">
@@ -93,7 +93,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         >
                             <img
                                 src={conversation?.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conversation?.otherUser?.name}`}
-                                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                className="w-10 h-10 rounded-full object-cover border border-white/10"
                                 alt=""
                             />
                         </div>
@@ -101,10 +101,10 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-gray-900 leading-none">
+                        <h3 className="font-bold text-white leading-none">
                             {conversation?.otherUser?.name || 'Unknown User'}
                         </h3>
-                        <p className={`text-xs font-medium mt-1 ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                        <p className={`text-xs font-medium mt-1 ${isOnline ? 'text-[#00F5A0]' : 'text-[#8A90A2]'}`}>
                             {isOnline ? 'Online' : 'Offline'}
                         </p>
                     </div>
@@ -135,7 +135,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                     <div className="relative">
                         <button
                             onClick={() => setShowMenu(!showMenu)}
-                            className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                            className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         >
                             <MoreVertical className="h-5 w-5" />
                         </button>
@@ -175,7 +175,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
             {/* Messages Area */}
             <div
                 ref={messageContainerRef}
-                className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+                className="flex-1 overflow-y-auto p-4 space-y-4 bg-transparent"
             >
                 {messages.map((msg, index) => {
                     // Date Separators
@@ -185,7 +185,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         <React.Fragment key={msg._id || index}>
                             {showDate && (
                                 <div className="flex justify-center my-4">
-                                    <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full font-medium">
+                                    <span className="bg-white/10 text-[#8A90A2] text-xs px-3 py-1 rounded-full font-medium">
                                         {formatDateSeparator(msg.timestamp)}
                                     </span>
                                 </div>
@@ -204,9 +204,9 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-white border-t border-gray-200">
-                <div className="flex items-end gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400 transition-all">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-colors">
+            <div className="p-4 bg-white/5 border-t border-white/10 backdrop-blur-xl">
+                <div className="flex items-end gap-2 bg-[#101726] p-2 rounded-2xl border border-white/10 focus-within:border-[#00C4FF] focus-within:ring-1 focus-within:ring-[#00C4FF] transition-all">
+                    <button className="p-2 text-[#8A90A2] hover:text-white hover:bg-white/10 rounded-full transition-colors">
                         <Paperclip className="h-5 w-5" />
                     </button>
 
@@ -217,7 +217,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         onKeyDown={handleKeyPress}
                         onInput={handleTyping}
                         placeholder="Type a message..."
-                        className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 py-2.5 text-gray-900 placeholder-gray-500"
+                        className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 py-2.5 text-white placeholder-[#8A90A2]"
                         rows={1}
                         style={{ minHeight: '44px', outline: 'none' }}
                     />
@@ -253,8 +253,6 @@ ChatWindow.propTypes = {
     messages: PropTypes.array.isRequired,
     onSendMessage: PropTypes.func.isRequired,
     isTyping: PropTypes.bool,
-    currentUserId: PropTypes.string,
-    currentUserId: PropTypes.string,
     currentUserId: PropTypes.string,
     onBack: PropTypes.func,
     onlineUsers: PropTypes.array,

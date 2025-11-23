@@ -27,8 +27,8 @@ const Card = ({
     return (
         <div
             className={`
-        bg-white rounded-lg
-        ${border ? 'border border-gray-200' : ''}
+        bg-white/5 rounded-lg backdrop-blur-xl
+        ${border ? 'border border-white/10' : ''}
         ${shadowClasses[shadow]}
         ${className}
       `}

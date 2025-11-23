@@ -114,14 +114,14 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0A0F1F] border border-white/10 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Create Community</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">Create Community</h2>
           <button
             data-testid="close-modal-button"
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-[#8A90A2] hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -131,7 +131,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Cover Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Cover Image
             </label>
             <input
@@ -144,7 +144,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
             <div
               data-testid="cover-upload-area"
               onClick={() => coverInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-lg h-40 cursor-pointer hover:border-blue-500 transition-colors overflow-hidden"
+              className="border-2 border-dashed border-white/20 rounded-lg h-40 cursor-pointer hover:border-[#00C4FF] transition-colors overflow-hidden bg-white/5"
             >
               {coverPreview ? (
                 <img
@@ -153,7 +153,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <div className="flex flex-col items-center justify-center h-full text-[#8A90A2]">
                   <Upload className="w-12 h-12 mb-2" />
                   <p className="text-sm">Click to upload cover image</p>
                 </div>
@@ -163,7 +163,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
 
           {/* Community Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Community Name *
             </label>
             <input
@@ -173,15 +173,15 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter community name"
               maxLength={50}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">{50 - name.length} characters remaining</p>
+            <p className="text-xs text-[#8A90A2] mt-1">{50 - name.length} characters remaining</p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Description *
             </label>
             <textarea
@@ -191,22 +191,22 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               placeholder="What is this community about?"
               maxLength={500}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent resize-none"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">{500 - description.length} characters remaining</p>
+            <p className="text-xs text-[#8A90A2] mt-1">{500 - description.length} characters remaining</p>
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Category *
             </label>
             <select
               data-testid="modal-category-select"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
               required
             >
               <option value="">Select category</option>
@@ -222,7 +222,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Tags (optional)
             </label>
             <input
@@ -233,20 +233,20 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               onKeyPress={handleTagKeyPress}
               placeholder="Add tags and press Enter"
               disabled={tags.length >= 5}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-white/5"
             />
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm border border-[#00C4FF]/20"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="hover:text-blue-800"
+                      className="hover:text-[#00C4FF]/80"
                     >
                       ×
                     </button>
@@ -254,12 +254,12 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                 ))}
               </div>
             )}
-            <p className="text-xs text-gray-500 mt-1">Max 5 tags ({tags.length}/5)</p>
+            <p className="text-xs text-[#8A90A2] mt-1">Max 5 tags ({tags.length}/5)</p>
           </div>
 
           {/* Location */}
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Location *
             </label>
             <input
@@ -271,18 +271,18 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                 handleLocationSearch(e.target.value);
               }}
               placeholder="Search for location..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
             />
 
             {/* Location Suggestions */}
             {locationSuggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-10 w-full mt-1 bg-[#101726] border border-white/10 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                 {locationSuggestions.map((place) => (
                   <button
                     key={place.place_id}
                     type="button"
                     onClick={() => selectLocation(place)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 last:border-0"
+                    className="w-full px-4 py-2 text-left text-[#E6E9EF] hover:bg-white/10 flex items-center gap-2 border-b border-white/10 last:border-0"
                   >
                     📍 <span className="truncate">{place.display_name}</span>
                   </button>
@@ -291,15 +291,15 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
             )}
 
             {selectedLocation && (
-              <div className="mt-2 p-3 bg-blue-50 rounded-lg flex items-center gap-2">
-                📍 <span className="text-blue-900 font-medium">{selectedLocation.areaLabel}</span>
+              <div className="mt-2 p-3 bg-[#00C4FF]/10 border border-[#00C4FF]/20 rounded-lg flex items-center gap-2">
+                📍 <span className="text-[#00C4FF] font-medium">{selectedLocation.areaLabel}</span>
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedLocation(null);
                     setLocationInput('');
                   }}
-                  className="ml-auto text-blue-400 hover:text-blue-600"
+                  className="ml-auto text-[#00C4FF]/60 hover:text-[#00C4FF]"
                 >
                   ×
                 </button>
@@ -309,7 +309,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-3">
               Visibility
             </label>
             <div className="space-y-2">
@@ -320,11 +320,11 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                   name="visibility"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
-                  className="w-4 h-4 text-blue-500"
+                  className="w-4 h-4 text-[#00C4FF] bg-[#101726] border-white/10"
                 />
                 <div>
-                  <div className="font-medium text-gray-900">Public</div>
-                  <div className="text-sm text-gray-500">Anyone can join</div>
+                  <div className="font-medium text-white">Public</div>
+                  <div className="text-sm text-[#8A90A2]">Anyone can join</div>
                 </div>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
@@ -334,22 +334,22 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                   name="visibility"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
-                  className="w-4 h-4 text-blue-500"
+                  className="w-4 h-4 text-[#00C4FF] bg-[#101726] border-white/10"
                 />
                 <div>
-                  <div className="font-medium text-gray-900">Private</div>
-                  <div className="text-sm text-gray-500">Invite only</div>
+                  <div className="font-medium text-white">Private</div>
+                  <div className="text-sm text-[#8A90A2]">Invite only</div>
                 </div>
               </label>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 pt-4 border-t border-white/10">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+              className="flex-1 px-6 py-2 border border-white/10 hover:bg-white/5 rounded-lg font-medium transition-colors text-[#E6E9EF]"
             >
               Cancel
             </button>
@@ -357,7 +357,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               data-testid="create-button"
               type="submit"
               disabled={!canSubmit || isLoading}
-              className="flex-1 px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-colors"
             >
               {isLoading ? 'Creating...' : 'Create Community'}
             </button>

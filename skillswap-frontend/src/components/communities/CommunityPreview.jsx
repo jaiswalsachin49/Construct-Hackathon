@@ -5,6 +5,7 @@ const CommunityPreview = ({ community, onClick }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    // console.log("Community clicked:", community);
     if (onClick) {
       onClick();
     } else {
@@ -37,7 +38,7 @@ const CommunityPreview = ({ community, onClick }) => {
           {community.name}
         </h3>
         <p className="text-xs text-gray-600">
-          {community.memberCount || 0} members
+          {community.members.length || 0} members
         </p>
       </div>
     </div>

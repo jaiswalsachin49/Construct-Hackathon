@@ -93,14 +93,14 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
         try {
             // Pass setUploadProgress as the last argument
             await createWave(
-                file, 
-                activeTab, 
-                caption, 
-                textContent, 
-                backgroundColor, 
-                (percent) => setUploadProgress(percent) 
+                file,
+                activeTab,
+                caption,
+                textContent,
+                backgroundColor,
+                (percent) => setUploadProgress(percent)
             );
-            
+
             onClose();
             // Reset state
             setFile(null);
@@ -114,7 +114,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
             setIsUploading(false);
         }
     };
-    
+
     const handleClose = () => {
         if (!isUploading) {
             setFile(null);
@@ -131,12 +131,12 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
         <Modal isOpen={isOpen} onClose={handleClose} size="lg" title="Create Wave">
             <div className="space-y-4">
                 {/* Tabs */}
-                <div className="flex gap-2 border-b border-gray-200">
+                <div className="flex gap-2 border-b border-white/10">
                     <button
                         onClick={() => setActiveTab('photo')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'photo'
-                                ? 'border-pink-600 text-pink-600'
-                                : 'border-transparent text-gray-600 hover:text-gray-900'
+                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
                         <Image className="h-5 w-5" />
@@ -145,8 +145,8 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={() => setActiveTab('video')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'video'
-                                ? 'border-pink-600 text-pink-600'
-                                : 'border-transparent text-gray-600 hover:text-gray-900'
+                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
                         <Video className="h-5 w-5" />
@@ -155,8 +155,8 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={() => setActiveTab('text')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'text'
-                                ? 'border-pink-600 text-pink-600'
-                                : 'border-transparent text-gray-600 hover:text-gray-900'
+                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
                         <Type className="h-5 w-5" />
@@ -201,13 +201,13 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-pink-500 transition-colors"
+                                    className="border-2 border-dashed border-white/20 rounded-lg p-12 text-center cursor-pointer hover:border-[#00C4FF] transition-colors bg-white/5"
                                 >
-                                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                    <p className="text-gray-600 mb-2">
+                                    <Upload className="h-12 w-12 text-[#8A90A2] mx-auto mb-4" />
+                                    <p className="text-[#E6E9EF] mb-2">
                                         Click to upload or drag and drop
                                     </p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-sm text-[#8A90A2]">
                                         {activeTab === 'photo'
                                             ? 'PNG, JPG up to 5MB'
                                             : 'MP4, MOV up to 20MB, max 15 seconds'}
@@ -234,10 +234,10 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                                 placeholder="Type your text..."
                                 rows={6}
                                 maxLength={200}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
                             />
                             <div className="flex items-center justify-between">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-[#8A90A2]">
                                     {textContent.length} / 200 characters
                                 </p>
                             </div>
@@ -253,8 +253,8 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                                             key={color.value}
                                             onClick={() => setBackgroundColor(color.value)}
                                             className={`h-10 w-10 rounded-full border-2 transition-all ${backgroundColor === color.value
-                                                    ? 'border-gray-900 scale-110'
-                                                    : 'border-gray-300'
+                                                ? 'border-gray-900 scale-110'
+                                                : 'border-gray-300'
                                                 }`}
                                             style={{ backgroundColor: color.value }}
                                             title={color.name}
@@ -285,7 +285,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
 
                 {/* Caption */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
                         Caption (Optional)
                     </label>
                     <input
@@ -294,9 +294,9 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                         onChange={(e) => setCaption(e.target.value.slice(0, 100))}
                         placeholder="Add a caption..."
                         maxLength={100}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[#8A90A2] mt-1">
                         {caption.length} / 100 characters
                     </p>
                 </div>
@@ -345,7 +345,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     </Button>
                 </div>
             </div>
-        </Modal>
+        </Modal >
     );
 };
 

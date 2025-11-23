@@ -5,12 +5,15 @@ import { useCommunities } from '../hooks/useCommunities';
 import CommunityPosts from '../components/communities/CommunityPosts';
 import CommunityChat from '../components/communities/CommunityChat';
 import MembersList from '../components/communities/MembersList';
+import { useAuth } from '../hooks/useAuth';
 
 const CommunityDetailPage = () => {
   const { communityId } = useParams();
+
   const navigate = useNavigate();
   const { currentCommunity, fetchCommunity, joinCommunity, leaveCommunity, isLoading } = useCommunities();
-  
+  const currentUserId = useAuth().user._id;
+
   const [activeTab, setActiveTab] = useState('posts');
   const [isMember, setIsMember] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -46,8 +49,15 @@ const CommunityDetailPage = () => {
   useEffect(() => {
     if (currentCommunity) {
       // Check if user is member/admin (mock for now)
-      setIsMember(currentCommunity.isMember || false);
-      setIsAdmin(currentCommunity.isAdmin || false);
+      let state = false;
+      for (let i = 0; i < currentCommunity.members.length; i++) {
+        if (currentCommunity.members[i].userId._id === currentUserId) {
+          state = true;
+          break;
+        }
+      }
+      setIsMember(state);
+      setIsAdmin(currentCommunity.admins?.includes(currentUserId) || false);
     }
   }, [currentCommunity]);
 
@@ -86,10 +96,10 @@ const CommunityDetailPage = () => {
 
   if (isLoading || (!currentCommunity && !loadError)) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading community...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C4FF] mx-auto mb-4"></div>
+          <p className="text-[#8A90A2]">Loading community...</p>
         </div>
       </div>
     );
@@ -97,12 +107,12 @@ const CommunityDetailPage = () => {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 font-semibold mb-2">{loadError}</p>
+          <p className="text-red-400 font-semibold mb-2">{loadError}</p>
           <button
             onClick={() => navigate('/app/communities')}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            className="px-4 py-2 bg-[#00C4FF] text-black font-semibold rounded-lg"
           >
             Back to Communities
           </button>
@@ -112,14 +122,14 @@ const CommunityDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-transparent">
       {/* Back Button */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/5 border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 py-3">
           <button
             data-testid="back-button"
             onClick={() => navigate('/app/communities')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-[#8A90A2] hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Communities
@@ -128,7 +138,7 @@ const CommunityDetailPage = () => {
       </div>
 
       {/* Community Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/5 border-b border-white/10 backdrop-blur-xl">
         {/* Cover Image */}
         <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500 relative">
           {currentCommunity.coverImage ? (
@@ -146,18 +156,18 @@ const CommunityDetailPage = () => {
 
         {/* Info Section */}
         <div className="max-w-6xl mx-auto px-6 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             {currentCommunity.name}
           </h1>
-          <p className="text-gray-600 mb-4 max-w-3xl">
+          <p className="text-[#E6E9EF] mb-4 max-w-3xl">
             {currentCommunity.description}
           </p>
 
           {/* Stats */}
-          <div className="flex items-center gap-6 mb-4 text-sm text-gray-600">
+          <div className="flex items-center gap-6 mb-4 text-sm text-[#8A90A2]">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span>{currentCommunity.memberCount || 0} members</span>
+              <span>{currentCommunity.members.length || 0} members</span>
             </div>
             {currentCommunity.location && (
               <div className="flex items-center gap-2">
@@ -173,7 +183,7 @@ const CommunityDetailPage = () => {
               {currentCommunity.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded-full"
+                  className="text-sm px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded-full"
                 >
                   #{tag}
                 </span>
@@ -187,7 +197,7 @@ const CommunityDetailPage = () => {
               <button
                 data-testid="leave-button"
                 onClick={handleLeave}
-                className="px-6 py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors"
+                className="px-6 py-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg font-medium transition-colors"
               >
                 Leave
               </button>
@@ -195,7 +205,7 @@ const CommunityDetailPage = () => {
               <button
                 data-testid="join-button"
                 onClick={handleJoin}
-                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black rounded-lg font-semibold transition-colors hover:shadow-[0_0_15px_rgba(0,244,255,0.4)]"
               >
                 Join Community
               </button>
@@ -203,7 +213,7 @@ const CommunityDetailPage = () => {
             <button
               data-testid="share-button"
               onClick={handleShare}
-              className="px-6 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors flex items-center gap-2"
+              className="px-6 py-2 border border-white/10 text-[#E6E9EF] hover:bg-white/5 rounded-lg font-medium transition-colors flex items-center gap-2"
             >
               <Share2 className="w-4 h-4" />
               Share
@@ -212,7 +222,7 @@ const CommunityDetailPage = () => {
               <button
                 data-testid="settings-button"
                 onClick={() => navigate(`/app/communities/${communityId}/settings`)}
-                className="px-6 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors flex items-center gap-2"
+                className="px-6 py-2 border border-white/10 text-[#E6E9EF] hover:bg-white/5 rounded-lg font-medium transition-colors flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
                 Settings
@@ -223,39 +233,36 @@ const CommunityDetailPage = () => {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/5 border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex gap-8">
             <button
               data-testid="posts-tab"
               onClick={() => setActiveTab('posts')}
-              className={`py-4 border-b-2 font-medium transition-colors ${
-                activeTab === 'posts'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
+              className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'posts'
+                  ? 'border-[#00C4FF] text-[#00C4FF]'
+                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                }`}
             >
               Posts
             </button>
             <button
               data-testid="buzz-tab"
               onClick={() => setActiveTab('buzz')}
-              className={`py-4 border-b-2 font-medium transition-colors ${
-                activeTab === 'buzz'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
+              className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'buzz'
+                  ? 'border-[#00C4FF] text-[#00C4FF]'
+                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                }`}
             >
               Buzz (Chat)
             </button>
             <button
               data-testid="members-tab"
               onClick={() => setActiveTab('members')}
-              className={`py-4 border-b-2 font-medium transition-colors ${
-                activeTab === 'members'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
+              className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'members'
+                  ? 'border-[#00C4FF] text-[#00C4FF]'
+                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                }`}
             >
               Members
             </button>

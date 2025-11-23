@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-    MessageCircle, MapPin, Calendar, Edit3, Shield, 
-    UserX, Flag, Camera, MoreVertical 
+import {
+    MessageCircle, MapPin, Calendar, Edit3, Shield,
+    UserX, Flag, Camera, MoreVertical
 } from 'lucide-react';
 import AlliesList from '../components/profile/AlliesList';
 import UserPosts from '../components/profile/UserPosts';
@@ -26,7 +26,7 @@ const ProfilePage = () => {
     const [displayUser, setDisplayUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('allies');
-    
+
     // Modal States
     const [showEditModal, setShowEditModal] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
@@ -63,12 +63,12 @@ const ProfilePage = () => {
 
     if (!displayUser) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-            <div className="bg-gray-100 p-6 rounded-full mb-4">
-                <UserX className="h-12 w-12 text-gray-400" />
+            <div className="bg-white/10 p-6 rounded-full mb-4">
+                <UserX className="h-12 w-12 text-[#8A90A2]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">User Not Found</h2>
-            <p className="text-gray-500 mt-2 mb-6">The user you are looking for doesn't exist or has been removed.</p>
-            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
+            <h2 className="text-xl font-bold text-white">User Not Found</h2>
+            <p className="text-[#8A90A2] mt-2 mb-6">The user you are looking for doesn't exist or has been removed.</p>
+            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-[#00C4FF] text-black font-semibold rounded-lg hover:bg-[#00C4FF]/90">
                 Back to Discovery
             </button>
         </div>
@@ -81,19 +81,19 @@ const ProfilePage = () => {
     return (
         <div className="max-w-5xl mx-auto px-4 pb-20">
             {/* --- HEADER CARD --- */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-6">
-                
+            <div className="bg-white/5 rounded-2xl shadow-sm border border-white/10 overflow-hidden mb-6 mt-6 backdrop-blur-xl">
+
                 {/* Cover Photo with Fallback Gradient */}
-                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-pink-600 via-orange-400 to-pink-400' : ''}`}>
+                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-[#7A3EF9] via-[#00C4FF] to-[#00F5A0]' : ''}`}>
                     {displayUser.coverPhoto && (
-                        <img 
-                            src={displayUser.coverPhoto} 
-                            alt="Cover" 
+                        <img
+                            src={displayUser.coverPhoto}
+                            alt="Cover"
                             className="w-full h-full object-cover"
                         />
                     )}
                     {isOwnProfile && (
-                        <button 
+                        <button
                             onClick={() => setShowEditModal(true)}
                             className="absolute bottom-4 right-4 bg-black/30 hover:bg-black/50 text-white p-2 rounded-lg backdrop-blur-sm transition-all"
                         >
@@ -106,11 +106,11 @@ const ProfilePage = () => {
                     {/* Profile Photo Container */}
                     <div className="flex justify-between items-end -mt-16 mb-4">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center bg-gray-100">
+                            <div className="w-32 h-32 rounded-full border-4 border-[#101726] bg-[#101726] shadow-md overflow-hidden flex items-center justify-center">
                                 {displayUser.profilePhoto ? (
                                     <img src={displayUser.profilePhoto} alt={displayUser.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <span className="text-4xl font-bold text-gray-400">{getInitials(displayUser.name)}</span>
+                                    <span className="text-4xl font-bold text-[#8A90A2]">{getInitials(displayUser.name)}</span>
                                 )}
                             </div>
                         </div>
@@ -118,15 +118,15 @@ const ProfilePage = () => {
                         {/* Action Buttons (Desktop) */}
                         <div className="hidden md:flex gap-3 mb-2">
                             {isOwnProfile ? (
-                                <button 
+                                <button
                                     onClick={() => setShowEditModal(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
                                 >
                                     <Edit3 size={18} /> Edit Profile
                                 </button>
                             ) : (
                                 <>
-                                    <button 
+                                    <button
                                         onClick={async () => {
                                             try {
                                                 // Ensure a conversation exists (server returns existing or new conv)
@@ -141,20 +141,20 @@ const ProfilePage = () => {
                                                 navigate('/app/chat');
                                             }
                                         }}
-                                        className="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg shadow-sm transition-all"
+                                        className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black font-semibold rounded-lg shadow-sm transition-all"
                                     >
                                         <MessageCircle size={18} /> Message
                                     </button>
                                     <div className="relative group">
-                                        <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
+                                        <button className="p-2 border border-white/10 rounded-lg hover:bg-white/10 text-[#E6E9EF]">
                                             <MoreVertical size={20} />
                                         </button>
                                         {/* Dropdown Menu */}
-                                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
-                                            <button onClick={() => setShowReportModal(true)} className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <div className="absolute right-0 mt-2 w-48 bg-[#101726] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                                            <button onClick={() => setShowReportModal(true)} className="w-full text-left px-4 py-3 text-sm text-[#E6E9EF] hover:bg-white/10 flex items-center gap-2">
                                                 <Flag size={16} /> Report User
                                             </button>
-                                            <button onClick={() => setShowBlockModal(true)} className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                            <button onClick={() => setShowBlockModal(true)} className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2">
                                                 <Shield size={16} /> Block User
                                             </button>
                                         </div>
@@ -166,65 +166,65 @@ const ProfilePage = () => {
 
                     {/* User Info */}
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                             {displayUser.name}
-                            {displayUser.isVerified && <span className="text-pink-500" title="Verified">✓</span>}
+                            {displayUser.isVerified && <span className="text-[#00C4FF]" title="Verified">✓</span>}
                         </h1>
-                        
+
                         {/* Meta Info */}
-                        <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-4 mt-2 text-sm text-[#8A90A2]">
                             <div className="flex items-center gap-1">
-                                <MapPin size={16} className="text-gray-400" />
+                                <MapPin size={16} className="text-[#8A90A2]" />
                                 {displayUser.location?.areaLabel || 'Location Unknown'}
                             </div>
                             <div className="flex items-center gap-1">
-                                <Calendar size={16} className="text-gray-400" />
+                                <Calendar size={16} className="text-[#8A90A2]" />
                                 Joined {joinedDate}
                             </div>
                         </div>
 
                         {/* Bio */}
-                        <p className="mt-4 text-gray-700 leading-relaxed max-w-2xl">
-                            {displayUser.bio || <span className="text-gray-400 italic">No bio yet...</span>}
+                        <p className="mt-4 text-[#E6E9EF] leading-relaxed max-w-2xl">
+                            {displayUser.bio || <span className="text-[#8A90A2] italic">No bio yet...</span>}
                         </p>
 
                         {/* Skills Tags */}
                         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Teaching</h3>
+                                <h3 className="text-xs font-semibold text-[#8A90A2] uppercase tracking-wider mb-3">Teaching</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {displayUser.teachTags?.length > 0 ? (
                                         displayUser.teachTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-pink-50 text-pink-700 rounded-full text-sm font-medium border border-blue-100">
+                                            <span key={i} className="px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm font-medium border border-[#00C4FF]/20">
                                                 {tag.name || tag}
                                             </span>
                                         ))
                                     ) : (
-                                        <span className="text-sm text-gray-400">No skills listed</span>
+                                        <span className="text-sm text-[#8A90A2]">No skills listed</span>
                                     )}
                                 </div>
                             </div>
                             <div>
-                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Learning</h3>
+                                <h3 className="text-xs font-semibold text-[#8A90A2] uppercase tracking-wider mb-3">Learning</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {displayUser.learnTags?.length > 0 ? (
                                         displayUser.learnTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+                                            <span key={i} className="px-3 py-1 bg-[#00F5A0]/10 text-[#00F5A0] rounded-full text-sm font-medium border border-[#00F5A0]/20">
                                                 {tag.name || tag}
                                             </span>
                                         ))
                                     ) : (
-                                        <span className="text-sm text-gray-400">No interests listed</span>
+                                        <span className="text-sm text-[#8A90A2]">No interests listed</span>
                                     )}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Mobile Action Buttons */}
                     <div className="md:hidden mt-6 flex gap-3">
                         {isOwnProfile ? (
-                            <button onClick={() => setShowEditModal(true)} className="flex-1 py-2 bg-gray-100 text-gray-800 rounded-lg font-medium">Edit Profile</button>
+                            <button onClick={() => setShowEditModal(true)} className="flex-1 py-2 bg-white/10 text-white rounded-lg font-medium">Edit Profile</button>
                         ) : (
                             <button onClick={async () => {
                                 try {
@@ -237,32 +237,31 @@ const ProfilePage = () => {
                                     console.error('Failed to start conversation', err);
                                     navigate('/app/chat');
                                 }
-                            }} className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium">Message</button>
+                            }} className="flex-1 py-2 bg-[#00C4FF] text-black rounded-lg font-medium">Message</button>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* --- TABS --- */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[400px]">
-                <div className="flex border-b border-gray-200">
+            <div className="bg-white/5 rounded-xl shadow-sm border border-white/10 overflow-hidden min-h-[400px] backdrop-blur-xl">
+                <div className="flex border-b border-white/10">
                     {['allies', 'posts', 'waves'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${
-                                activeTab === tab ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                            }`}
+                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${activeTab === tab ? 'text-[#00C4FF]' : 'text-[#8A90A2] hover:text-white'
+                                }`}
                         >
                             {tab.charAt(0).toUpperCase() + tab.slice(1)}
                             {activeTab === tab && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00C4FF]" />
                             )}
                         </button>
                     ))}
                 </div>
 
-                <div className="p-6 bg-gray-50/50 h-full">
+                <div className="p-6 bg-transparent h-full">
                     {activeTab === 'allies' && (
                         <AlliesList userId={displayUser._id} isOwnProfile={isOwnProfile} />
                     )}
@@ -277,16 +276,16 @@ const ProfilePage = () => {
 
             {/* --- MODALS --- */}
             {isOwnProfile && (
-                <EditProfileModal 
-                    isOpen={showEditModal} 
-                    onClose={() => setShowEditModal(false)} 
-                    currentUser={displayUser} 
+                <EditProfileModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    currentUser={displayUser}
                 />
             )}
-            
+
             {!isOwnProfile && (
                 <>
-                    <ReportModal 
+                    <ReportModal
                         isOpen={showReportModal}
                         onClose={() => setShowReportModal(false)}
                         targetType="user"
