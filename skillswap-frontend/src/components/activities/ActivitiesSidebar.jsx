@@ -4,7 +4,7 @@ import useActivityStore from '../../store/activityStore';
 import CreateActivityModal from './CreateActivityModal';
 
 const ActivitiesSidebar = () => {
-  const { activities, filters, setFilter, selectActivity, selectedActivity } = useActivityStore();
+  const { activities, filters, setFilter, selectActivity, selectedActivity, userLocation } = useActivityStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categories = [
@@ -15,11 +15,37 @@ const ActivitiesSidebar = () => {
     { id: 'Cooking', label: 'Cooking', icon: Utensils },
   ];
 
+  // Haversine formula to calculate distance between two coordinates in km
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(filters.search.toLowerCase()) ||
                           activity.location.toLowerCase().includes(filters.search.toLowerCase());
     const matchesCategory = filters.category === 'All' || activity.category === filters.category;
-    return matchesSearch && matchesCategory;
+    
+    // Distance filtering
+    let withinDistance = true;
+    if (userLocation && activity.coordinates && activity.coordinates.length === 2) {
+      const distance = calculateDistance(
+        userLocation[0], 
+        userLocation[1],
+        activity.coordinates[0],
+        activity.coordinates[1]
+      );
+      withinDistance = distance <= filters.distanceRange;
+    }
+    
+    return matchesSearch && matchesCategory && withinDistance;
   });
 
   return (
@@ -66,19 +92,24 @@ const ActivitiesSidebar = () => {
           ))}
         </div>
 
-        {/* Active Toggle */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-400">Show active only</span>
-          <button
-            onClick={() => setFilter('showActiveOnly', !filters.showActiveOnly)}
-            className={`w-10 h-5 rounded-full relative transition-colors ${
-              filters.showActiveOnly ? 'bg-[#00C4FF]' : 'bg-gray-600'
-            }`}
-          >
-            <div className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform ${
-              filters.showActiveOnly ? 'translate-x-5' : 'translate-x-0'
-            }`} />
-          </button>
+        {/* Distance Range Filter */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-400">Distance Range</span>
+            <span className="text-xs font-mono text-[#00C4FF]">{filters.distanceRange} km</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="100"
+            value={filters.distanceRange}
+            onChange={(e) => setFilter('distanceRange', parseInt(e.target.value))}
+            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#00C4FF]"
+          />
+          <div className="flex justify-between text-[10px] text-gray-500">
+            <span>1km</span>
+            <span>100km</span>
+          </div>
         </div>
       </div>
 

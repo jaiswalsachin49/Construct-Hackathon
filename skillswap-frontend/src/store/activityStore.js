@@ -16,7 +16,7 @@ const useActivityStore = create((set, get) => ({
     filters: {
         search: '',
         category: 'All',
-        showActiveOnly: true
+        distanceRange: 50 // in km
     },
     loading: false,
     error: null,
@@ -67,7 +67,24 @@ const useActivityStore = create((set, get) => ({
             }));
         } catch (error) {
             console.error('Error joining activity:', error);
-            // Handle error (maybe show toast)
+        }
+    },
+
+    leaveActivity: async (activityId) => {
+        try {
+            const response = await axios.post(`${API_URL}/${activityId}/leave`, {}, {
+                headers: getAuthHeader()
+            });
+            set((state) => ({
+                activities: state.activities.map(a =>
+                    a._id === activityId ? response.data : a
+                ),
+                selectedActivity: state.selectedActivity?._id === activityId
+                    ? response.data
+                    : state.selectedActivity
+            }));
+        } catch (error) {
+            console.error('Error leaving activity:', error);
         }
     },
 
