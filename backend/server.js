@@ -44,7 +44,7 @@ app.use('/api/', apiLimiter);
 app.set('io', io);
 
 app.get("/", (req, res) => {
-    res.send("Backend is running......");
+  res.send("Backend is running......");
 })
 
 // Routes
@@ -57,6 +57,7 @@ app.use('/api/waves', require('./routes/waves'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/matches', require('./routes/matches'));
 app.use('/api/badges', require('./routes/badges'));
+app.use('/api/activities', require('./routes/activityRoutes'));
 
 // Socket.IO
 require('./config/socket')(io);

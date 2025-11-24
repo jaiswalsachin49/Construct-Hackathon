@@ -1,0 +1,26 @@
+const express = require('express');
+const router = express.Router();
+const activityController = require('../controllers/activityController');
+const auth = require('../middlewares/auth'); // Assuming you have an auth middleware
+
+// @route   GET api/activities
+// @desc    Get all activities
+// @access  Private (or Public depending on reqs, let's say Private for now)
+router.get('/', auth, activityController.getActivities);
+
+// @route   POST api/activities
+// @desc    Create an activity
+// @access  Private
+router.post('/', auth, activityController.createActivity);
+
+// @route   POST api/activities/:id/join
+// @desc    Join an activity
+// @access  Private
+router.post('/:id/join', auth, activityController.joinActivity);
+
+// @route   DELETE api/activities/:id
+// @desc    Delete an activity
+// @access  Private
+router.delete('/:id', auth, activityController.deleteActivity);
+
+module.exports = router;

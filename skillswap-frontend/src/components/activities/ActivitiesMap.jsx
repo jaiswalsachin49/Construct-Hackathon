@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import useActivityStore from '../../store/activityStore';
-import { Zap, Music, Utensils, Users } from 'lucide-react';
+import { Zap, Music, Utensils, Users, Crosshair } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
 
 // Fix for default marker icon issues in some bundlers, though we are using custom icons mainly.
@@ -31,38 +31,73 @@ const MapUpdater = ({ center }) => {
 };
 
 const ActivitiesMap = () => {
-  const { activities, selectedActivity, selectActivity, userLocation } = useActivityStore();
+  const { activities, selectedActivity, selectActivity, userLocation, setUserLocation, fetchActivities } = useActivityStore();
+
+  useEffect(() => {
+    fetchActivities();
+    
+    // Get user location on load
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          // Keep default or handle error
+        }
+      );
+    }
+  }, []);
+
+  const handleShowMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Could not get your location.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
 
   // Create custom icons based on category
-  const createCustomIcon = (category, isSelected) => {
-    let IconComponent = Users;
-    let colorClass = 'bg-gray-500';
+  const createCustomIcon = (activity, isSelected) => {
+    let borderColor = 'border-gray-500';
     
-    if (category === 'Running') {
-      IconComponent = Zap;
-      colorClass = 'bg-purple-500';
-    } else if (category === 'Music') {
-      IconComponent = Music;
-      colorClass = 'bg-blue-500';
-    } else if (category === 'Cooking') {
-      IconComponent = Utensils;
-      colorClass = 'bg-orange-500';
+    if (activity.category === 'Running') {
+      borderColor = 'border-purple-500';
+    } else if (activity.category === 'Music') {
+      borderColor = 'border-blue-500';
+    } else if (activity.category === 'Cooking') {
+      borderColor = 'border-orange-500';
     }
 
     const iconHtml = renderToString(
-      <div className={`relative flex items-center justify-center w-10 h-10 rounded-full shadow-lg border-2 border-white ${colorClass} text-white`}>
-        <IconComponent size={20} />
+      <div className={`relative w-12 h-12 rounded-full border-4 ${borderColor} overflow-hidden shadow-lg bg-white`}>
+        <img 
+            src={activity.host.profilePhoto || "https://github.com/shadcn.png"} 
+            alt="Host" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
         {isSelected && (
-           <div className="absolute inset-0 rounded-full animate-ripple bg-white/50 z-[-1]" />
+           <div className="absolute inset-0 rounded-full animate-ripple bg-white/30 z-[1]" />
         )}
       </div>
     );
 
     return L.divIcon({
       html: iconHtml,
-      className: 'custom-marker-icon', // We'll need to ensure this class doesn't override too much, or use !important in inline styles if needed, but divIcon is usually clean.
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+      className: 'custom-marker-icon', 
+      iconSize: [48, 48],
+      iconAnchor: [24, 24]
     });
   };
 
@@ -94,9 +129,9 @@ const ActivitiesMap = () => {
 
         {activities.map((activity) => (
           <Marker
-            key={activity.id}
+            key={activity._id}
             position={activity.coordinates}
-            icon={createCustomIcon(activity.category, selectedActivity?.id === activity.id)}
+            icon={createCustomIcon(activity, selectedActivity?._id === activity._id)}
             eventHandlers={{
               click: () => selectActivity(activity),
             }}
@@ -110,6 +145,15 @@ const ActivitiesMap = () => {
               <h1 className="text-4xl font-light text-white/10 tracking-widest">EXPLORE</h1>
           </div>
       )}
+
+      {/* Show My Location Button */}
+      <button
+        onClick={handleShowMyLocation}
+        className="absolute bottom-6 right-6 z-[400] p-3 bg-[#101726] border border-white/10 rounded-full text-white shadow-lg hover:bg-[#1a2436] transition-colors"
+        title="Show My Location"
+      >
+        <Crosshair className="h-6 w-6" />
+      </button>
     </div>
   );
 };
