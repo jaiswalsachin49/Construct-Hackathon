@@ -22,7 +22,6 @@ class SocketService {
         });
 
         this.socket.on('connect', () => {
-            console.log('✅ Socket connected:', this.socket.id);
             useChatStore.getState().setConnected(true);
 
             // Emit setup with the latest user from the store (don't rely on earlier capture)
