@@ -82,15 +82,15 @@ const AlliesList = ({ userId, isOwnProfile }) => {
     }
   };
 
-  if (isLoading) return <div className="p-4 text-center text-gray-500">Loading allies...</div>;
+  if (isLoading) return <div className="p-4 text-center text-[#8A90A2]">Loading allies...</div>;
 
   if (allies.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-12 text-center bg-white rounded-lg border border-dashed border-gray-300">
-      <p className="text-gray-500">No allies connected yet.</p>
+    <div className="flex flex-col items-center justify-center py-12 text-center bg-white/5 rounded-lg border border-dashed border-white/20">
+      <p className="text-[#8A90A2]">No allies connected yet.</p>
       {isOwnProfile && (
         <button
           onClick={() => navigate('/app/discover')}
-          className="mt-2 text-blue-600 font-medium hover:underline"
+          className="mt-2 text-[#00C4FF] font-medium hover:text-[#00F5A0] transition-colors"
         >
           Find people nearby
         </button>
@@ -107,22 +107,22 @@ const AlliesList = ({ userId, isOwnProfile }) => {
           tabIndex={0}
           onClick={() => navigate(`/app/profile/${ally._id}`)}
           onKeyPress={(e) => { if (e.key === 'Enter') navigate(`/app/profile/${ally._id}`); }}
-          className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
+          className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer backdrop-blur-sm"
         >
           <img
             src={ally.profilePhoto || `https://ui-avatars.com/api/?name=${ally.name}&background=random`}
-            className="w-12 h-12 rounded-full object-cover bg-gray-100"
+            className="w-12 h-12 rounded-full object-cover bg-[#101726]"
             alt={ally.name}
           />
           <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-gray-900 truncate">{ally.name}</h4>
-            <p className="text-xs text-gray-500 truncate">{ally.location?.areaLabel || 'Location hidden'}</p>
+            <h4 className="font-medium text-white truncate">{ally.name}</h4>
+            <p className="text-xs text-[#8A90A2] truncate">{ally.location?.areaLabel || 'Location hidden'}</p>
           </div>
           <div className="flex gap-2">
             {isOwnProfile ? (
               <button
                 onClick={(e) => { e.stopPropagation(); handleRemove(ally._id); }}
-                className="p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
+                className="p-2 text-[#8A90A2] hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-colors"
                 title="Remove Ally"
               >
                 <X size={18} />
@@ -130,7 +130,7 @@ const AlliesList = ({ userId, isOwnProfile }) => {
             ) : (
               <button
                 onClick={(e) => { e.stopPropagation(); handleMessage(ally._id); }}
-                className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
+                className="p-2 text-[#00C4FF] hover:bg-[#00C4FF]/10 rounded-full"
               >
                 <MessageCircle size={18} />
               </button>

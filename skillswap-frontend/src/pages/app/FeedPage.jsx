@@ -18,13 +18,6 @@ const FeedPage = () => {
 
     useEffect(() => {
         fetchFeed(1);
-
-        // Auto-refresh every 5 minutes
-        const refreshInterval = setInterval(() => {
-            fetchFeed(1);
-        }, 5 * 60 * 1000); // 5 minutes
-
-        return () => clearInterval(refreshInterval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

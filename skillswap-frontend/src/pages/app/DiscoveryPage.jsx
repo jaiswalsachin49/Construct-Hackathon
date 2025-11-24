@@ -8,9 +8,11 @@ import { useToast } from "../../hooks/use-toast"; // <--- IMPORT TOAST HOOK
 import UserCard from "../../components/discovery/UserCard";
 import FilterBar from "../../components/discovery/FilterBar";
 import ProfileModal from "../../components/discovery/ProfileModal";
+import PostCard from "../../components/Posts/PostCard";
 import Loading from "../../components/common/Loading";
 import Button from "../../components/common/Button";
 import { sendConnectionRequest } from "../../services/discoveryService";
+import { getGlobalFeed } from "../../services/postService";
 
 const DiscoveryPage = () => {
     const navigate = useNavigate();
@@ -32,6 +34,11 @@ const DiscoveryPage = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Global feed state
+    const [globalPosts, setGlobalPosts] = useState([]);
+    const [feedLoading, setFeedLoading] = useState(true);
+    const [feedPage, setFeedPage] = useState(1);
+
     // 1. Initial Load
     useEffect(() => {
         if (view === "nearby") {
@@ -41,7 +48,23 @@ const DiscoveryPage = () => {
         }
     }, [view, filters.radius, filters.availability]);
 
-    // 2. Search Debounce
+    // 2. Load global feed
+    useEffect(() => {
+        const loadGlobalFeed = async () => {
+            try {
+                setFeedLoading(true);
+                const data = await getGlobalFeed(1);
+                setGlobalPosts(data.posts || []);
+            } catch (error) {
+                console.error('Failed to load global feed:', error);
+            } finally {
+                setFeedLoading(false);
+            }
+        };
+        loadGlobalFeed();
+    }, []);
+
+    // 3. Search Debounce
     useEffect(() => {
         const timer = setTimeout(() => {
             if (view === "nearby") {
@@ -51,7 +74,7 @@ const DiscoveryPage = () => {
         return () => clearTimeout(timer);
     }, [filters.search]);
 
-    // 3. Handle Connect (Fixed Logic)
+    // 4. Handle Connect (Fixed Logic)
     const handleConnect = async (userId) => {
         try {
             // A. Call API
@@ -75,8 +98,8 @@ const DiscoveryPage = () => {
             });
         }
     };
-
-    // 4. View Profile Handler
+    console.log("Global Posts:", globalPosts);
+    // 5. View Profile Handler
     const handleViewProfile = (userId) => {
         setSelectedUserId(userId);
         setIsModalOpen(true);
@@ -96,36 +119,19 @@ const DiscoveryPage = () => {
                         Latest Posts
                     </h2>
 
-                    {/* IMAGE POST */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
-                        <img
-                            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"
-                            className="w-full h-52 rounded-lg object-cover"
-                            alt="Post preview"
-                        />
-                        <p className="text-[#E6E9EF] text-sm mt-2">
-                            Example image-based post preview.
-                        </p>
-                    </div>
-
-                    {/* VIDEO POST */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
-                        <div className="w-full h-52 rounded-lg bg-white/5 flex items-center justify-center">
-                            <span className="text-[#8A90A2] text-sm">Video Preview</span>
+                    {feedLoading ? (
+                        <div className="flex justify-center py-10">
+                            <Loading size="lg" text="Loading feed..." />
                         </div>
-                        <p className="text-[#E6E9EF] text-sm mt-2">
-                            Sample tutorial video post preview.
-                        </p>
-                    </div>
-
-                    {/* TEXT POST */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl shadow-sm p-4 backdrop-blur-sm">
-                        <div className="w-full h-52 rounded-lg bg-white/5 p-4">
-                            <p className="text-[#E6E9EF] text-sm">
-                                Text-only post — clean, minimal, perfect for updates & ideas.
-                            </p>
+                    ) : globalPosts.length > 0 ? (
+                        globalPosts.map(post => (
+                            <PostCard key={post._id} post={post} />
+                        ))
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center bg-white/5 rounded-lg border border-dashed border-white/20">
+                            <p className="text-[#8A90A2]">No posts to display yet.</p>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* ----------------------------------------------------------- */}

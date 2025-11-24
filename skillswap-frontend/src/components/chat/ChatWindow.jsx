@@ -77,7 +77,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
             <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10 shadow-sm z-10 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
                     {onBack && (
-                        <button onClick={onBack} className="lg:hidden p-2 hover:bg-gray-100 rounded-full text-gray-600">
+                        <button onClick={onBack} className="lg:hidden p-2 hover:bg-white/10 rounded-full text-[#8A90A2]">
                             <ArrowLeft className="h-5 w-5" />
                         </button>
                     )}
@@ -113,21 +113,21 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => alert("Audio calls coming soon!")}
-                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         title="Audio Call"
                     >
                         <Phone className="h-5 w-5" />
                     </button>
                     <button
                         onClick={() => alert("Video calls coming soon!")}
-                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         title="Video Call"
                     >
                         <Video className="h-5 w-5" />
                     </button>
                     <button
                         onClick={() => window.location.reload()}
-                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         title="Refresh Chat"
                     >
                         <RefreshCw className="h-5 w-5" />

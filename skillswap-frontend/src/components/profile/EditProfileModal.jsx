@@ -204,15 +204,15 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#0A0F1F] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <h2 className="text-2xl font-bold text-gray-900">Edit Profile</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/10 sticky top-0 bg-[#0A0F1F] z-10">
+          <h2 className="text-2xl font-bold text-white">Edit Profile</h2>
           <button
             data-testid="close-modal-button"
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-[#8A90A2] hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -222,10 +222,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
         <form onSubmit={handleSave} className="p-6 space-y-6">
           {/* Cover Photo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Cover Photo
             </label>
-            <div className="relative h-40 rounded-lg overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500">
+            <div className="relative h-40 rounded-lg overflow-hidden bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF]">
               {coverPreview && (
                 <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
               )}
@@ -251,15 +251,15 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
           {/* Profile Photo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Profile Photo
             </label>
             <div className="flex items-center gap-4">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#00F5A0] to-[#00C4FF]">
                 {photoPreview ? (
                   <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
+                  <div className="w-full h-full flex items-center justify-center text-black text-3xl font-bold">
                     {name.charAt(0) || 'U'}
                   </div>
                 )}
@@ -267,7 +267,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}
-                className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                className="px-4 py-2 border border-white/20 hover:bg-white/10 rounded-lg font-medium transition-colors text-white"
               >
                 Change Photo
               </button>
@@ -283,7 +283,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Name *
             </label>
             <input
@@ -292,14 +292,14 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
               required
             />
           </div>
 
           {/* Bio */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Bio
             </label>
             <textarea
@@ -309,23 +309,23 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               maxLength={500}
               rows={4}
               placeholder="Tell others about yourself..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent resize-none"
             />
-            <p className="text-xs text-gray-500 mt-1">{500 - bio.length} characters remaining</p>
+            <p className="text-xs text-[#8A90A2] mt-1">{500 - bio.length} characters remaining</p>
           </div>
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Location *
             </label>
             {location && !showLocationSearch ? (
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <span className="text-blue-900">📍 {location.areaLabel}</span>
+              <div className="flex items-center justify-between p-3 bg-[#00C4FF]/10 border border-[#00C4FF]/20 rounded-lg">
+                <span className="text-[#00C4FF]">📍 {location.areaLabel}</span>
                 <button
                   type="button"
                   onClick={() => setShowLocationSearch(true)}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-[#00F5A0] hover:text-[#00F5A0]/80 font-medium"
                 >
                   Change
                 </button>
@@ -338,10 +338,10 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
                   placeholder="Search for location..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
                 />
                 {locationInput && (
-                  <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="mt-2 bg-[#101726] border border-white/10 rounded-lg overflow-hidden">
                     <button
                       type="button"
                       onClick={() => selectLocation({
@@ -349,7 +349,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                         lng: 77.5946,
                         areaLabel: 'Koramangala, Bangalore'
                       })}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left hover:bg-white/10 flex items-center gap-2 text-white"
                     >
                       📍 Koramangala, Bangalore
                     </button>
@@ -360,7 +360,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                         lng: 77.6245,
                         areaLabel: 'Indiranagar, Bangalore'
                       })}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left hover:bg-white/10 flex items-center gap-2 text-white"
                     >
                       📍 Indiranagar, Bangalore
                     </button>
@@ -372,20 +372,20 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
           {/* Skills to Teach */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Skills to Teach *
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
               {teachTags.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#00C4FF]/10 border border-[#00C4FF]/20 text-[#00C4FF] rounded-full text-sm"
                 >
                   {renderTeachTag(skill)}
                   <button
                     type="button"
                     onClick={() => removeTeachSkill(renderTeachTag(skill))}
-                    className="hover:text-blue-800"
+                    className="hover:text-[#00C4FF]/80"
                   >
                     ×
                   </button>
@@ -406,27 +406,27 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               }}
               placeholder="Add skill and press Enter..."
               disabled={teachTags.length >= 10}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
             />
-            <p className="text-xs text-gray-500 mt-1">Max 10 skills ({teachTags.length}/10)</p>
+            <p className="text-xs text-[#8A90A2] mt-1">Max 10 skills ({teachTags.length}/10)</p>
           </div>
 
           {/* Skills to Learn */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Skills to Learn *
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
               {learnTags.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#00F5A0]/10 border border-[#00F5A0]/20 text-[#00F5A0] rounded-full text-sm"
                 >
                   {renderLearnTag(skill)}
                   <button
                     type="button"
                     onClick={() => removeLearnSkill(renderLearnTag(skill))}
-                    className="hover:text-green-800"
+                    className="hover:text-[#00F5A0]/80"
                   >
                     ×
                   </button>
@@ -447,21 +447,21 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               }}
               placeholder="Add skill and press Enter..."
               disabled={learnTags.length >= 10}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
             />
-            <p className="text-xs text-gray-500 mt-1">Max 10 skills ({learnTags.length}/10)</p>
+            <p className="text-xs text-[#8A90A2] mt-1">Max 10 skills ({learnTags.length}/10)</p>
           </div>
 
           {/* Availability */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-[#E6E9EF] mb-3">
               Availability
             </label>
             <div className="grid grid-cols-2 gap-3">
               {['morning', 'evening', 'weekend', 'flexible'].map((option) => (
                 <label
                   key={option}
-                  className="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
                 >
                   <input
                     data-testid={`availability-${option}`}
@@ -470,20 +470,20 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                     value={option}
                     checked={availability === option}
                     onChange={(e) => setAvailability(e.target.value)}
-                    className="w-4 h-4 text-blue-500"
+                    className="w-4 h-4 text-[#00C4FF]"
                   />
-                  <span className="capitalize">{option}</span>
+                  <span className="capitalize text-white">{option}</span>
                 </label>
               ))}
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 pt-4 border-t border-white/10">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+              className="flex-1 px-6 py-2 border border-white/20 hover:bg-white/10 rounded-lg font-medium transition-colors text-white"
             >
               Cancel
             </button>
@@ -491,7 +491,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               data-testid="save-button"
               type="submit"
               disabled={!canSave || isSaving}
-              className="flex-1 px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-opacity"
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>

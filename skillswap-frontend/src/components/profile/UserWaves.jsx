@@ -71,7 +71,7 @@ const UserWaves = ({ userId, isOwnProfile }) => {
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="aspect-[9/16] bg-gray-200 rounded-lg animate-pulse"></div>
+          <div key={i} className="aspect-[9/16] bg-white/10 rounded-lg animate-pulse"></div>
         ))}
       </div>
     );
@@ -79,7 +79,7 @@ const UserWaves = ({ userId, isOwnProfile }) => {
 
   if (waves.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-[#8A90A2]">
         <p className="text-lg mb-2">No active waves</p>
         <p className="text-sm">Waves expire after 24 hours</p>
       </div>
@@ -88,7 +88,7 @@ const UserWaves = ({ userId, isOwnProfile }) => {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <h3 className="text-lg font-semibold text-white mb-4">
         Active Waves ({waves.length})
       </h3>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -125,7 +125,7 @@ const UserWaves = ({ userId, isOwnProfile }) => {
                   e.stopPropagation();
                   handleDelete(wave._id);
                 }}
-                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
               >
                 ×
               </button>
