@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCommunities } from '../../hooks/useCommunities';
+import useAuthStore from '../../store/authStore';
 import { Plus } from 'lucide-react';
 import CreatePostModal from '../Posts/CreatePostModal';
 import PostCard from '../Posts/PostCard';
 
-const CommunityPosts = ({ communityId }) => {
+const CommunityPosts = ({ communityId, community }) => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const { fetchCommunityPosts, communityPosts } = useCommunities();
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const posts = communityPosts[communityId] || [];
+
+  // Check if user is a member
+  const isMember = community?.members?.some(m => m.userId?._id === user?._id || m.userId === user?._id);
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -52,14 +57,19 @@ const CommunityPosts = ({ communityId }) => {
   return (
     <div className="space-y-4">
       {/* Create Post Button */}
-      <button
-        data-testid="create-post-button"
-        onClick={() => setIsCreateModalOpen(true)}
-        className="w-full bg-[#0A0F1F] border-2 border-dashed border-white/20 hover:border-[#00C4FF] rounded-lg p-6 text-[#8A90A2] hover:text-[#00C4FF] transition-colors flex items-center justify-center gap-2"
-      >
-        <Plus className="w-5 h-5" />
-        <span className="font-medium">Create Post</span>
-      </button>
+      {isMember ? (
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full p-4 bg-[#0A0F1F] border border-white/10 rounded-lg hover:border-[#00C4FF] transition-colors flex items-center justify-center gap-2 text-white"
+        >
+          <Plus className="w-5 h-5" />
+          <span>Create Post</span>
+        </button>
+      ) : (
+        <div className="w-full p-4 bg-[#0A0F1F] border border-white/10 rounded-lg text-center">
+          <p className="text-[#8A90A2]">Join this community to create posts</p>
+        </div>
+      )}
 
       <CreatePostModal
         isOpen={isCreateModalOpen}
@@ -68,20 +78,14 @@ const CommunityPosts = ({ communityId }) => {
       />
 
       {/* Posts List */}
-      {posts.length > 0 ? (
-        posts.map((post) => (
-          <PostCard
-            key={post._id}
-            post={{
-              ...post,
-              user: post.userId
-            }}
-          />
-        ))
-      ) : (
-        <div className="bg-[#0A0F1F] rounded-lg shadow-sm p-12 text-center border border-white/10">
-          <p className="text-[#8A90A2]">No posts yet. Be the first to post!</p>
+      {posts.length === 0 ? (
+        <div className="text-center py-12 text-[#8A90A2]">
+          <p>No posts yet. Be the first to post!</p>
         </div>
+      ) : (
+        posts.map((post) => (
+          <PostCard key={post._id} post={post} />
+        ))
       )}
     </div>
   );

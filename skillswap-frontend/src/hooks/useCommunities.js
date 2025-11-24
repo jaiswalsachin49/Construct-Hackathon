@@ -8,7 +8,9 @@ import {
   leaveCommunity as leaveCommunityService,
   getCommunityMembers,
   getCommunityPosts,
-  searchCommunities
+  searchCommunities,
+  updateMemberRole,
+  kickMember
 } from '../services/communityService';
 
 export const useCommunities = () => {
@@ -159,6 +161,30 @@ export const useCommunities = () => {
     }
   };
 
+  const updateMemberRoleFunc = async (communityId, userId, role) => {
+    try {
+      store.setError(null);
+      await updateMemberRole(communityId, userId, role);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update member role';
+      store.setError(errorMessage);
+      console.error('Error updating member role:', error);
+      throw error;
+    }
+  };
+
+  const kickMemberFunc = async (communityId, userId) => {
+    try {
+      store.setError(null);
+      await kickMember(communityId, userId);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to kick member';
+      store.setError(errorMessage);
+      console.error('Error kicking member:', error);
+      throw error;
+    }
+  };
+
   return {
     // State
     myCommunities: store.myCommunities,
@@ -168,7 +194,7 @@ export const useCommunities = () => {
     communityMessages: store.communityMessages,
     isLoading: store.isLoading,
     error: store.error,
-    
+
     // Actions
     fetchMyCommunities,
     fetchNearbyCommunities,
@@ -179,7 +205,9 @@ export const useCommunities = () => {
     fetchCommunityMembers,
     fetchCommunityPosts,
     searchCommunities: searchCommunitiesFunc,
-    
+    updateMemberRole: updateMemberRoleFunc,
+    kickMember: kickMemberFunc,
+
     // Store actions
     addCommunityPost: store.addCommunityPost,
     addCommunityMessage: store.addCommunityMessage,

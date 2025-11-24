@@ -66,3 +66,15 @@ export const searchCommunities = async (query) => {
   });
   return response.data;
 };
+
+// Update member role
+export const updateMemberRole = async (communityId, userId, role) => {
+  const response = await api.put(`/api/communities/${communityId}/members/${userId}/role`, { role });
+  return response.data;
+};
+
+// Kick member
+export const kickMember = async (communityId, userId) => {
+  const response = await api.post(`/api/communities/${communityId}/kick/${userId}`);
+  return response.data;
+};

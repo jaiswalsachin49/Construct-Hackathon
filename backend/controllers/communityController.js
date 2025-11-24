@@ -237,6 +237,50 @@ exports.kickMember = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+exports.updateMemberRole = async (req, res) => {
+    try {
+        const { communityId, userId } = req.params;
+        const { role } = req.body;
+
+        if (!['admin', 'moderator', 'member'].includes(role)) {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        const community = await Community.findById(communityId);
+
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        // Check if requester is admin
+        const requester = community.members.find(m => m.userId.toString() === req.user.userId);
+        if (!requester || requester.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can update roles' });
+        }
+
+        // Find target member
+        const memberIndex = community.members.findIndex(m => m.userId.toString() === userId);
+        if (memberIndex === -1) {
+            return res.status(404).json({ error: 'Member not found' });
+        }
+
+        // Prevent removing the last admin
+        if (role !== 'admin' && community.members[memberIndex].role === 'admin') {
+            const adminCount = community.members.filter(m => m.role === 'admin').length;
+            if (adminCount <= 1) {
+                return res.status(400).json({ error: 'Cannot remove the last admin' });
+            }
+        }
+
+        community.members[memberIndex].role = role;
+        await community.save();
+
+        res.json({ success: true, message: 'Member role updated' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 exports.searchCommunities = async (req, res) => {
     try {
         const { q } = req.query;

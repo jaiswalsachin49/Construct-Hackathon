@@ -32,7 +32,7 @@ class SocketService {
         });
 
         // Server broadcasts online users list; update store when received
-        this.socket.on('users:online', (rooms) => {
+        this.socket.on('users:online', (rooms) => { 
             try {
                 // Server sends an array of room keys; personal rooms are userId strings (24-hex)
                 const onlineUserIds = Array.isArray(rooms)
