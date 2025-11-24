@@ -33,6 +33,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SafetyComponentsDemo from "./pages/SafetyComponentsDemo";
 // import OptimizationDemo from "./pages/OptimizationDemo";
 import MobileDemo from "./pages/MobileDemo";
+import ActivitiesPage from "./pages/app/ActivitiesPage";
 
 // Backend
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -128,6 +129,9 @@ function App() {
           <Route path="communities/create" element={<CreateCommunityPage />} />
           <Route path="communities/:communityId" element={<CommunityDetailPage />} />
           <Route path="communities/:communityId/settings" element={<CommunitySettingsPage />} />
+
+          {/* Activities */}
+          <Route path="activities" element={<ActivitiesPage />} />
 
           {/* Combined profile */}
           <Route path="profile" element={<ProfilePage />} />
