@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Zap, Shield, Heart } from 'lucide-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 
@@ -44,9 +45,19 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
 
-                        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent">
-                            SkillSwap
-                        </h1>
+                        <div className="flex items-center gap-0">
+                            <div className="w-16 h-16 flex items-center justify-center">
+                                <DotLottieReact
+                                    src="/logo_final.lottie"
+                                    loop
+                                    autoplay
+                                    className="w-full h-full"
+                                />
+                            </div>
+                            <span className="text-3xl font-extrabold -skew-x-6 tracking-tight bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent -ml-1">
+                                killSwap
+                            </span>
+                        </div>
 
                         <div className="flex items-center gap-4">
 
@@ -82,7 +93,7 @@ const LandingPage = () => {
                 </h1>
 
                 <p className="text-xl text-[#8A90A2] max-w-2xl mx-auto mb-12">
-                    Discover people nearby who want to share skills, learn together,  
+                    Discover people nearby who want to share skills, learn together,
                     and build meaningful real-life connections.
                 </p>
 
@@ -179,7 +190,7 @@ const LandingPage = () => {
                     </h2>
 
                     <p className="text-[#8A90A2] max-w-3xl mx-auto text-lg leading-relaxed">
-                        People today feel more disconnected than ever. SkillSwap helps bring  
+                        People today feel more disconnected than ever. SkillSwap helps bring
                         people together by sharing what they love and building genuine relationships.
                     </p>
                 </div>

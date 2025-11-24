@@ -6,6 +6,7 @@ import useChatStore from '../../store/chatStore';
 import socketService from '../../services/socketService';
 import { getConversations } from '../../services/chatService';
 import { getPendingRequests, acceptConnectionRequest, rejectConnectionRequest } from '../../services/discoveryService';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const Navbar = () => {
     // 1. Hooks & Store Access (MUST be at the top)
@@ -129,12 +130,17 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-16">
 
                     {/* Logo */}
-                    <Link to="/app/discover" className="flex items-center gap-2">
-                        <div className="bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] p-1.5 rounded-lg shadow-lg shadow-[#00C4FF]/20">
-                            <div className="w-4 h-4 border-2 border-black rounded-full" />
+                    <Link to="/app/feed" className="flex items-center gap-0 group">
+                        <div className="w-16 h-16 flex items-center justify-center">
+                            <DotLottieReact
+                                src="/logo_final.lottie"
+                                loop
+                                autoplay
+                                className="w-full h-full"
+                            />
                         </div>
-                        <span className="text-2xl font-bold bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight">
-                            SkillSwap
+                        <span className="text-2xl font-bold -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-2">
+                            killSwap
                         </span>
                     </Link>
 

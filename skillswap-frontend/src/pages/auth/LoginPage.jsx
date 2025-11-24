@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Eye, EyeOff, Zap } from 'lucide-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -56,27 +57,24 @@ const LoginPage = () => {
 
                     {/* Logo */}
                     <div className="text-center mb-8">
-                        <Link to="/" className="inline-flex items-center gap-2">
-                            <div className="
-                                h-12 w-12 rounded-full 
-                                bg-gradient-to-r from-[#00F5A0] to-[#00C4FF]
-                                flex items-center justify-center shadow-xl
-                            ">
-                                <Zap className="h-6 w-6 text-black" />
+                        <div className="flex items-center justify-center gap-0 mb-8">
+                            <div className="w-18 h-18 flex items-center justify-center">
+                                <DotLottieReact
+                                    src="/logo_final.lottie"
+                                    loop
+                                    autoplay
+                                    className="w-full h-full"
+                                />
                             </div>
-                            <span className="
-                                text-2xl font-extrabold 
-                                bg-gradient-to-r from-[#00F5A0] to-[#00C4FF]
-                                bg-clip-text text-transparent
-                            ">
-                                SkillSwap
+                            <span className="text-3xl font -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-2">
+                                killSwap
                             </span>
-                        </Link>
+                        </div>
                     </div>
 
                     {/* Header */}
                     <div className="text-center mb-6">
-                        <h1 className="text-3xl font-extrabold text-white">Welcome Back</h1>
+                        <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
                         <p className="text-[#8A90A2] mt-1">Log in to continue</p>
                     </div>
 
