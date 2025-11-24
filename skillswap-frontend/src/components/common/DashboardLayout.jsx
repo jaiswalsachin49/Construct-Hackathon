@@ -2,13 +2,14 @@ import React, { useEffect } from 'react';
 import useAuthStore from '../../store/authStore';
 import socketService from '../../services/socketService';
 import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Users, MessageCircle, Zap, FileText, UsersRound, User } from 'lucide-react';
+import { Home, Users, MessageCircle, Zap, FileText, UsersRound, User, Map, Hammer } from 'lucide-react';
 import Navbar from './Navbar';
 
 const DashboardLayout = () => {
     const navItems = [
         { to: '/app/discover', icon: Home, label: 'Discover' },
         // { to: '/app/matches', icon: Users, label: 'Matches' },
+        { to: '/app/activities', icon: Map, label: "Activities"},
         { to: '/app/chat', icon: MessageCircle, label: 'Chat' },
         { to: '/app/waves', icon: Zap, label: 'Waves' },
         { to: '/app/feed', icon: FileText, label: 'Feed' },
