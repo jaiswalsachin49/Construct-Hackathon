@@ -43,6 +43,10 @@ app.use('/api/', apiLimiter);
 // Make io accessible to routes
 app.set('io', io);
 
+app.get("/", (req, res) => {
+    res.send("Backend is running......");
+})
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
