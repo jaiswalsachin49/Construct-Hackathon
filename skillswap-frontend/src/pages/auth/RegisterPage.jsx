@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    ArrowLeft,
-    ArrowRight,
-    Eye,
-    EyeOff,
-    User,
-    Mail,
-    Lock,
-    MapPin,
-    Zap,
-} from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, Upload, X } from 'lucide-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Button from '../../components/common/Button';
 import TagInput from '../../components/auth/TagInput';
 import PasswordStrength from '../../components/auth/PasswordStrength';
@@ -418,7 +409,7 @@ const RegisterPage = () => {
                     Location <span className="text-[#00F5A0]">*</span>
                 </label>
                 <div className="relative">
-                    <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" />
+                    <User className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" /> {/* Replaced MapPin with User as per new lucide-react import */}
                     <input
                         name="location"
                         value={formData.location.areaLabel}
@@ -538,12 +529,17 @@ const RegisterPage = () => {
             >
                 {/* Logo */}
                 <div className="text-center mb-6">
-                    <Link className="inline-flex items-center gap-3" to="/">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] flex items-center justify-center shadow-xl">
-                            <Zap className="h-6 w-6 text-black" />
+                    <Link to="/" className="flex items-center justify-center gap-0 mb-8">
+                        <div className="w-16 h-16 flex items-center justify-center">
+                            <DotLottieReact
+                                src="/logo_final.lottie"
+                                loop
+                                autoplay
+                                className="w-full h-full"
+                            />
                         </div>
-                        <span className="text-3xl font-extrabold bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight">
-                            SkillSwap
+                        <span className="text-3xl font-bold -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-1">
+                            killSwap
                         </span>
                     </Link>
                 </div>
