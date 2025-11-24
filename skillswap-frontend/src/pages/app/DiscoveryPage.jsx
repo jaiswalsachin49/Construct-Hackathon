@@ -98,7 +98,7 @@ const DiscoveryPage = () => {
             });
         }
     };
-    console.log("Global Posts:", globalPosts);
+    // console.log("Global Posts:", globalPosts);
     // 5. View Profile Handler
     const handleViewProfile = (userId) => {
         setSelectedUserId(userId);
@@ -114,7 +114,7 @@ const DiscoveryPage = () => {
                 {/* ----------------------------------------------------------- */}
                 {/* LEFT SECTION (2 PARTS) — POST FEED SCROLLABLE               */}
                 {/* ----------------------------------------------------------- */}
-                <div className="w-[60%] h-full overflow-y-auto border-r border-white/10 p-6 space-y-6">
+                <div className="w-[60%] h-full overflow-y-auto border-r border-white/10 p-6 space-y-6 no-scrollbar">
                     <h2 className="text-2xl font-semibold text-white mb-4">
                         Latest Posts
                     </h2>

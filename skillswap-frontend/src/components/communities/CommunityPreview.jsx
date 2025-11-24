@@ -18,9 +18,9 @@ const CommunityPreview = ({ community, onClick }) => {
     <div
       data-testid={`community-preview-${community._id}`}
       onClick={handleClick}
-      className="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden"
+      className="flex-shrink-0 w-40 bg-[#101726] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-white/10 hover:border-[#00C4FF]/30"
     >
-      <div className="h-28 bg-gradient-to-br from-blue-400 to-purple-500 relative">
+      <div className="h-28 bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] relative">
         {community.coverImage ? (
           <img
             src={community.coverImage}
@@ -34,10 +34,10 @@ const CommunityPreview = ({ community, onClick }) => {
         )}
       </div>
       <div className="p-3">
-        <h3 className="font-semibold text-sm text-gray-900 truncate mb-1">
+        <h3 className="font-semibold text-sm text-white truncate mb-1">
           {community.name}
         </h3>
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-[#8A90A2]">
           {community.members.length || 0} members
         </p>
       </div>

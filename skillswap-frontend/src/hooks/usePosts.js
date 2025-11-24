@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import usePostStore from '../store/postStore';
+import useCommunityStore from '../store/communityStore';
 import * as postService from '../services/postService';
 
 export const usePosts = () => {
     const store = usePostStore();
 
-    const fetchFeed = async (page = 1) => {
+    const fetchFeed = useCallback(async (page = 1) => {
         try {
             store.setLoading(true);
             store.setError(null);
@@ -38,13 +39,15 @@ export const usePosts = () => {
                 // Append for pagination
                 store.setFeedPosts([...store.feedPosts, ...normalized]);
             }
+            return data; // Return data so component can check hasMore
         } catch (error) {
             console.error('Failed to fetch feed:', error);
             store.setError(error.response?.data?.message || 'Failed to load posts');
+            throw error; // Re-throw so component knows it failed
         } finally {
             store.setLoading(false);
         }
-    };
+    }, [store]);
 
     const createPost = async (content, mediaFiles, visibility, tags, communityId) => {
         try {
@@ -83,6 +86,12 @@ export const usePosts = () => {
                 // Non-fatal
                 console.warn('Failed to update userPosts cache after createPost', e);
             }
+
+            // Update community post count if applicable
+            if (communityId) {
+                useCommunityStore.getState().incrementCommunityPostCount(communityId);
+            }
+
             return data;
         } catch (error) {
             console.error('Failed to create post:', error);

@@ -39,7 +39,17 @@ exports.getNearbyCommunities = async (req, res) => {
             .sort((a, b) => a.distance - b.distance)
             .slice(0, 20);
 
-        res.json({ success: true, communities: nearbyCommunities });
+        // Add isMember flag
+        const communitiesWithMemberStatus = nearbyCommunities.map(c => {
+            const isMember = c.members.some(m => m.userId.toString() === req.user.userId);
+            return {
+                ...c,
+                postCount: Math.max(0, c.postCount || 0),
+                isMember
+            };
+        });
+
+        res.json({ success: true, communities: communitiesWithMemberStatus });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -53,7 +63,15 @@ exports.getMyCommunities = async (req, res) => {
             .populate('creatorId', 'name profilePhoto')
             .sort({ createdAt: -1 });
 
-        res.json({ success: true, communities });
+        const communitiesWithSanitizedCount = communities.map(c => {
+            const obj = c.toObject();
+            return {
+                ...obj,
+                postCount: Math.max(0, obj.postCount || 0)
+            };
+        });
+
+        res.json({ success: true, communities: communitiesWithSanitizedCount });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -121,7 +139,10 @@ exports.getCommunity = async (req, res) => {
             return res.status(404).json({ error: 'Community not found' });
         }
 
-        res.json({ success: true, community });
+        const communityObj = community.toObject();
+        communityObj.postCount = Math.max(0, communityObj.postCount || 0);
+
+        res.json({ success: true, community: communityObj });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -234,7 +255,18 @@ exports.searchCommunities = async (req, res) => {
             .limit(20)
             .sort({ createdAt: -1 });
 
-        res.json({ success: true, communities });
+        // Add isMember flag
+        const communitiesWithMemberStatus = communities.map(c => {
+            const communityObj = c.toObject();
+            const isMember = c.members.some(m => m.userId.toString() === req.user.userId);
+            return {
+                ...communityObj,
+                postCount: Math.max(0, communityObj.postCount || 0),
+                isMember
+            };
+        });
+
+        res.json({ success: true, communities: communitiesWithMemberStatus });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
