@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getUserPosts } from '../../services/postService'; 
+import { getUserPosts } from '../../services/postService';
 import PostCard from '../../components/Posts/PostCard';
 import Loading from '../common/Loading';
 import { FileText } from 'lucide-react';
@@ -52,16 +52,16 @@ const UserPosts = ({ userId }) => {
   }, [userId]);
 
   if (isLoading) return <div className="py-8"><Loading text="Loading posts..." /></div>;
-  
+
   if (posts.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-12 text-center bg-white rounded-lg border border-dashed border-gray-300">
-        <div className="p-4 bg-gray-50 rounded-full mb-3">
-            <FileText className="h-8 w-8 text-gray-400" />
-        </div>
-        <h3 className="text-lg font-medium text-gray-900">No posts yet</h3>
-        <p className="text-sm text-gray-500 max-w-xs mx-auto">
-            This user hasn't shared anything on their feed yet.
-        </p>
+    <div className="flex flex-col items-center justify-center py-12 text-center bg-white/5 rounded-lg border border-dashed border-white/20">
+      <div className="p-4 bg-white/10 rounded-full mb-3">
+        <FileText className="h-8 w-8 text-[#8A90A2]" />
+      </div>
+      <h3 className="text-lg font-medium text-white">No posts yet</h3>
+      <p className="text-sm text-[#8A90A2] max-w-xs mx-auto">
+        This user hasn't shared anything on their feed yet.
+      </p>
     </div>
   );
 

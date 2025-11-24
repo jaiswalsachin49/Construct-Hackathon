@@ -90,19 +90,19 @@ const PostCard = ({ post }) => {
             <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div
-                        onClick={() => navigate(`/app/profile/${post.user?._id}`)}
+                        onClick={() => navigate(`/app/profile/${post?._id}`)}
                         className="cursor-pointer"
                     >
-                        {post.user?.profilePhoto ? (
+                        {post.userId?.profilePhoto ? (
                             <img
-                                src={post.user.profilePhoto}
-                                alt={post.user.name}
+                                src={post.userId.profilePhoto}
+                                alt={post.userId.name}
                                 className="h-10 w-10 rounded-full object-cover"
                             />
                         ) : (
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                                 <span className="text-white font-semibold text-sm">
-                                    {getInitials(post.user?.name)}
+                                    {getInitials(post.userId?.name)}
                                 </span>
                             </div>
                         )}
@@ -110,10 +110,10 @@ const PostCard = ({ post }) => {
 
                     <div>
                         <h4
-                            onClick={() => navigate(`/app/profile/${post.user?._id}`)}
+                            onClick={() => navigate(`/app/profile/${post._id}`)}
                             className="font-semibold text-white cursor-pointer hover:underline"
                         >
-                            {post.user?.name || 'Unknown User'}
+                            {post.userId?.name || 'Unknown User'}
                         </h4>
                         <div className="flex items-center gap-1 text-sm text-[#8A90A2]">
                             <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
@@ -144,7 +144,7 @@ const PostCard = ({ post }) => {
                     </button>
 
                     {showMore && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                        <div className="absolute right-0 mt-2 w-48 bg-[#101726] rounded-lg shadow-lg border border-white/10 py-1 z-10 backdrop-blur-sm">
                             {isOwnPost ? (
                                 <>
                                     <button onClick={() => {
@@ -160,11 +160,16 @@ const PostCard = ({ post }) => {
                                                 console.error(err);
                                             }
                                         }
-                                    }} className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm">
-                                        Edit
+                                    }} className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                        Edit Post
                                     </button>
+                                    {/* The original code had a direct delete button here.
+                                        The provided snippet introduces `onDelete` prop, which is not defined in PostCard props.
+                                        For faithfulness, I'll adapt the original delete logic to the new button structure.
+                                    */}
                                     <button
                                         onClick={async () => {
+                                            setShowMore(false);
                                             const ok = window.confirm('Are you sure you want to delete this post?');
                                             if (!ok) return;
                                             const success = await deletePost(post._id);
@@ -172,18 +177,18 @@ const PostCard = ({ post }) => {
                                                 alert('Failed to delete post');
                                             }
                                         }}
-                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm text-red-600"
+                                        className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-red-500"
                                     >
-                                        Delete
+                                        Delete Post
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <button className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm">
-                                        Report
+                                    <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                        Report Post
                                     </button>
-                                    <button className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm">
-                                        Hide
+                                    <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                        Hide Post
                                     </button>
                                 </>
                             )}
@@ -348,8 +353,8 @@ const PostCard = ({ post }) => {
                             />
                             <button
                                 onClick={handleAddComment}
-                                disabled={!commentText.trim() || isAddingComment}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                disabled={!commentText.trim()}
+                                className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                             >
                                 Post
                             </button>

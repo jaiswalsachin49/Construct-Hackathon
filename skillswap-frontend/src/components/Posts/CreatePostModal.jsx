@@ -294,9 +294,10 @@ const CreatePostModal = ({ isOpen, onClose, communityId }) => {
                             className="flex-1 px-3 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
                         />
                         <button
+                            type="button"
                             onClick={() => addTag(tagInput)}
                             disabled={!tagInput.trim()}
-                            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                         >
                             Add
                         </button>

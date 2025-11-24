@@ -5,6 +5,7 @@ const authenticateToken = require('../middlewares/auth');
 const upload = require('../config/multer');
 
 router.get('/feed', authenticateToken, postController.getFeed);
+router.get('/global', authenticateToken, postController.getGlobalFeed);
 router.post('/', authenticateToken, upload.array('media', 10), postController.createPost);
 router.put('/:postId', authenticateToken, postController.updatePost);
 router.delete('/:postId', authenticateToken, postController.deletePost);

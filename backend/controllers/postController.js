@@ -3,6 +3,7 @@ const User = require('../models/User');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 
+// Get feed for allies only
 exports.getFeed = async (req, res) => {
     try {
         const { page = 1 } = req.query;
@@ -10,13 +11,11 @@ exports.getFeed = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const user = await User.findById(req.user.userId);
-        const allyIds = [...user.allies, user._id];
+        const allyIds = [...user.allies, user._id]; // Include user's own posts
 
+        // Only fetch posts from allies (removed public posts)
         const posts = await Post.find({
-            $or: [
-                { userId: { $in: allyIds } },
-                { visibility: 'public' }
-            ]
+            userId: { $in: allyIds }
         })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
@@ -26,10 +25,7 @@ exports.getFeed = async (req, res) => {
             .limit(limit);
 
         const totalPosts = await Post.countDocuments({
-            $or: [
-                { userId: { $in: allyIds } },
-                { visibility: 'public' }
-            ]
+            userId: { $in: allyIds }
         });
 
         res.json({
@@ -38,8 +34,38 @@ exports.getFeed = async (req, res) => {
             hasMore: skip + limit < totalPosts
         });
     } catch (error) {
-        // Log full error for debugging
         console.error('Get feed error:', error);
+        const payload = { error: error.message };
+        if (process.env.NODE_ENV !== 'production') payload.stack = error.stack;
+        res.status(500).json(payload);
+    }
+};
+
+// Get global feed (all public posts)
+exports.getGlobalFeed = async (req, res) => {
+    try {
+        const { page = 1 } = req.query;
+        const limit = 20;
+        const skip = (page - 1) * limit;
+
+        // Fetch all public posts (no ally filtering)
+        const posts = await Post.find({ visibility: 'public' })
+            .populate('userId', 'name profilePhoto')
+            .populate('comments.userId', 'name profilePhoto')
+            .populate('communityId', 'name')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalPosts = await Post.countDocuments({ visibility: 'public' });
+
+        res.json({
+            success: true,
+            posts,
+            hasMore: skip + limit < totalPosts
+        });
+    } catch (error) {
+        console.error('Get global feed error:', error);
         const payload = { error: error.message };
         if (process.env.NODE_ENV !== 'production') payload.stack = error.stack;
         res.status(500).json(payload);

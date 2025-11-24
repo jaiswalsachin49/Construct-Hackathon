@@ -1,10 +1,14 @@
 import api from './api';
 
-// Get feed posts
-export const getFeedPosts = async (page = 1, limit = 20) => {
-    const response = await api.get('/api/posts/feed', {
-        params: { page, limit },
-    });
+// Get feed posts (allies only)
+export const getFeedPosts = async (page = 1) => {
+    const response = await api.get(`/api/posts/feed?page=${page}`);
+    return response.data;
+};
+
+// Get global feed (all public posts)
+export const getGlobalFeed = async (page = 1) => {
+    const response = await api.get(`/api/posts/global?page=${page}`);
     return response.data;
 };
 
