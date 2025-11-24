@@ -68,7 +68,38 @@ const ActivityDetails = () => {
               <Clock className="h-5 w-5 mt-0.5 text-gray-500" />
               <div>
                 <p className="text-sm font-medium text-white">Time</p>
-                <p className="text-sm">{new Date(selectedActivity.time).toLocaleString()}</p>
+                <p className="text-sm">
+                  {(() => {
+                    // Try to extract and format the date
+                    try {
+                      if (selectedActivity.time) {
+                        const dateStr = selectedActivity.time.split('T')[0]; // Get YYYY-MM-DD part
+                        const date = new Date(dateStr);
+                        if (!isNaN(date.getTime())) {
+                          const formattedDate = date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          });
+                          return (
+                            <>
+                              {formattedDate}
+                              {selectedActivity.startTime && selectedActivity.endTime && (
+                                <> • {selectedActivity.startTime} - {selectedActivity.endTime}</>
+                              )}
+                            </>
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      console.error('Date parsing error:', e);
+                    }
+                    // Fallback
+                    return selectedActivity.startTime && selectedActivity.endTime 
+                      ? `${selectedActivity.startTime} - ${selectedActivity.endTime}`
+                      : 'Time not set';
+                  })()}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3 text-gray-400">

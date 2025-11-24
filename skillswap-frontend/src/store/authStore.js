@@ -15,6 +15,11 @@ const useAuthStore = create(
                 const realUser = user && typeof user === 'object' && user.user ? user.user : user;
                 set({ user: realUser, isAuthenticated: !!realUser });
             },
+            // Returns Authorization header for API requests
+            getAuthHeader: () => {
+                const token = get().token;
+                return token ? { Authorization: `Bearer ${token}` } : {};
+            },
 
             setToken: (token) => {
                 if (token) {

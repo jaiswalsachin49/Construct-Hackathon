@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-    conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
+    conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' }, // Optional now
+    activityId: { type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }, // New field for activity chat
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     content: { type: String, required: true },
     read: { type: Boolean, default: false },

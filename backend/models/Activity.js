@@ -17,7 +17,15 @@ const activitySchema = new mongoose.Schema({
     default: 'Other'
   },
   time: {
-    type: String, // Can be a specific date string or "Today, 8:00 PM"
+    type: String,
+    required: true
+  },
+  startTime: {
+    type: String,
+    required: true
+  },
+  endTime: {
+    type: String,
     required: true
   },
   location: {
@@ -43,9 +51,15 @@ const activitySchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-    expires: 86400 // Auto-expire after 24 hours (optional, based on requirement "pin auto-expires")
+    default: Date.now
+  },
+  expireAt: {
+    type: Date
   }
 });
+
+// Create TTL index - MongoDB will automatically delete documents when expireAt date is reached
+// The background task runs every 60 seconds, so deletion may take up to 1 minute after expireAt
+activitySchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('Activity', activitySchema);

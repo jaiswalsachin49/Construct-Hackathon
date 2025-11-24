@@ -37,6 +37,8 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
     category: 'Running',
     date: '',
     time: '',
+    startTime: '',
+    endTime: '',
     location: '',
     description: '',
     isOnline: false
@@ -71,6 +73,8 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
       await createActivity({
         ...formData,
         time: combinedTime,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
         coordinates: coordinates 
       });
       onClose();
@@ -136,30 +140,44 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                             </div>
                             </div>
                             <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">Time</label>
-                            <div className="relative">
-                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <input
-                                type="time"
-                                value={formData.time}
-                                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
-                                required
-                                />
+                                <label className="block text-xs font-medium text-gray-400 mb-1">Date</label>
+                                <div className="relative">
+                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="date"
+                                        value={formData.date}
+                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                                        required
+                                    />
+                                </div>
                             </div>
+                            {/* Changed: Added Start Time and End Time inputs */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-400 mb-1">Start Time</label>
+                                <div className="relative">
+                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="time"
+                                        value={formData.startTime}
+                                        onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">Date</label>
-                            <div className="relative">
-                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <input
-                                type="date"
-                                value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
-                                required
-                                />
-                            </div>
+                                <label className="block text-xs font-medium text-gray-400 mb-1">End Time</label>
+                                <div className="relative">
+                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="time"
+                                        value={formData.endTime}
+                                        onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
 
