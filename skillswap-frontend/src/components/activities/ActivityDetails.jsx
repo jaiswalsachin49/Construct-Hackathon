@@ -5,7 +5,7 @@ import ActivityChat from './ActivityChat';
 import useAuthStore from '../../store/authStore';
 
 const ActivityDetails = () => {
-  const { selectedActivity, selectActivity, joinActivity, deleteActivity } = useActivityStore();
+  const { selectedActivity, selectActivity, joinActivity, leaveActivity, deleteActivity } = useActivityStore();
   const { user } = useAuthStore();
 
   if (!selectedActivity) return null;
@@ -17,6 +17,12 @@ const ActivityDetails = () => {
     if (window.confirm("Are you sure you want to delete this activity?")) {
         await deleteActivity(selectedActivity._id);
         selectActivity(null);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (window.confirm("Are you sure you want to leave this activity?")) {
+        await leaveActivity(selectedActivity._id);
     }
   };
 
@@ -159,7 +165,14 @@ const ActivityDetails = () => {
             >
             Delete Activity
             </button>
-        ) : !isJoined ? (
+        ) : isJoined ? (
+            <button 
+                onClick={handleLeave}
+                className="w-full py-3 bg-orange-500/10 text-orange-400 font-bold rounded-xl hover:bg-orange-500/20 transition-colors"
+            >
+            Leave Activity
+            </button>
+        ) : (
             <>
                 <button 
                     onClick={() => joinActivity(selectedActivity._id)}
@@ -171,7 +184,7 @@ const ActivityDetails = () => {
                 Message Host
                 </button>
             </>
-        ) : null}
+        )}
       </div>
     </div>
   );

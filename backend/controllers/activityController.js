@@ -101,6 +101,38 @@ exports.joinActivity = async (req, res) => {
     }
 };
 
+// Leave an activity
+exports.leaveActivity = async (req, res) => {
+    try {
+        const activity = await Activity.findById(req.params.id);
+
+        if (!activity) {
+            return res.status(404).json({ msg: 'Activity not found' });
+        }
+
+        // Check if user is in attendees
+        if (!activity.attendees.includes(req.user.userId)) {
+            return res.status(400).json({ msg: 'Not in this activity' });
+        }
+
+        // Remove user from attendees
+        activity.attendees = activity.attendees.filter(
+            attendee => attendee.toString() !== req.user.userId
+        );
+        await activity.save();
+
+        // Return updated activity with populated fields
+        const updatedActivity = await Activity.findById(req.params.id)
+            .populate('host', 'name profilePhoto bio')
+            .populate('attendees', 'name profilePhoto');
+
+        res.json(updatedActivity);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 // Delete an activity
 exports.deleteActivity = async (req, res) => {
     try {
