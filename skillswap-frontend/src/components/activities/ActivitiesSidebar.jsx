@@ -115,8 +115,8 @@ const ActivitiesSidebar = () => {
                   <div className="flex items-center gap-2 mt-1">
                      <span className="text-xs text-gray-400">{activity.host.name}</span>
                      <span className="text-xs text-gray-500">•</span>
-                     <span className="text-xs text-gray-400">{new Date(activity.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                  </div>
+                     <span className="text-xs text-gray-400">{activity.startTime || 'Time TBD'}</span>
+                   </div>
                 </div>
               </div>
               <div className={`p-1.5 rounded-full ${

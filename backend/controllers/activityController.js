@@ -1,5 +1,6 @@
 const Activity = require('../models/Activity');
 const User = require('../models/User');
+const Message = require('../models/Message');
 
 // Get all activities
 exports.getActivities = async (req, res) => {
@@ -18,18 +19,45 @@ exports.getActivities = async (req, res) => {
 // Create a new activity
 exports.createActivity = async (req, res) => {
     try {
-        const { title, category, time, location, coordinates, description, isOnline } = req.body;
+        const { title, category, time, startTime, endTime, location, coordinates, description, isOnline } = req.body;
+
+        // Calculate expireAt based on date from time field and endTime
+        // time is in format "YYYY-MM-DDTHH:MM", endTime is "HH:MM"
+        let expireDateTime = null;
+        try {
+            if (time && endTime) {
+                // Extract date part from time (YYYY-MM-DD)
+                const datePart = time.split('T')[0];
+                // Combine with endTime to create expiration datetime
+                const expireDateTimeStr = `${datePart}T${endTime}:00`;
+                expireDateTime = new Date(expireDateTimeStr);
+
+                // Validate the date
+                if (isNaN(expireDateTime.getTime())) {
+                    console.error('Invalid expireAt date calculated:', { datePart, endTime, expireDateTimeStr });
+                    expireDateTime = null;
+                } else {
+                    console.log('Activity will expire at:', expireDateTime.toISOString());
+                }
+            }
+        } catch (dateError) {
+            console.error('Error calculating expireAt:', dateError);
+            expireDateTime = null;
+        }
 
         const newActivity = new Activity({
             title,
-            host: req.user.userId, // Fixed: accessing userId from token payload
+            host: req.user.userId,
             category,
             time,
+            startTime,
+            endTime,
             location,
             coordinates,
             description,
             isOnline,
-            attendees: [] // Host is not automatically an attendee, or maybe they should be? Let's keep them separate as 'host'
+            attendees: [],
+            ...(expireDateTime && { expireAt: expireDateTime }) // Only add if valid
         });
 
         const activity = await newActivity.save();
@@ -39,7 +67,7 @@ exports.createActivity = async (req, res) => {
 
         res.json(activity);
     } catch (err) {
-        console.error(err.message);
+        console.error('Activity creation error:', err.message);
         res.status(500).send('Server Error');
     }
 };
@@ -92,9 +120,54 @@ exports.deleteActivity = async (req, res) => {
         res.json({ msg: 'Activity removed' });
     } catch (err) {
         console.error(err.message);
-        if (err.kind === 'ObjectId') {
+        res.status(500).send('Server Error');
+    }
+};
+
+// Get activity messages
+exports.getActivityMessages = async (req, res) => {
+    try {
+        const messages = await Message.find({ activityId: req.params.id })
+            .populate('senderId', 'name profilePhoto')
+            .sort({ createdAt: 1 });
+        res.json(messages);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// Send activity message
+exports.sendActivityMessage = async (req, res) => {
+    try {
+        const { content } = req.body;
+        const activity = await Activity.findById(req.params.id);
+
+        if (!activity) {
             return res.status(404).json({ msg: 'Activity not found' });
         }
+
+        // Check if user is participant (host or attendee)
+        const isParticipant = activity.host.toString() === req.user.userId ||
+            activity.attendees.includes(req.user.userId);
+
+        if (!isParticipant) {
+            return res.status(403).json({ msg: 'Not a participant' });
+        }
+
+        const newMessage = new Message({
+            activityId: req.params.id,
+            senderId: req.user.userId,
+            content
+        });
+
+        await newMessage.save();
+
+        const populatedMessage = await newMessage.populate('senderId', 'name profilePhoto');
+
+        res.json(populatedMessage);
+    } catch (err) {
+        console.error(err.message);
         res.status(500).send('Server Error');
     }
 };

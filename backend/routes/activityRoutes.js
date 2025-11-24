@@ -23,4 +23,14 @@ router.post('/:id/join', auth, activityController.joinActivity);
 // @access  Private
 router.delete('/:id', auth, activityController.deleteActivity);
 
+// @route   GET api/activities/:id/messages
+// @desc    Get activity messages
+// @access  Private
+router.get('/:id/messages', auth, activityController.getActivityMessages);
+
+// @route   POST api/activities/:id/messages
+// @desc    Send activity message
+// @access  Private
+router.post('/:id/messages', auth, activityController.sendActivityMessage);
+
 module.exports = router;

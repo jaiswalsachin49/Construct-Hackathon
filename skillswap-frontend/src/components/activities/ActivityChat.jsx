@@ -1,26 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
+import useActivityStore from '../../store/activityStore';
+import useAuthStore from '../../store/authStore';
+import axios from 'axios';
 
 const ActivityChat = () => {
-  const [messages, setMessages] = useState([
-    { id: 1, user: 'Alisa', text: 'Hey everyone! Excited for the run.', time: '10:00 AM', isMe: false },
-    { id: 2, user: 'You', text: 'Me too! Where exactly are we meeting?', time: '10:02 AM', isMe: true },
-    { id: 3, user: 'Alisa', text: 'Right at the main gate, near the fountain.', time: '10:03 AM', isMe: false },
-  ]);
+  const { selectedActivity } = useActivityStore();
+  const { user, getAuthHeader } = useAuthStore();
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const messagesEndRef = useRef(null);
+  const API_URL = import.meta.env.VITE_BACKEND_URL + '/api/activities';
 
-  const handleSend = (e) => {
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (selectedActivity) {
+        fetchMessages();
+        // Poll for new messages every 3 seconds (simple real-time)
+        const interval = setInterval(fetchMessages, 3000);
+        return () => clearInterval(interval);
+    }
+  }, [selectedActivity]);
+
+  const fetchMessages = async () => {
+    try {
+        const res = await axios.get(`${API_URL}/${selectedActivity._id}/messages`, {
+            headers: getAuthHeader()
+        });
+        setMessages(res.data);
+    } catch (err) {
+        console.error("Error fetching messages:", err);
+    }
+  };
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isSending) return;
     
-    setMessages([...messages, {
-      id: Date.now(),
-      user: 'You',
-      text: input,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isMe: true
-    }]);
-    setInput('');
+    setIsSending(true);
+    try {
+        const res = await axios.post(`${API_URL}/${selectedActivity._id}/messages`, 
+            { content: input },
+            { headers: getAuthHeader() }
+        );
+        setMessages([...messages, res.data]);
+        setInput('');
+    } catch (err) {
+        console.error("Error sending message:", err);
+    } finally {
+        setIsSending(false);
+    }
   };
 
   return (
@@ -31,18 +68,30 @@ const ActivityChat = () => {
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
-            <div className={`max-w-[80%] p-3 rounded-xl text-sm ${
-              msg.isMe 
-                ? 'bg-[#00C4FF] text-white rounded-tr-none' 
-                : 'bg-white/10 border border-white/10 text-gray-200 rounded-tl-none'
-            }`}>
-              {msg.text}
+        {messages.map((msg) => {
+          const isMe = msg.senderId._id === user?._id;
+          return (
+            <div key={msg._id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                <div className="flex items-end gap-2 max-w-[80%]">
+                    {!isMe && (
+                        <img src={msg.senderId.profilePhoto || "https://github.com/shadcn.png"} className="w-6 h-6 rounded-full object-cover mb-1" />
+                    )}
+                    <div className={`p-3 rounded-xl text-sm ${
+                        isMe 
+                            ? 'bg-[#00C4FF] text-white rounded-tr-none' 
+                            : 'bg-white/10 border border-white/10 text-gray-200 rounded-tl-none'
+                        }`}>
+                        {!isMe && <p className="text-[10px] text-[#00C4FF] font-bold mb-1">{msg.senderId.name}</p>}
+                        {msg.content}
+                    </div>
+                </div>
+                <span className="text-[10px] text-gray-500 mt-1 mr-1">
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
             </div>
-            <span className="text-[10px] text-gray-500 mt-1">{msg.time}</span>
-          </div>
-        ))}
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
 
       <form onSubmit={handleSend} className="p-3 bg-[#101726] border-t border-white/10 flex gap-2">
@@ -51,13 +100,15 @@ const ActivityChat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00C4FF]"
+          disabled={isSending}
+          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00C4FF] disabled:opacity-50"
         />
         <button 
           type="submit"
-          className="p-2 bg-[#00C4FF] text-white rounded-lg hover:bg-[#00b0e6] transition-colors"
+          disabled={isSending || !input.trim()}
+          className="p-2 bg-[#00C4FF] text-white rounded-lg hover:bg-[#00b0e6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Send className="h-4 w-4" />
+          <Send className={`h-4 w-4 ${isSending ? 'animate-pulse' : ''}`} />
         </button>
       </form>
     </div>

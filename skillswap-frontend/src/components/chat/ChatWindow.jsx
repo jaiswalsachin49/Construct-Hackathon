@@ -70,6 +70,20 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     const isOnline = onlineUsers.includes(otherUserId);
 
     // ... (Keep your existing header helpers) ...
+    
+    if (!conversation) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-transparent">
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                    <Send className="h-8 w-8 text-[#8A90A2]" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Select a user to start chatting</h3>
+                <p className="text-[#8A90A2] max-w-md">
+                    Choose a conversation from the list or start a new one to connect with other users.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full bg-transparent">
