@@ -17,7 +17,15 @@ const FeedPage = () => {
     const loadMoreRef = useRef(null);
 
     useEffect(() => {
-        fetchFeed(1);
+        const loadInitial = async () => {
+            try {
+                const data = await fetchFeed(1);
+                if (data) setHasMore(data.hasMore);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        loadInitial();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -28,7 +36,11 @@ const FeedPage = () => {
                 if (entries[0].isIntersecting && !isLoading && hasMore) {
                     const nextPage = page + 1;
                     setPage(nextPage);
-                    fetchFeed(nextPage);
+                    fetchFeed(nextPage).then(data => {
+                        if (data) setHasMore(data.hasMore);
+                    }).catch(err => {
+                        console.error(err);
+                    });
                 }
             },
             { threshold: 0.5 }
@@ -147,7 +159,10 @@ const FeedPage = () => {
                             <button
                                 onClick={() => {
                                     setPage(1);
-                                    fetchFeed(1);
+                                    setHasMore(true);
+                                    fetchFeed(1).then(data => {
+                                        if (data) setHasMore(data.hasMore);
+                                    });
                                 }}
                                 className="px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
                             >

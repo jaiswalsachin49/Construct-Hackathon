@@ -70,7 +70,7 @@ const CommunitiesPage = () => {
       console.error('Error joining community:', err);
     }
   };
-  console.log(filteredCommunities)
+  // console.log(filteredCommunities)
   return (
     <div className="min-h-screen bg-transparent">
       {/* Header */}

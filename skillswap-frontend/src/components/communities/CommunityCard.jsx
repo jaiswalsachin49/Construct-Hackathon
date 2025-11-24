@@ -27,10 +27,10 @@ const CommunityCard = ({ community, onJoin }) => {
     <div
       data-testid={`community-card-${community._id}`}
       onClick={handleCardClick}
-      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all overflow-hidden cursor-pointer border border-gray-100"
+      className="bg-[#101726] rounded-lg shadow-sm hover:shadow-lg transition-all overflow-hidden cursor-pointer border border-white/10 hover:border-[#00C4FF]/30"
     >
       {/* Cover Image */}
-      <div className="h-32 bg-gradient-to-br from-blue-400 to-purple-500 relative">
+      <div className="h-32 bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] relative">
         {community.coverImage ? (
           <img
             src={community.coverImage}
@@ -46,11 +46,11 @@ const CommunityCard = ({ community, onJoin }) => {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-bold text-lg text-gray-900 mb-2">
+        <h3 className="font-bold text-lg text-white mb-2">
           {community.name}
         </h3>
 
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+        <p className="text-sm text-[#8A90A2] mb-3 line-clamp-2">
           {community.description}
         </p>
 
@@ -60,7 +60,7 @@ const CommunityCard = ({ community, onJoin }) => {
             {community.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded-full"
+                className="text-xs px-2 py-1 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded-full"
               >
                 #{tag}
               </span>
@@ -71,18 +71,18 @@ const CommunityCard = ({ community, onJoin }) => {
         {/* Stats */}
         <div className="space-y-2 mb-4">
           {community.distance !== undefined && (
-            <div className="flex items-center text-sm text-gray-600">
-              <MapPin className="w-4 h-4 mr-2" />
+            <div className="flex items-center text-sm text-[#8A90A2]">
+              <MapPin className="w-4 h-4 mr-2 text-[#00C4FF]" />
               <span>{community.distance.toFixed(2)} km away</span>
             </div>
           )}
-          <div className="flex items-center text-sm text-gray-600">
-            <Users className="w-4 h-4 mr-2" />
+          <div className="flex items-center text-sm text-[#8A90A2]">
+            <Users className="w-4 h-4 mr-2 text-[#7A3EF9]" />
             <span>{community.members.length || 0} members</span>
           </div>
           {community.postCount !== undefined && (
-            <div className="flex items-center text-sm text-gray-600">
-              <FileText className="w-4 h-4 mr-2" />
+            <div className="flex items-center text-sm text-[#8A90A2]">
+              <FileText className="w-4 h-4 mr-2 text-[#00F5A0]" />
               <span>{community.postCount} posts this week</span>
             </div>
           )}
@@ -94,7 +94,7 @@ const CommunityCard = ({ community, onJoin }) => {
             <button
               data-testid={`join-button-${community._id}`}
               onClick={handleJoin}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex-1 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 text-black px-4 py-2 rounded-lg font-medium transition-all"
             >
               Join
             </button>
@@ -102,7 +102,7 @@ const CommunityCard = ({ community, onJoin }) => {
           <button
             data-testid={`view-button-${community._id}`}
             onClick={handleView}
-            className="flex-1 border border-gray-300 hover:border-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+            className="flex-1 border border-white/10 hover:bg-white/5 text-white px-4 py-2 rounded-lg font-medium transition-colors"
           >
             View
           </button>

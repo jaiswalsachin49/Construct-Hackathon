@@ -39,6 +39,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
             setIsLoading(false);
         }
     };
+    console.log(user)
 
     const handleConnect = async () => {
         try {
@@ -107,10 +108,18 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                 ) : (
                     <>
                         {/* Header / Cover */}
-                        <div className="h-32 bg-gradient-to-r from-pink-500 to-orange-400 w-full flex-shrink-0" />
+                        <div className="relative h-32 bg-gradient-to-r from-[#7A3EF9] via-[#00C4FF] to-[#00F5A0] w-full flex-shrink-0">
+                            {user.coverPhoto && (
+                                <img
+                                    src={user.coverPhoto}
+                                    alt="Cover"
+                                    className="w-full h-full object-cover"
+                                />
+                            )}
+                        </div>
 
                         {/* Profile Info */}
-                        <div className="px-6 pb-6 -mt-12 flex-1">
+                        <div className="px-6 pb-6 -mt-12 flex-1 z-10">
                             <div className="flex justify-between items-end mb-4">
                                 <div className="w-24 h-24 bg-[#0A0F1F] rounded-full p-1 shadow-lg border border-white/10">
                                     <img
@@ -126,7 +135,13 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                            <h2
+                                onClick={() => {
+                                    onClose();
+                                    navigate(`/app/profile/${user._id}`);
+                                }}
+                                className="text-2xl font-bold text-white flex items-center gap-2 cursor-pointer hover:text-[#00C4FF] transition-colors"
+                            >
                                 {user.name}
                                 {user.isVerified && <CheckCircle className="w-5 h-5 text-[#00C4FF]" />}
                             </h2>

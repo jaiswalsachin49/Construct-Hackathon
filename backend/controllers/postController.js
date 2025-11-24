@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Community = require('../models/Community');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 
@@ -144,6 +145,11 @@ exports.createPost = async (req, res) => {
         await post.save();
         await post.populate('userId', 'name profilePhoto');
 
+        // Increment community post count
+        if (communityId) {
+            await Community.findByIdAndUpdate(communityId, { $inc: { postCount: 1 } });
+        }
+
         res.status(201).json({ success: true, post });
     } catch (error) {
         // Log and return stack in dev to help debugging client-side 500s
@@ -204,6 +210,14 @@ exports.deletePost = async (req, res) => {
         }
 
         await Post.findByIdAndDelete(req.params.postId);
+
+        // Decrement community post count (prevent going below 0)
+        if (post.communityId) {
+            await Community.findOneAndUpdate(
+                { _id: post.communityId, postCount: { $gt: 0 } },
+                { $inc: { postCount: -1 } }
+            );
+        }
 
         res.json({ success: true, message: 'Post deleted' });
     } catch (error) {
@@ -342,6 +356,9 @@ exports.createCommunityPost = async (req, res) => {
 
         await post.save();
         await post.populate('userId', 'name profilePhoto');
+
+        // Increment community post count
+        await Community.findByIdAndUpdate(communityId, { $inc: { postCount: 1 } });
 
         res.status(201).json({ success: true, post });
     } catch (error) {
