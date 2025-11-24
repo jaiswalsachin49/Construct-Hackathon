@@ -3,34 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import socketService from '../../services/socketService';
 import useCommunityStore from '../../store/communityStore';
+import useAuthStore from '../../store/authStore';
 
-const CommunityChat = ({ communityId }) => {
+const CommunityChat = ({ communityId, community }) => {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const { user } = useAuthStore();
   const { communityMessages, addCommunityMessage } = useCommunityStore();
   const messages = communityMessages[communityId] || [];
 
+  // Check if user is a member
+  const isMember = community?.members?.some(m => m.userId?._id === user?._id || m.userId === user?._id);
+
   useEffect(() => {
-    // Connect socket and join community room
-    socketService.connect();
-    socketService.joinCommunityRoom(communityId);
-    setIsConnected(true);
+    // Only connect if user is a member
+    if (isMember) {
+      socketService.connect();
+      socketService.joinCommunityRoom(communityId);
+      setIsConnected(true);
 
-    // Listen for new messages
-    socketService.on('receive:community:message', (newMessage) => {
-      if (newMessage.communityId === communityId) {
-        addCommunityMessage(communityId, newMessage);
-      }
-    });
+      // Listen for new messages
+      socketService.on('receive:community:message', (newMessage) => {
+        if (newMessage.communityId === communityId) {
+          addCommunityMessage(communityId, newMessage);
+        }
+      });
 
-    return () => {
-      socketService.leaveCommunityRoom(communityId);
-      socketService.off('receive:community:message');
-    };
-  }, [communityId]);
+      return () => {
+        socketService.leaveCommunityRoom(communityId);
+        socketService.off('receive:community:message');
+      };
+    }
+  }, [communityId, isMember]);
 
   useEffect(() => {
     // Scroll to bottom when new messages arrive
@@ -39,7 +46,7 @@ const CommunityChat = ({ communityId }) => {
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (message.trim() && isConnected) {
+    if (message.trim() && isConnected && isMember) {
       socketService.sendCommunityMessage(communityId, message);
       setMessage('');
     }
@@ -51,13 +58,20 @@ const CommunityChat = ({ communityId }) => {
       <div className="px-4 py-3 border-b border-white/10">
         <h3 className="font-semibold text-white">Community Buzz</h3>
         <p className="text-xs text-[#00F5A0]">
-          {isConnected ? 'Connected' : 'Connecting...'}
+          {!isMember ? 'Join to chat' : isConnected ? 'Connected' : 'Connecting...'}
         </p>
       </div>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
+        {!isMember ? (
+          <div className="flex items-center justify-center h-full text-center">
+            <div className="space-y-2">
+              <p className="text-[#8A90A2]">Join this community to participate in chat</p>
+              <p className="text-sm text-[#00C4FF]">Click "Join Community" to get started</p>
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-[#8A90A2]">
             <p>No messages yet. Start the conversation!</p>
           </div>
@@ -100,14 +114,14 @@ const CommunityChat = ({ communityId }) => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type message..."
-            className="flex-1 px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
-            disabled={!isConnected}
+            placeholder={isMember ? "Type message..." : "Join community to chat"}
+            className="flex-1 px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!isConnected || !isMember}
           />
           <button
             data-testid="send-button"
             type="submit"
-            disabled={!message.trim() || !isConnected}
+            disabled={!message.trim() || !isConnected || !isMember}
             className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg transition-colors"
           >
             <Send className="w-5 h-5" />

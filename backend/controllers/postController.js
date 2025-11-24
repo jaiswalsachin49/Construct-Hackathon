@@ -48,8 +48,9 @@ exports.getGlobalFeed = async (req, res) => {
         const { page = 1 } = req.query;
         const limit = 20;
         const skip = (page - 1) * limit;
+        const userId = req.user.userId;
 
-        // Fetch all public posts (no ally filtering)
+        // Fetch all public posts
         const posts = await Post.find({ visibility: 'public' })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
@@ -58,11 +59,25 @@ exports.getGlobalFeed = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
+        // Filter out community posts where user is not a member
+        const userCommunities = await Community.find({
+            'members.userId': userId
+        }).select('_id');
+
+        const userCommunityIds = new Set(userCommunities.map(c => c._id.toString()));
+
+        const filteredPosts = posts.filter(post => {
+            // If post has no community, show it
+            if (!post.communityId) return true;
+            // If post has community, only show if user is a member
+            return userCommunityIds.has(post.communityId._id.toString());
+        });
+
         const totalPosts = await Post.countDocuments({ visibility: 'public' });
 
         res.json({
             success: true,
-            posts,
+            posts: filteredPosts,
             hasMore: skip + limit < totalPosts
         });
     } catch (error) {
@@ -345,6 +360,17 @@ exports.createCommunityPost = async (req, res) => {
         const { content, tags } = req.body;
         const { communityId } = req.params;
         const userId = req.user.userId;
+
+        // Verify user is a member of the community
+        const community = await Community.findById(communityId);
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        const isMember = community.members.some(m => m.userId.toString() === userId);
+        if (!isMember) {
+            return res.status(403).json({ error: 'Only members can post in this community' });
+        }
 
         const post = new Post({
             userId,

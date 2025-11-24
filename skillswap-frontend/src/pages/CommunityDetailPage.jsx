@@ -240,8 +240,8 @@ const CommunityDetailPage = () => {
               data-testid="posts-tab"
               onClick={() => setActiveTab('posts')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'posts'
-                  ? 'border-[#00C4FF] text-[#00C4FF]'
-                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                ? 'border-[#00C4FF] text-[#00C4FF]'
+                : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >
               Posts
@@ -250,8 +250,8 @@ const CommunityDetailPage = () => {
               data-testid="buzz-tab"
               onClick={() => setActiveTab('buzz')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'buzz'
-                  ? 'border-[#00C4FF] text-[#00C4FF]'
-                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                ? 'border-[#00C4FF] text-[#00C4FF]'
+                : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >
               Buzz (Chat)
@@ -260,8 +260,8 @@ const CommunityDetailPage = () => {
               data-testid="members-tab"
               onClick={() => setActiveTab('members')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'members'
-                  ? 'border-[#00C4FF] text-[#00C4FF]'
-                  : 'border-transparent text-[#8A90A2] hover:text-white'
+                ? 'border-[#00C4FF] text-[#00C4FF]'
+                : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >
               Members
@@ -272,8 +272,8 @@ const CommunityDetailPage = () => {
 
       {/* Tab Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {activeTab === 'posts' && <CommunityPosts communityId={communityId} />}
-        {activeTab === 'buzz' && <CommunityChat communityId={communityId} />}
+        {activeTab === 'posts' && <CommunityPosts communityId={communityId} community={currentCommunity} />}
+        {activeTab === 'buzz' && <CommunityChat communityId={communityId} community={currentCommunity} />}
         {activeTab === 'members' && <MembersList communityId={communityId} />}
       </div>
     </div>

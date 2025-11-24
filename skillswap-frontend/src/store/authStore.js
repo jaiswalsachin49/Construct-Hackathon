@@ -34,6 +34,10 @@ const useAuthStore = create(
             logout: () => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('skillswap-auth');
+
+                // Clear community messages on logout to prevent showing other user's messages
+                localStorage.removeItem('skillswap-community-storage');
+
                 set({
                     user: null,
                     token: null,

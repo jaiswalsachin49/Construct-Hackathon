@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCommunities } from '../../hooks/useCommunities';
+import useAuthStore from '../../store/authStore';
 import { Search, Crown, Shield } from 'lucide-react';
 
 const MembersList = ({ communityId }) => {
   const navigate = useNavigate();
-  const { fetchCommunityMembers } = useCommunities();
+  const { fetchCommunityMembers, updateMemberRole, kickMember } = useCommunities();
+  const { user } = useAuthStore();
   const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -25,9 +27,39 @@ const MembersList = ({ communityId }) => {
     loadMembers();
   }, [communityId]);
 
+  const handleRoleUpdate = async (memberId, newRole) => {
+    try {
+      await updateMemberRole(communityId, memberId, newRole);
+      // Optimistic update
+      setMembers(prev => prev.map(m =>
+        m.userId._id === memberId ? { ...m, role: newRole } : m
+      ));
+    } catch (error) {
+      console.error('Failed to update role:', error);
+    }
+  };
+
+  const handleRemoveMember = async (memberId) => {
+    if (!window.confirm('Are you sure you want to remove this member?')) {
+      return;
+    }
+
+    try {
+      await kickMember(communityId, memberId);
+      // Remove from local state
+      setMembers(prev => prev.filter(m => m.userId._id !== memberId));
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+      alert(error.response?.data?.error || 'Failed to remove member');
+    }
+  };
+
   const filteredMembers = members.filter(member =>
     member.userId?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const currentUserRole = members.find(m => m.userId?._id === user?._id)?.role;
+  const isAdmin = currentUserRole === 'admin';
 
   const admins = filteredMembers.filter(m => m.role === 'admin');
   const moderators = filteredMembers.filter(m => m.role === 'moderator');
@@ -35,10 +67,12 @@ const MembersList = ({ communityId }) => {
   const MemberItem = ({ member }) => (
     <div
       data-testid={`member-${member._id}`}
-      onClick={() => navigate(`/app/profile/${member.userId?._id}`)}
-      className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-white/5"
+      className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/5 group"
     >
-      <div className="w-12 h-12 bg-gradient-to-br from-[#00F5A0] to-[#00C4FF] rounded-full flex items-center justify-center text-black font-semibold">
+      <div
+        onClick={() => navigate(`/app/profile/${member.userId?._id}`)}
+        className="w-12 h-12 bg-gradient-to-br from-[#00F5A0] to-[#00C4FF] rounded-full flex items-center justify-center text-black font-semibold cursor-pointer"
+      >
         {member.userId?.profilePhoto ? (
           <img src={member.userId?.profilePhoto} alt={member.userId?.name} className="w-full h-full rounded-full object-cover" />
         ) : (
@@ -47,7 +81,12 @@ const MembersList = ({ communityId }) => {
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h4 className="font-medium text-white">{member.userId?.name}</h4>
+          <h4
+            onClick={() => navigate(`/app/profile/${member.userId?._id}`)}
+            className="font-medium text-white cursor-pointer hover:underline"
+          >
+            {member.userId?.name}
+          </h4>
           {member.role === 'admin' && (
             <Crown className="w-4 h-4 text-yellow-500" title="Admin" />
           )}
@@ -60,6 +99,42 @@ const MembersList = ({ communityId }) => {
           {member.joinedAt && ` • Joined ${new Date(member.joinedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
         </p>
       </div>
+
+      {/* Admin Actions */}
+      {isAdmin && user?._id !== member.userId?._id && (
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+          {member.role !== 'admin' ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRoleUpdate(member.userId._id, 'admin');
+              }}
+              className="px-3 py-1 text-xs font-medium bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors"
+            >
+              Make Admin
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRoleUpdate(member.userId._id, 'member');
+              }}
+              className="px-3 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors"
+            >
+              Remove Admin
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemoveMember(member.userId._id);
+            }}
+            className="px-3 py-1 text-xs font-medium bg-red-600/20 text-red-500 rounded-full hover:bg-red-600/30 transition-colors"
+          >
+            Remove Member
+          </button>
+        </div>
+      )}
     </div>
   );
 
