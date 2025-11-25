@@ -16,6 +16,7 @@ router.get('/:communityId/members', communityController.getMembers);
 router.post('/:communityId/kick/:userId', authenticateToken, communityController.kickMember);
 router.put('/:communityId/members/:userId/role', authenticateToken, communityController.updateMemberRole);
 router.get('/:communityId/messages', authenticateToken, communityController.getCommunityMessages);
+router.delete('/:communityId', authenticateToken, communityController.deleteCommunity);
 
 router.get('/:communityId/posts', authenticateToken, postController.getCommunityPosts);
 router.post('/:communityId/posts', authenticateToken, postController.createCommunityPost);

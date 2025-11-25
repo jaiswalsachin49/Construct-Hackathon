@@ -357,4 +357,46 @@ exports.getCommunityMessages = async (req, res) => {
     }
 };
 
+// Delete Community (Admin Only)
+exports.deleteCommunity = async (req, res) => {
+    try {
+        const { communityId } = req.params;
+        const userId = req.user.userId;
+
+        // Find the community
+        const community = await Community.findById(communityId);
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        // Check if user is the admin/creator
+        if (community.creatorId.toString() !== userId) {
+            return res.status(403).json({ error: 'Only the community admin can delete this community' });
+        }
+
+        // Check if community has more than 1 member
+        if (community.members.length > 1) {
+            return res.status(400).json({
+                error: 'Cannot delete community with multiple members',
+                message: `This community has ${community.members.length} members. Please remove all other members before deleting.`
+            });
+        }
+
+        // Delete community (this will also cascade delete related data if configured in schema)
+        await Community.findByIdAndDelete(communityId);
+
+        // Optional: Delete related data manually if not using cascade
+        // await Post.deleteMany({ communityId });
+        // await CommunityMessage.deleteMany({ communityId });
+
+        res.json({
+            success: true,
+            message: 'Community deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete community error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = exports;

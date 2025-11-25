@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share2, Settings, Users, MapPin } from 'lucide-react';
+import { ArrowLeft, Share2, Settings, Users, MapPin, Trash2 } from 'lucide-react';
 import { useCommunities } from '../hooks/useCommunities';
 import CommunityPosts from '../components/communities/CommunityPosts';
 import CommunityChat from '../components/communities/CommunityChat';
 import MembersList from '../components/communities/MembersList';
 import { useAuth } from '../hooks/useAuth';
+import { deleteCommunity } from '../services/communityService';
+import { useToast } from '../hooks/use-toast';
 
 const CommunityDetailPage = () => {
   const { communityId } = useParams();
@@ -13,6 +15,7 @@ const CommunityDetailPage = () => {
   const navigate = useNavigate();
   const { currentCommunity, fetchCommunity, joinCommunity, leaveCommunity, isLoading } = useCommunities();
   const currentUserId = useAuth().user._id;
+  const { toast } = useToast();
 
   const [activeTab, setActiveTab] = useState('posts');
   const [isMember, setIsMember] = useState(false);
@@ -91,6 +94,50 @@ const CommunityDetailPage = () => {
     } else {
       navigator.clipboard.writeText(window.location.href);
       alert('Link copied to clipboard!');
+    }
+  };
+
+  const handleDelete = async () => {
+    // Check if user is admin
+    if (!isAdmin) {
+      toast({
+        title: "Permission Denied",
+        description: "Only community admins can delete the community.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check member count
+    if (currentCommunity.members.length > 1) {
+      toast({
+        title: "Cannot Delete Community",
+        description: `This community has ${currentCommunity.members.length} members. Please remove all other members before deleting.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to permanently delete "${currentCommunity.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await deleteCommunity(communityId);
+      toast({
+        title: "Community Deleted",
+        description: "The community has been successfully deleted.",
+        variant: "success",
+      });
+      navigate('/app/communities');
+    } catch (error) {
+      console.error('Error deleting community:', error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || error.response?.data?.error || "Failed to delete community.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -211,18 +258,27 @@ const CommunityDetailPage = () => {
               </button>
             )}
             <button
-              data-testid="share-button"
               onClick={handleShare}
-              className="px-6 py-2 border border-white/10 text-[#E6E9EF] hover:bg-white/5 rounded-lg font-medium transition-colors flex items-center gap-2"
+              className="p-2 border border-white/20 text-[#8A90A2] hover:bg-white/10 hover:text-white rounded-lg transition-colors"
+              title="Share"
             >
-              <Share2 className="w-4 h-4" />
-              Share
+              <Share2 className="w-5 h-5" />
             </button>
+
+            {/* Delete Button (Admin Only) */}
+            {isAdmin && (
+              <button
+                onClick={handleDelete}
+                className="p-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                title="Delete Community"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
             {isAdmin && (
               <button
                 data-testid="settings-button"
                 onClick={() => navigate(`/app/communities/${communityId}/settings`)}
-                className="px-6 py-2 border border-white/10 text-[#E6E9EF] hover:bg-white/5 rounded-lg font-medium transition-colors flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
                 Settings

@@ -83,3 +83,9 @@ export const getCommunityMessages = async (communityId) => {
   const response = await api.get(`/api/communities/${communityId}/messages`);
   return response.data;
 };
+
+// Delete community (Admin only)
+export const deleteCommunity = async (communityId) => {
+  const response = await api.delete(`/api/communities/${communityId}`);
+  return response.data;
+};

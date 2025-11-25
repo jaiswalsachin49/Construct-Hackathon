@@ -62,8 +62,8 @@ const ActivitiesSidebar = () => {
   };
 
   return (
-    <div className="w-full lg:w-96 bg-[#101726] border-r border-white/10 flex flex-col h-full">
-      <div className="p-4 space-y-4">
+    <div className="w-full lg:w-96 bg-[#101726] border-r border-white/10 flex flex-col h-full max-h-screen lg:max-h-none overflow-hidden">
+      <div className="p-4 space-y-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">Live Meetup Spots</h2>
           <button
@@ -94,8 +94,8 @@ const ActivitiesSidebar = () => {
               key={cat.id}
               onClick={() => setFilter('category', cat.id)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${filters.category === cat.id
-                  ? 'bg-[#00C4FF]/20 text-[#00C4FF] border border-[#00C4FF]/50'
-                  : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
+                ? 'bg-[#00C4FF]/20 text-[#00C4FF] border border-[#00C4FF]/50'
+                : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
                 }`}
             >
               <cat.icon className="h-3 w-3" />
@@ -150,10 +150,10 @@ const ActivitiesSidebar = () => {
                   ref={cardRef}
                   key={activity._id}
                   onClick={() => selectActivity(activity)}
-                  onMouseMove={(e) => handleCardMouseMove(activity._id, cardRef.current, e)}
+                  onMouseMove={(e) => handleCardMouseMove(activity._id, e, cardRef.current)}
                   className={`p-3 rounded-xl border cursor-pointer transition-all relative group ${selectedActivity?._id === activity._id
-                      ? 'bg-white/10 border-[#00C4FF]/50'
-                      : 'bg-white/5 border-white/10 hover:border-white/20'
+                    ? 'bg-white/10 border-[#00C4FF]/50'
+                    : 'bg-white/5 border-white/10 hover:border-white/20'
                     }`}
                   style={{
                     '--mouse-x': `${mousePos.x}px`,
@@ -180,8 +180,8 @@ const ActivitiesSidebar = () => {
                       </div>
                     </div>
                     <div className={`p-1.5 rounded-full ${activity.category === 'Running' ? 'bg-purple-500/20 text-purple-400' :
-                        activity.category === 'Music' ? 'bg-blue-500/20 text-blue-400' :
-                          'bg-orange-500/20 text-orange-400'
+                      activity.category === 'Music' ? 'bg-blue-500/20 text-blue-400' :
+                        'bg-orange-500/20 text-orange-400'
                       }`}>
                       {activity.category === 'Running' && <Zap className="h-3 w-3" />}
                       {activity.category === 'Music' && <Music className="h-3 w-3" />}
