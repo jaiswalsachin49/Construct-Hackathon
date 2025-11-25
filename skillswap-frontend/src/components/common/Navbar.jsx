@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Menu, X, LogOut, Settings, User as UserIcon, ChevronDown, MessageCircle, Check } from 'lucide-react';
+import { Bell, Menu, X, LogOut, Settings, User as UserIcon, ChevronDown, MessageCircle, Check, Loader2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useChatStore from '../../store/chatStore';
 import socketService from '../../services/socketService';
 import { getConversations } from '../../services/chatService';
 import { getPendingRequests, acceptConnectionRequest, rejectConnectionRequest } from '../../services/discoveryService';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { formatDistanceToNow } from 'date-fns';
+import { useToast } from '../../hooks/use-toast';
 
 const Navbar = () => {
     // 1. Hooks & Store Access (MUST be at the top)
     const navigate = useNavigate();
     const { user, logout: storeLogout } = useAuthStore();
+    const { toast } = useToast();
 
     const unreadCounts = useChatStore(state => state.unreadCounts);
     const conversations = useChatStore(state => state.conversations);
@@ -23,6 +26,7 @@ const Navbar = () => {
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [requests, setRequests] = useState([]);
+    const [loadingRequests, setLoadingRequests] = useState({});
 
     // 3. Derived State
     const totalChatUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
@@ -99,20 +103,48 @@ const Navbar = () => {
     }, [user]);
     // 6. Handlers
     const handleAccept = async (requesterId) => {
+        setLoadingRequests(prev => ({ ...prev, [requesterId]: 'accepting' }));
         try {
             await acceptConnectionRequest(requesterId);
             setRequests(prev => prev.filter(r => r._id !== requesterId));
+            toast({
+                title: "Connection Accepted",
+                description: "You are now connected!",
+                variant: "success",
+            });
+            setIsNotificationsOpen(false);
         } catch (error) {
             console.error("Accept failed", error);
+            toast({
+                title: "Error",
+                description: "Failed to accept connection request.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoadingRequests(prev => ({ ...prev, [requesterId]: null }));
         }
     };
 
     const handleReject = async (requesterId) => {
+        setLoadingRequests(prev => ({ ...prev, [requesterId]: 'rejecting' }));
         try {
             await rejectConnectionRequest(requesterId);
             setRequests(prev => prev.filter(r => r._id !== requesterId));
+            toast({
+                title: "Request Rejected",
+                description: "Connection request declined.",
+                variant: "default",
+            });
+            setIsNotificationsOpen(false);
         } catch (error) {
             console.error("Reject failed", error);
+            toast({
+                title: "Error",
+                description: "Failed to reject connection request.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoadingRequests(prev => ({ ...prev, [requesterId]: null }));
         }
     };
 
@@ -152,10 +184,12 @@ const Navbar = () => {
                             <button
                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                                 className="relative p-2 text-[#8A90A2] hover:bg-white/10 hover:text-white rounded-full transition-all focus:outline-none"
+                                aria-label="Notifications"
+                                aria-expanded={isNotificationsOpen}
                             >
                                 <Bell className="h-6 w-6" />
                                 {totalNotifications > 0 && (
-                                    <span className="absolute top-1 right-1 h-5 w-5 bg-[#00C4FF] text-black text-xs font-bold flex items-center justify-center rounded-full border-2 border-[#101726] shadow-sm">
+                                    <span className="absolute top-1 right-1 h-5 w-5 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black text-xs font-bold flex items-center justify-center rounded-full border-2 border-[#101726] shadow-lg animate-pulse">
                                         {totalNotifications > 9 ? '9+' : totalNotifications}
                                     </span>
                                 )}
@@ -165,7 +199,7 @@ const Navbar = () => {
                             {isNotificationsOpen && (
                                 <>
                                     <div className="fixed inset-0 z-10" onClick={() => setIsNotificationsOpen(false)} />
-                                    <div className="absolute right-0 mt-2 w-80 bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden backdrop-blur-xl">
+                                    <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden backdrop-blur-xl" role="dialog" aria-label="Notifications panel">
                                         <div className="px-4 py-3 border-b border-white/10 flex justify-between items-center bg-white/5">
                                             <h3 className="font-semibold text-white">Notifications</h3>
                                             {totalNotifications > 0 && (
@@ -180,34 +214,52 @@ const Navbar = () => {
                                             {/* --- SECTION 1: CONNECTION REQUESTS --- */}
                                             {requests.length > 0 && (
                                                 <div className="border-b border-white/10">
-                                                    <div className="px-4 py-2 bg-white/5 text-xs font-bold text-[#00C4FF] uppercase tracking-wider">
-                                                        Connection Requests
+                                                    <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
+                                                        <span>Connection Requests</span>
+                                                        <span className="text-[#00F5A0]">{requests.length}</span>
                                                     </div>
                                                     {requests.map(req => (
-                                                        <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors">
+                                                        <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors group">
                                                             <img
                                                                 src={req.profilePhoto || `https://ui-avatars.com/api/?name=${req.name}`}
-                                                                className="w-10 h-10 rounded-full object-cover bg-white/10 border border-white/10"
+                                                                className="w-10 h-10 rounded-full object-cover bg-white/10 border border-white/10 ring-2 ring-transparent group-hover:ring-[#00C4FF]/30 transition-all"
                                                                 alt={req.name}
                                                             />
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-semibold text-white truncate">{req.name}</p>
                                                                 <p className="text-xs text-[#8A90A2] truncate">wants to connect</p>
+                                                                {req.createdAt && (
+                                                                    <p className="text-xs text-[#00C4FF]/60 mt-0.5">
+                                                                        {formatDistanceToNow(new Date(req.createdAt), { addSuffix: true })}
+                                                                    </p>
+                                                                )}
                                                             </div>
                                                             <div className="flex gap-2">
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); handleAccept(req._id); }}
-                                                                    className="p-1.5 bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors"
+                                                                    disabled={!!loadingRequests[req._id]}
+                                                                    className="p-1.5 bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     title="Accept"
+                                                                    aria-label="Accept connection request"
                                                                 >
-                                                                    <Check size={16} />
+                                                                    {loadingRequests[req._id] === 'accepting' ? (
+                                                                        <Loader2 size={16} className="animate-spin" />
+                                                                    ) : (
+                                                                        <Check size={16} />
+                                                                    )}
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); handleReject(req._id); }}
-                                                                    className="p-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors"
+                                                                    disabled={!!loadingRequests[req._id]}
+                                                                    className="p-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     title="Reject"
+                                                                    aria-label="Reject connection request"
                                                                 >
-                                                                    <X size={16} />
+                                                                    {loadingRequests[req._id] === 'rejecting' ? (
+                                                                        <Loader2 size={16} className="animate-spin" />
+                                                                    ) : (
+                                                                        <X size={16} />
+                                                                    )}
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -218,8 +270,9 @@ const Navbar = () => {
                                             {/* --- SECTION 2: MESSAGES --- */}
                                             {unreadConversations.length > 0 ? (
                                                 <>
-                                                    <div className="px-4 py-2 bg-white/5 text-xs font-bold text-[#8A90A2] uppercase tracking-wider">
-                                                        Messages
+                                                    <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
+                                                        <span>Unread Messages</span>
+                                                        <span className="text-[#00F5A0]">{unreadConversations.length}</span>
                                                     </div>
                                                     {unreadConversations.map(conv => (
                                                         <div
@@ -249,9 +302,12 @@ const Navbar = () => {
                                                     ))}
                                                 </>
                                             ) : requests.length === 0 && (
-                                                <div className="p-8 text-center text-[#8A90A2] text-sm">
-                                                    <Bell className="h-8 w-8 text-white/20 mx-auto mb-2" />
-                                                    No new notifications
+                                                <div className="p-8 text-center">
+                                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#00C4FF]/20 to-[#00F5A0]/20 mb-3">
+                                                        <Bell className="h-8 w-8 text-[#00C4FF]" />
+                                                    </div>
+                                                    <p className="text-sm font-medium text-white mb-1">All caught up!</p>
+                                                    <p className="text-xs text-[#8A90A2]">No new notifications right now</p>
                                                 </div>
                                             )}
                                         </div>

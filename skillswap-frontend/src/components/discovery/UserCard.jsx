@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { MapPin, Star, Sparkles } from 'lucide-react';
 import Button from '../common/Button';
 
 const UserCard = ({ user, onConnect, onViewProfile }) => {
     const [isConnecting, setIsConnecting] = useState(false);
+    const cardRef = useRef(null);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     // State to track the button status: 'none', 'pending', 'connected'
     const [status, setStatus] = useState('none');
@@ -20,6 +22,15 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
         } finally {
             setIsConnecting(false);
         }
+    };
+
+    const handleMouseMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
     };
 
     const getInitials = (name) => {
@@ -43,9 +54,22 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
 
     return (
         <div
-            className="bg-white/5 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border border-white/10 flex flex-col h-full backdrop-blur-sm"
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            className="bg-white/5 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border border-white/10 flex flex-col h-full backdrop-blur-sm relative group"
             onClick={() => onViewProfile(user._id)}
+            style={{
+                '--mouse-x': `${mousePosition.x}px`,
+                '--mouse-y': `${mousePosition.y}px`,
+            }}
         >
+            {/* Glow Effect */}
+            <div
+                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                style={{
+                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.15), transparent 40%)`,
+                }}
+            />
             <div className="p-5 flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-start gap-4 mb-4">

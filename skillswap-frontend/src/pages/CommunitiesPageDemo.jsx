@@ -104,7 +104,7 @@ const mockNearbyCommunities = [
 
 const CommunitiesPageDemo = () => {
   const navigate = useNavigate();
-  
+
   const [myCommunities] = useState(mockMyCommunities);
   const [nearbyCommunities] = useState(mockNearbyCommunities);
   const [isLoading] = useState(false);
@@ -116,7 +116,7 @@ const CommunitiesPageDemo = () => {
 
   // Filtered communities
   const [filteredCommunities, setFilteredCommunities] = useState([]);
-  
+
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -174,7 +174,7 @@ const CommunitiesPageDemo = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             My Communities ({myCommunities.length})
           </h2>
-          
+
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
             {myCommunities.map((community) => (
               <CommunityPreview
@@ -249,12 +249,12 @@ const CommunitiesPageDemo = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm h-80 animate-pulse">
-                  <div className="h-32 bg-gray-200"></div>
+                <div key={i} className="bg-white/5 rounded-lg shadow-sm h-80 animate-pulse border border-white/10">
+                  <div className="h-32 bg-white/10"></div>
                   <div className="p-4 space-y-3">
-                    <div className="h-6 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-6 bg-white/10 rounded"></div>
+                    <div className="h-4 bg-white/10 rounded w-3/4"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/2"></div>
                   </div>
                 </div>
               ))}

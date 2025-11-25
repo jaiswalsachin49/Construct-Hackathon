@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, MapPin, Users, Music, Utensils, Zap, Filter, Plus } from 'lucide-react';
 import useActivityStore from '../../store/activityStore';
 import CreateActivityModal from './CreateActivityModal';
@@ -6,6 +6,7 @@ import CreateActivityModal from './CreateActivityModal';
 const ActivitiesSidebar = () => {
   const { activities, filters, setFilter, selectActivity, selectedActivity, userLocation } = useActivityStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cardMousePositions, setCardMousePositions] = useState({});
 
   const categories = [
     { id: 'All', label: 'All', icon: Filter },
@@ -20,7 +21,7 @@ const ActivitiesSidebar = () => {
     const R = 6371; // Earth's radius in km
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -30,38 +31,50 @@ const ActivitiesSidebar = () => {
 
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          activity.location.toLowerCase().includes(filters.search.toLowerCase());
+      activity.location.toLowerCase().includes(filters.search.toLowerCase());
     const matchesCategory = filters.category === 'All' || activity.category === filters.category;
-    
+
     // Distance filtering
     let withinDistance = true;
     if (userLocation && activity.coordinates && activity.coordinates.length === 2) {
       const distance = calculateDistance(
-        userLocation[0], 
+        userLocation[0],
         userLocation[1],
         activity.coordinates[0],
         activity.coordinates[1]
       );
       withinDistance = distance <= filters.distanceRange;
     }
-    
+
     return matchesSearch && matchesCategory && withinDistance;
   });
+
+  const handleCardMouseMove = (activityId, e, cardRef) => {
+    if (!cardRef) return;
+    const rect = cardRef.getBoundingClientRect();
+    setCardMousePositions(prev => ({
+      ...prev,
+      [activityId]: {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      }
+    }));
+  };
 
   return (
     <div className="w-full lg:w-96 bg-[#101726] border-r border-white/10 flex flex-col h-full">
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Live Meetup Spots</h2>
-            <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-[#00C4FF]/20 text-[#00C4FF] rounded-lg hover:bg-[#00C4FF]/30 transition-colors"
-            >
-                <Plus className="h-4 w-4" />
-                <span className="text-sm font-bold">Create</span>
-            </button>
+          <h2 className="text-xl font-bold text-white">Live Meetup Spots</h2>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 bg-[#00C4FF]/20 text-[#00C4FF] rounded-lg hover:bg-[#00C4FF]/30 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="text-sm font-bold">Create</span>
+          </button>
         </div>
-        
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -80,11 +93,10 @@ const ActivitiesSidebar = () => {
             <button
               key={cat.id}
               onClick={() => setFilter('category', cat.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                filters.category === cat.id
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${filters.category === cat.id
                   ? 'bg-[#00C4FF]/20 text-[#00C4FF] border border-[#00C4FF]/50'
                   : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
-              }`}
+                }`}
             >
               <cat.icon className="h-3 w-3" />
               {cat.label}
@@ -120,62 +132,81 @@ const ActivitiesSidebar = () => {
             <MapPin className="h-12 w-12 mb-3 opacity-20" />
             <p className="text-sm">No activities found.</p>
             <p className="text-xs mt-1">Create your own for meeting people!</p>
-            <button 
-                onClick={() => setIsModalOpen(true)}
-                className="mt-4 text-[#00C4FF] text-xs hover:underline"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="mt-4 text-[#00C4FF] text-xs hover:underline"
             >
-                Start an activity
+              Start an activity
             </button>
           </div>
         ) : (
-          filteredActivities.map((activity) => (
-          <div
-            key={activity._id}
-            onClick={() => selectActivity(activity)}
-            className={`p-3 rounded-xl border cursor-pointer transition-all ${
-              selectedActivity?._id === activity._id
-                ? 'bg-white/10 border-[#00C4FF]/50'
-                : 'bg-white/5 border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex items-center gap-2">
-                <img src={activity.host.profilePhoto || "https://github.com/shadcn.png"} alt={activity.host.name} className="w-8 h-8 rounded-full object-cover" />
-                <div>
-                  <h3 className="text-sm font-semibold text-white leading-tight">{activity.title}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                     <span className="text-xs text-gray-400">{activity.host.name}</span>
-                     <span className="text-xs text-gray-500">•</span>
-                     <span className="text-xs text-gray-400">{activity.startTime || 'Time TBD'}</span>
-                   </div>
-                </div>
-              </div>
-              <div className={`p-1.5 rounded-full ${
-                activity.category === 'Running' ? 'bg-purple-500/20 text-purple-400' :
-                activity.category === 'Music' ? 'bg-blue-500/20 text-blue-400' :
-                'bg-orange-500/20 text-orange-400'
-              }`}>
-                {activity.category === 'Running' && <Zap className="h-3 w-3" />}
-                {activity.category === 'Music' && <Music className="h-3 w-3" />}
-                {activity.category === 'Cooking' && <Utensils className="h-3 w-3" />}
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex -space-x-2">
-                {activity.attendees.slice(0, 3).map((attendee) => (
-                  <img key={attendee._id} src={attendee.profilePhoto || "https://github.com/shadcn.png"} alt="User" className="w-6 h-6 rounded-full border-2 border-[#101726]" />
-                ))}
-                {activity.attendees.length > 3 && (
-                  <div className="w-6 h-6 rounded-full bg-gray-700 border-2 border-[#101726] flex items-center justify-center text-[10px] text-white">
-                    +{activity.attendees.length - 3}
+          filteredActivities.map((activity) => {
+            const ActivityCard = ({ activity }) => {
+              const cardRef = useRef(null);
+              const mousePos = cardMousePositions[activity._id] || { x: 0, y: 0 };
+
+              return (
+                <div
+                  ref={cardRef}
+                  key={activity._id}
+                  onClick={() => selectActivity(activity)}
+                  onMouseMove={(e) => handleCardMouseMove(activity._id, cardRef.current, e)}
+                  className={`p-3 rounded-xl border cursor-pointer transition-all relative group ${selectedActivity?._id === activity._id
+                      ? 'bg-white/10 border-[#00C4FF]/50'
+                      : 'bg-white/5 border-white/10 hover:border-white/20'
+                    }`}
+                  style={{
+                    '--mouse-x': `${mousePos.x}px`,
+                    '--mouse-y': `${mousePos.y}px`,
+                  }}
+                >
+                  {/* Glow Effect */}
+                  <div
+                    className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 rounded-xl"
+                    style={{
+                      background: `radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.15), transparent 40%)`,
+                    }}
+                  />
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2">
+                      <img src={activity.host.profilePhoto || "https://github.com/shadcn.png"} alt={activity.host.name} className="w-8 h-8 rounded-full object-cover" />
+                      <div>
+                        <h3 className="text-sm font-semibold text-white leading-tight">{activity.title}</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-400">{activity.host.name}</span>
+                          <span className="text-xs text-gray-500">•</span>
+                          <span className="text-xs text-gray-400">{activity.startTime || 'Time TBD'}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-1.5 rounded-full ${activity.category === 'Running' ? 'bg-purple-500/20 text-purple-400' :
+                        activity.category === 'Music' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-orange-500/20 text-orange-400'
+                      }`}>
+                      {activity.category === 'Running' && <Zap className="h-3 w-3" />}
+                      {activity.category === 'Music' && <Music className="h-3 w-3" />}
+                      {activity.category === 'Cooking' && <Utensils className="h-3 w-3" />}
+                    </div>
                   </div>
-                )}
-              </div>
-              <span className="text-xs text-gray-400">+{activity.attendees.length} interested</span>
-            </div>
-          </div>
-        ))
+
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex -space-x-2">
+                      {activity.attendees.slice(0, 3).map((attendee) => (
+                        <img key={attendee._id} src={attendee.profilePhoto || "https://github.com/shadcn.png"} alt="User" className="w-6 h-6 rounded-full border-2 border-[#101726]" />
+                      ))}
+                      {activity.attendees.length > 3 && (
+                        <div className="w-6 h-6 rounded-full bg-gray-700 border-2 border-[#101726] flex items-center justify-center text-[10px] text-white">
+                          +{activity.attendees.length - 3}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-400">+{activity.attendees.length} interested</span>
+                  </div>
+                </div>
+              );
+            };
+            return <ActivityCard key={activity._id} activity={activity} />;
+          })
         )}
       </div>
 

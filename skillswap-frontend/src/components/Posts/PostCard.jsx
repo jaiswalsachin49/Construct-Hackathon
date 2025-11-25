@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Heart, MessageCircle, Share2, MoreVertical, Trash2, Flag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -12,6 +12,7 @@ const PostCard = ({ post, onUpdate }) => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const { toggleLike, addComment, deleteComment, deletePost, updatePost } = usePosts();
+    const cardRef = useRef(null);
 
     const [showComments, setShowComments] = useState(false);
     const [showMore, setShowMore] = useState(false);
@@ -19,9 +20,19 @@ const PostCard = ({ post, onUpdate }) => {
     const [commentText, setCommentText] = useState('');
     const [isAddingComment, setIsAddingComment] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     const isLiked = post.likes?.includes(user?._id);
     const isOwnPost = post.user?._id === user?._id;
+
+    const handleMouseMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
+    };
 
     const getInitials = (name) => {
         if (!name) return 'U';
@@ -120,8 +131,24 @@ const PostCard = ({ post, onUpdate }) => {
         ? post.content.slice(0, 300) + '...'
         : post.content;
 
+    // console.log(post.comments)
     return (
-        <div className="bg-white/5 rounded-lg shadow-md overflow-hidden mb-4 border border-white/10 backdrop-blur-xl">
+        <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            className="bg-white/5 rounded-lg shadow-md overflow-hidden mb-4 border border-white/10 backdrop-blur-xl relative group"
+            style={{
+                '--mouse-x': `${mousePosition.x}px`,
+                '--mouse-y': `${mousePosition.y}px`,
+            }}
+        >
+            {/* Glow Effect */}
+            <div
+                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.15), transparent 40%)`,
+                }}
+            />
             {/* Header */}
             <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -333,23 +360,23 @@ const PostCard = ({ post, onUpdate }) => {
                         {post.comments?.slice(0, 2).map((comment) => (
                             <div key={comment._id} className="flex gap-2 group">
                                 <div className="flex-shrink-0">
-                                    {comment.user?.profilePhoto ? (
+                                    {comment.userId?.profilePhoto ? (
                                         <img
-                                            src={comment.user.profilePhoto}
-                                            alt={comment.user.name}
+                                            src={comment.userId.profilePhoto}
+                                            alt={comment.userId.name}
                                             className="h-8 w-8 rounded-full object-cover"
                                         />
                                     ) : (
                                         <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
                                             <span className="text-xs font-semibold text-[#E6E9EF]">
-                                                {getInitials(comment.user?.name)}
+                                                {getInitials(comment.userId?.name)}
                                             </span>
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex-1">
                                     <div className="bg-white/5 rounded-lg px-3 py-2 relative">
-                                        <p className="font-semibold text-sm text-white">{comment.user?.name}</p>
+                                        <p className="font-semibold text-sm text-white">{comment.userId?.name}</p>
                                         <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
                                         {/* Delete button - only show for comment author */}
                                         {(comment.userId === user?._id || comment.user?._id === user?._id) && (
@@ -363,7 +390,15 @@ const PostCard = ({ post, onUpdate }) => {
                                         )}
                                     </div>
                                     <p className="text-xs text-[#8A90A2] mt-1 ml-3">
-                                        {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                        {(() => {
+                                            try {
+                                                const date = new Date(comment.createdAt);
+                                                if (isNaN(date.getTime())) return 'Just now';
+                                                return formatDistanceToNow(date, { addSuffix: true });
+                                            } catch {
+                                                return 'Just now';
+                                            }
+                                        })()}
                                     </p>
                                 </div>
                             </div>

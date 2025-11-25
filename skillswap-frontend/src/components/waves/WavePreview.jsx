@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 
 const WavePreview = ({ wave, onClick, isViewed }) => {
+    const cardRef = useRef(null);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
     // --- FIX: Normalize User Data ---
     // Backend sends 'userId' (populated), Frontend might expect 'user'
     const waveUser = wave.userId || wave.user || {};
@@ -44,13 +47,35 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
         return waveUser.profilePhoto;
     };
 
+    const handleMouseMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
+    };
+
     const thumbnail = getThumbnail();
 
     return (
         <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
             onClick={onClick}
-            className="flex flex-col items-center cursor-pointer group"
+            className="flex flex-col items-center cursor-pointer group relative"
+            style={{
+                '--mouse-x': `${mousePosition.x}px`,
+                '--mouse-y': `${mousePosition.y}px`,
+            }}
         >
+            {/* Glow Effect */}
+            <div
+                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 rounded-full"
+                style={{
+                    background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.2), transparent 40%)`,
+                }}
+            />
             <div className="relative">
                 {/* Ring */}
                 <div
