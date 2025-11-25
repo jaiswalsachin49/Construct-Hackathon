@@ -51,6 +51,18 @@ const usePostStore = create((set, get) => ({
         }),
     })),
 
+    deleteComment: (postId, commentId) => set((state) => ({
+        feedPosts: state.feedPosts.map((p) => {
+            if (p._id === postId) {
+                return {
+                    ...p,
+                    comments: (p.comments || []).filter(c => c._id !== commentId),
+                };
+            }
+            return p;
+        }),
+    })),
+
     setUserPosts: (userId, posts) => set((state) => ({
         userPosts: {
             ...state.userPosts,

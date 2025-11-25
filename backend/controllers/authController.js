@@ -190,10 +190,34 @@ const refreshToken = (req, res) => {
   }
 };
 
+// Change password
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!(await user.comparePassword(currentPassword))) {
+      return res.status(400).json({ error: 'Invalid current password' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   getCurrentUser,
   logout,
-  refreshToken
+  refreshToken,
+  changePassword
 };

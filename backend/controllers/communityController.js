@@ -329,4 +329,32 @@ function getDistance(loc1, loc2) {
     return R * c;
 }
 
+exports.getCommunityMessages = async (req, res) => {
+    try {
+        const { communityId } = req.params;
+        const CommunityMessage = require('../models/CommunityMessage');
+
+        // Check if user is member
+        const community = await Community.findById(communityId);
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        const isMember = community.members.some(m => m.userId.toString() === req.user.userId);
+        if (!isMember) {
+            return res.status(403).json({ error: 'Must be a member to view messages' });
+        }
+
+        const messages = await CommunityMessage.find({ communityId })
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .populate('senderId', 'name profilePhoto');
+
+        // Reverse to show oldest first
+        res.json({ success: true, messages: messages.reverse() });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = exports;

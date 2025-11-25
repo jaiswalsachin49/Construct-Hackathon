@@ -57,7 +57,8 @@ export const addComment = async (postId, content) => {
 
 // Delete comment
 export const deleteComment = async (postId, commentId) => {
-    await api.delete(`/api/posts/${postId}/comment/${commentId}`);
+    const response = await api.delete(`/api/posts/${postId}/comment/${commentId}`);
+    return response.data;
 };
 
 // Share post

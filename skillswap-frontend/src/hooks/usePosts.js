@@ -173,6 +173,16 @@ export const usePosts = () => {
         }
     };
 
+    const deleteComment = async (postId, commentId) => {
+        try {
+            await postService.deleteComment(postId, commentId);
+            store.deleteComment(postId, commentId);
+        } catch (error) {
+            console.error('Failed to delete comment:', error);
+            throw error;
+        }
+    };
+
     return {
         feedPosts: store.feedPosts,
         isLoading: store.isLoading,
@@ -180,7 +190,9 @@ export const usePosts = () => {
         fetchFeed,
         createPost,
         deletePost,
+        updatePost,
         toggleLike,
         addComment,
+        deleteComment,
     };
 };

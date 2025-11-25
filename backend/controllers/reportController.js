@@ -9,6 +9,19 @@ const isAdmin = async (userId) => {
     return adminEmails.includes(user.email);
 };
 
+const nodemailer = require('nodemailer');
+
+// Configure transporter
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER || 'sj976958@gmail.com',
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
 const createReport = async (req, res) => {
     try {
         const { targetType, targetId, reason, details } = req.body;
@@ -32,6 +45,31 @@ const createReport = async (req, res) => {
         });
 
         await newReport.save();
+
+        // Send Email Notification
+        const mailOptions = {
+            from: process.env.EMAIL_USER || 'sj976958@gmail.com',
+            to: 'sj976958@gmail.com',
+            subject: `New Report: ${reason} (${targetType})`,
+            html: `
+                <h2>New Report Submitted</h2>
+                <p><strong>Reporter ID:</strong> ${req.user.userId}</p>
+                <p><strong>Target Type:</strong> ${targetType}</p>
+                <p><strong>Target ID:</strong> ${targetId}</p>
+                <p><strong>Reason:</strong> ${reason}</p>
+                <p><strong>Details:</strong> ${details}</p>
+                <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+            `
+        };
+
+        // Send email asynchronously without blocking response
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('CRITICAL: Error sending report email. Check EMAIL_PASSWORD and App Password settings.', error);
+            } else {
+                console.log('Report email sent successfully:', info.response);
+            }
+        });
 
         res.json({
             success: true,

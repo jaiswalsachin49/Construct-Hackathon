@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Heart, MessageCircle, Share2, MoreVertical, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreVertical, Trash2, Flag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { usePosts } from '../../hooks/usePosts';
 import useAuthStore from '../../store/authStore';
 import { sharePost } from '../../services/postService';
+import ReportModal from '../safety/ReportModal';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onUpdate }) => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { toggleLike, addComment, deletePost, updatePost } = usePosts();
+    const { toggleLike, addComment, deleteComment, deletePost, updatePost } = usePosts();
 
     const [showComments, setShowComments] = useState(false);
     const [showMore, setShowMore] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
     const [commentText, setCommentText] = useState('');
     const [isAddingComment, setIsAddingComment] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
 
     const isLiked = post.likes?.includes(user?._id);
     const isOwnPost = post.user?._id === user?._id;
@@ -26,8 +28,19 @@ const PostCard = ({ post }) => {
         return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
     };
 
-    const handleLike = () => {
-        toggleLike(post._id, user._id);
+    const handleLike = async () => {
+        try {
+            await toggleLike(post._id, user._id);
+            // Notify parent component of the update
+            if (onUpdate) {
+                const newLikes = isLiked
+                    ? post.likes.filter(id => id !== user._id)
+                    : [...(post.likes || []), user._id];
+                onUpdate({ likes: newLikes });
+            }
+        } catch (error) {
+            console.error('Failed to toggle like:', error);
+        }
     };
 
     const handleAddComment = async () => {
@@ -35,12 +48,35 @@ const PostCard = ({ post }) => {
 
         setIsAddingComment(true);
         try {
-            await addComment(post._id, commentText.trim());
+            const result = await addComment(post._id, commentText.trim());
             setCommentText('');
+            // Notify parent component of the update
+            if (onUpdate && result?.comment) {
+                const newComments = [...(post.comments || []), result.comment];
+                onUpdate({ comments: newComments });
+            }
         } catch (error) {
             console.error('Failed to add comment:', error);
         } finally {
             setIsAddingComment(false);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!window.confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+
+        try {
+            await deleteComment(post._id, commentId);
+            // Notify parent component of the update
+            if (onUpdate) {
+                const newComments = (post.comments || []).filter(c => c._id !== commentId);
+                onUpdate({ comments: newComments });
+            }
+        } catch (error) {
+            console.error('Failed to delete comment:', error);
+            alert('Failed to delete comment');
         }
     };
 
@@ -184,19 +220,25 @@ const PostCard = ({ post }) => {
                                 </>
                             ) : (
                                 <>
-                                    <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                    <button
+                                        onClick={() => {
+                                            setShowMore(false);
+                                            setShowReportModal(true);
+                                        }}
+                                        className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white flex items-center gap-2"
+                                    >
+                                        <Flag className="h-4 w-4" />
                                         Report Post
                                     </button>
-                                    <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                    {/* <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
                                         Hide Post
-                                    </button>
+                                    </button> */}
                                 </>
                             )}
                         </div>
                     )}
                 </div>
             </div>
-
             {/* Content */}
             <div className="px-4 pb-3">
                 <p className="text-[#E6E9EF] whitespace-pre-wrap break-words">
@@ -289,7 +331,7 @@ const PostCard = ({ post }) => {
                 <div className="px-4 pb-4 border-t border-white/10">
                     <div className="space-y-3 mt-3">
                         {post.comments?.slice(0, 2).map((comment) => (
-                            <div key={comment._id} className="flex gap-2">
+                            <div key={comment._id} className="flex gap-2 group">
                                 <div className="flex-shrink-0">
                                     {comment.user?.profilePhoto ? (
                                         <img
@@ -306,9 +348,19 @@ const PostCard = ({ post }) => {
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="bg-white/5 rounded-lg px-3 py-2">
+                                    <div className="bg-white/5 rounded-lg px-3 py-2 relative">
                                         <p className="font-semibold text-sm text-white">{comment.user?.name}</p>
                                         <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
+                                        {/* Delete button - only show for comment author */}
+                                        {(comment.userId === user?._id || comment.user?._id === user?._id) && (
+                                            <button
+                                                onClick={() => handleDeleteComment(comment._id)}
+                                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
+                                                title="Delete comment"
+                                            >
+                                                <Trash2 className="h-3 w-3 text-red-400" />
+                                            </button>
+                                        )}
                                     </div>
                                     <p className="text-xs text-[#8A90A2] mt-1 ml-3">
                                         {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
@@ -362,6 +414,15 @@ const PostCard = ({ post }) => {
                     </div>
                 </div>
             )}
+
+            {/* Report Modal */}
+            <ReportModal
+                isOpen={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                targetType="post"
+                targetId={post._id}
+                targetName={`Post by ${post.userId?.name || 'Unknown User'}`}
+            />
         </div>
     );
 };

@@ -34,3 +34,8 @@ export const updateProfile = async (data) => {
 //     const response = await api.post('/api/auth/check-email', { email });
 //     return response.data;
 // };
+// Change password
+export const changePassword = async (currentPassword, newPassword) => {
+    const response = await api.post('/api/auth/change-password', { currentPassword, newPassword });
+    return response.data;
+};

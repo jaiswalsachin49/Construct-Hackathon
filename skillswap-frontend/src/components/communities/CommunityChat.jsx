@@ -4,6 +4,7 @@ import { Send } from 'lucide-react';
 import socketService from '../../services/socketService';
 import useCommunityStore from '../../store/communityStore';
 import useAuthStore from '../../store/authStore';
+import { getCommunityMessages } from '../../services/communityService';
 
 const CommunityChat = ({ communityId, community }) => {
   const navigate = useNavigate();
@@ -21,6 +22,20 @@ const CommunityChat = ({ communityId, community }) => {
   useEffect(() => {
     // Only connect if user is a member
     if (isMember) {
+      // Fetch historical messages
+      const fetchMessages = async () => {
+        try {
+          const data = await getCommunityMessages(communityId);
+          if (data.success) {
+            useCommunityStore.getState().setCommunityMessages(communityId, data.messages);
+          }
+        } catch (error) {
+          console.error('Failed to fetch community messages:', error);
+        }
+      };
+
+      fetchMessages();
+
       socketService.connect();
       socketService.joinCommunityRoom(communityId);
       setIsConnected(true);
@@ -81,20 +96,20 @@ const CommunityChat = ({ communityId, community }) => {
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => navigate(`/app/profile/${msg.senderId || msg.user?._id}`)}
+                  onClick={() => navigate(`/app/profile/${msg.senderId?._id || msg.senderId || msg.user?._id}`)}
                 >
-                  {msg.user?.name?.charAt(0)?.toUpperCase() || msg.senderName?.charAt(0)?.toUpperCase() || 'U'}
+                  {msg.senderId?.name?.charAt(0)?.toUpperCase() || msg.user?.name?.charAt(0)?.toUpperCase() || msg.senderName?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
                     <span
                       className="font-medium text-sm text-white hover:text-[#00C4FF] cursor-pointer transition-colors"
-                      onClick={() => navigate(`/app/profile/${msg.senderId || msg.user?._id}`)}
+                      onClick={() => navigate(`/app/profile/${msg.senderId?._id || msg.senderId || msg.user?._id}`)}
                     >
-                      {msg.user?.name || msg.senderName || 'Unknown User'}
+                      {msg.senderId?.name || msg.user?.name || msg.senderName || 'Unknown User'}
                     </span>
                     <span className="text-xs text-[#8A90A2]">
-                      {new Date(msg.timestamp).toLocaleTimeString()}
+                      {new Date(msg.createdAt || msg.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
                   <p className="text-sm text-[#E6E9EF] mt-1">{msg.content}</p>
