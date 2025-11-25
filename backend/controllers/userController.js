@@ -430,17 +430,52 @@ exports.getAllies = async (req, res) => {
 };
 
 // Block user
+// Block user
 exports.blockUser = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId);
+        const currentUserId = req.user.userId;
         const blockedId = req.params.userId;
 
-        if (!user.blocked.includes(blockedId)) {
-            user.blocked.push(blockedId);
-            await user.save();
+        const currentUser = await User.findById(currentUserId);
+        const blockedUser = await User.findById(blockedId);
+
+        if (!blockedUser) {
+            return res.status(404).json({ error: "User not found" });
         }
 
-        res.json({ success: true, message: 'User blocked' });
+        // 1. Add to blocked list if not already there
+        if (!currentUser.blocked.includes(blockedId)) {
+            currentUser.blocked.push(blockedId);
+        }
+
+        // 2. Remove from Allies (Both sides)
+        currentUser.allies = currentUser.allies.filter(id => id.toString() !== blockedId);
+        blockedUser.allies = blockedUser.allies.filter(id => id.toString() !== currentUserId);
+
+        // 3. Remove from Friend Requests (Received)
+        currentUser.friendRequests = currentUser.friendRequests.filter(id => id.toString() !== blockedId);
+        blockedUser.friendRequests = blockedUser.friendRequests.filter(id => id.toString() !== currentUserId);
+
+        // 4. Remove from Sent Requests
+        currentUser.sentRequests = currentUser.sentRequests.filter(id => id.toString() !== blockedId);
+        blockedUser.sentRequests = blockedUser.sentRequests.filter(id => id.toString() !== currentUserId);
+
+        await currentUser.save();
+        await blockedUser.save();
+
+        res.json({ success: true, message: 'User blocked and connections removed' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get blocked users
+exports.getBlockedUsers = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId)
+            .populate('blocked', 'name profilePhoto bio');
+
+        res.json({ success: true, blockedUsers: user.blocked });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

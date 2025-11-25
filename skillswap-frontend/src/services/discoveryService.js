@@ -68,3 +68,14 @@ export const startChat = async (userId) => {
     const response = await api.post('/api/chat/start', { userId });
     return response.data;
 };
+// Get blocked users
+export const getBlockedUsers = async () => {
+    const response = await api.get('/api/users/blocked/list');
+    return response.data.blockedUsers || [];
+};
+
+// Unblock user
+export const unblockUser = async (userId) => {
+    const response = await api.post(`/api/users/unblock/${userId}`);
+    return response.data;
+};

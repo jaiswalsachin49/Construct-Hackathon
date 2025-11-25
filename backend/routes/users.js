@@ -25,6 +25,7 @@ router.put('/profile', authenticateToken, upload.fields([
 	{ name: 'profilePhoto', maxCount: 1 }
 ]), userController.updateProfile);
 router.get('/:userId/allies', userController.getAllies);
+router.get('/blocked/list', authenticateToken, userController.getBlockedUsers);
 router.post('/block/:userId', authenticateToken, userController.blockUser);
 router.post('/unblock/:userId', authenticateToken, userController.unblockUser);
 

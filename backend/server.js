@@ -11,14 +11,6 @@ const { initializeBadges } = require('./controllers/badgeController');
 
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
-// Initialize badges after DB connection
-setTimeout(() => {
-  initializeBadges();
-}, 2000);
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -78,4 +70,24 @@ console.log('Cron job scheduled: Expired waves cleanup every hour');
 app.use(require('./middlewares/errorHandler'));
 
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Start server after DB connection
+const startServer = async () => {
+  try {
+    // Connect to MongoDB first
+    await connectDB();
+
+    // Initialize badges after DB connection
+    await initializeBadges();
+
+    // Start server
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

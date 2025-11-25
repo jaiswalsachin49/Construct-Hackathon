@@ -73,7 +73,7 @@ module.exports = (io) => {
                         }
                     });
                     await conversation.save();
-                    
+
                     // Prepare payload
                     const messagePayload = {
                         _id: message._id,
@@ -138,7 +138,7 @@ module.exports = (io) => {
         });
 
         // ========== COMMUNITY CHAT ==========
-        
+
         socket.on('community:join', (communityId) => {
             socket.join(`community:${communityId}`);
         });
@@ -150,13 +150,24 @@ module.exports = (io) => {
         socket.on('send:community:message', async (data) => {
             try {
                 const { communityId, content, senderId, senderName, senderPhoto } = data;
+
+                // Save to database
+                const CommunityMessage = require('../models/CommunityMessage');
+                const newMessage = new CommunityMessage({
+                    communityId,
+                    senderId,
+                    content
+                });
+                await newMessage.save();
+
                 io.to(`community:${communityId}`).emit('receive:community:message', {
+                    _id: newMessage._id,
                     content,
                     senderId,
                     senderName,
                     senderPhoto,
-                    communityId, // Add this so frontend can filter
-                    timestamp: new Date()
+                    communityId,
+                    timestamp: newMessage.createdAt
                 });
             } catch (error) {
                 console.error('Community message error:', error);

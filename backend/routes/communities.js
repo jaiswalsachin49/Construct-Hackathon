@@ -15,6 +15,7 @@ router.post('/:communityId/leave', authenticateToken, communityController.leaveC
 router.get('/:communityId/members', communityController.getMembers);
 router.post('/:communityId/kick/:userId', authenticateToken, communityController.kickMember);
 router.put('/:communityId/members/:userId/role', authenticateToken, communityController.updateMemberRole);
+router.get('/:communityId/messages', authenticateToken, communityController.getCommunityMessages);
 
 router.get('/:communityId/posts', authenticateToken, postController.getCommunityPosts);
 router.post('/:communityId/posts', authenticateToken, postController.createCommunityPost);

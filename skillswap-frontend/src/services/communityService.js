@@ -78,3 +78,8 @@ export const kickMember = async (communityId, userId) => {
   const response = await api.post(`/api/communities/${communityId}/kick/${userId}`);
   return response.data;
 };
+// Get community messages
+export const getCommunityMessages = async (communityId) => {
+  const response = await api.get(`/api/communities/${communityId}/messages`);
+  return response.data;
+};
