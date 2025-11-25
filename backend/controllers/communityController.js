@@ -182,9 +182,38 @@ exports.leaveCommunity = async (req, res) => {
             return res.status(404).json({ error: 'Community not found' });
         }
 
-        community.members = community.members.filter(
-            m => m.userId.toString() !== req.user.userId
-        );
+        const userId = req.user.userId;
+        const memberIndex = community.members.findIndex(m => m.userId.toString() === userId);
+
+        if (memberIndex === -1) {
+            return res.status(400).json({ error: 'You are not a member of this community' });
+        }
+
+        const member = community.members[memberIndex];
+
+        // 1. Check if user is the LAST member -> Delete community
+        if (community.members.length === 1) {
+            await Community.findByIdAndDelete(req.params.communityId);
+            return res.json({
+                success: true,
+                message: 'Community deleted as you were the last member',
+                action: 'deleted'
+            });
+        }
+
+        // 2. Check if user is the LAST ADMIN (and there are other members) -> Prevent leaving
+        if (member.role === 'admin') {
+            const adminCount = community.members.filter(m => m.role === 'admin').length;
+            if (adminCount === 1) {
+                return res.status(400).json({
+                    error: 'Cannot leave community',
+                    message: 'You are the only admin. Please promote another member to admin before leaving.'
+                });
+            }
+        }
+
+        // 3. Normal leave
+        community.members.splice(memberIndex, 1);
         await community.save();
 
         res.json({ success: true, message: 'Left community' });

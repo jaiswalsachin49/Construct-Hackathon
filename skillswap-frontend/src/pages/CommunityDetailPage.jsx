@@ -76,10 +76,32 @@ const CommunityDetailPage = () => {
   const handleLeave = async () => {
     if (window.confirm('Are you sure you want to leave this community?')) {
       try {
-        await leaveCommunity(communityId);
+        const response = await leaveCommunity(communityId);
+
+        // Check if community was deleted (last member left)
+        if (response.action === 'deleted') {
+          toast({
+            title: "Community Deleted",
+            description: "The community has been deleted as you were the last member.",
+            variant: "default",
+          });
+          navigate('/app/communities');
+          return;
+        }
+
         setIsMember(false);
+        toast({
+          title: "Left Community",
+          description: "You have successfully left the community.",
+          variant: "default",
+        });
       } catch (error) {
         console.error('Error leaving community:', error);
+        toast({
+          title: "Cannot Leave Community",
+          description: error.response?.data?.message || error.response?.data?.error || "Failed to leave community.",
+          variant: "destructive",
+        });
       }
     }
   };

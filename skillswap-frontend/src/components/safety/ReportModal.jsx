@@ -27,8 +27,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
       // console.log('Report submitted:', { targetType, targetId, reason, details });
 
       alert('Report submitted. We will review it shortly.');
-      onClose();
-
+      onClose()
       // Reset form
       setReason('');
       setDetails('');
@@ -38,7 +37,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
     } finally {
       setIsReporting(false);
     }
-  };
+  }
 
   const handleClose = () => {
     setReason('');
