@@ -71,7 +71,7 @@ const MembersList = ({ communityId }) => {
     >
       <div
         onClick={() => navigate(`/app/profile/${member.userId?._id}`)}
-        className="w-12 h-12 bg-gradient-to-br from-[#00F5A0] to-[#00C4FF] rounded-full flex items-center justify-center text-black font-semibold cursor-pointer"
+        className="w-12 h-12 bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] rounded-full flex items-center justify-center text-black font-semibold cursor-pointer"
       >
         {member.userId?.profilePhoto ? (
           <img src={member.userId?.profilePhoto} alt={member.userId?.name} className="w-full h-full rounded-full object-cover" />
@@ -91,7 +91,7 @@ const MembersList = ({ communityId }) => {
             <Crown className="w-4 h-4 text-yellow-500" title="Admin" />
           )}
           {member.role === 'moderator' && (
-            <Shield className="w-4 h-4 text-[#00C4FF]" title="Moderator" />
+            <Shield className="w-4 h-4 text-[#3B82F6]" title="Moderator" />
           )}
         </div>
         <p className="text-sm text-[#8A90A2]">
@@ -109,7 +109,7 @@ const MembersList = ({ communityId }) => {
                 e.stopPropagation();
                 handleRoleUpdate(member.userId._id, 'admin');
               }}
-              className="px-3 py-1 text-xs font-medium bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors"
+              className="px-3 py-1 text-xs font-medium bg-[#60A5FA]/20 text-[#60A5FA] rounded-full hover:bg-[#60A5FA]/30 transition-colors"
             >
               Make Admin
             </button>
@@ -165,7 +165,7 @@ const MembersList = ({ communityId }) => {
           placeholder="Search members..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
         />
       </div>
 

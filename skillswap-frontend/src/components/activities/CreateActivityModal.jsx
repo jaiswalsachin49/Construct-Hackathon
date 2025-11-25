@@ -157,7 +157,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none"
                     placeholder="e.g., Morning Run"
                     required
                   />
@@ -171,7 +171,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                       <select
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none appearance-none"
+                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none appearance-none"
                       >
                         <option value="Running">Running</option>
                         <option value="Yoga">Yoga</option>
@@ -191,7 +191,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                         type="date"
                         value={formData.date}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none [color-scheme:dark]"
                         required
                       />
                     </div>
@@ -204,7 +204,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                         type="time"
                         value={formData.startTime}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none [color-scheme:dark]"
                         required
                       />
                     </div>
@@ -217,7 +217,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                         type="time"
                         value={formData.endTime}
                         onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none [color-scheme:dark]"
+                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none [color-scheme:dark]"
                         required
                       />
                     </div>
@@ -235,7 +235,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                         setFormData({ ...formData, location: e.target.value });
                         setIsSearching(true);
                       }}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none"
                       placeholder="Search for a location..."
                       required
                       autoComplete="off"
@@ -252,7 +252,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                           onClick={() => handleLocationSelect(place)}
                           className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-white/5 hover:text-white border-b border-white/5 last:border-0 transition-colors flex items-start gap-2"
                         >
-                          <MapPin className="h-4 w-4 text-[#00C4FF] mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-[#3B82F6] mt-0.5 flex-shrink-0" />
                           <span className="line-clamp-2">{place.display_name}</span>
                         </button>
                       ))}
@@ -272,7 +272,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-[#00C4FF] focus:outline-none h-24 resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none h-24 resize-none"
                     placeholder="Describe your activity..."
                     required
                   />
@@ -317,7 +317,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-6 py-3 bg-[#00C4FF] text-[#0A0F1F] font-bold rounded-xl hover:bg-[#00b0e6] transition-colors disabled:opacity-50"
+                  className="w-full mt-6 py-3 bg-[#3B82F6] text-[#0A0F1F] font-bold rounded-xl hover:bg-[#00b0e6] transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Creating...' : 'Create Activity'}
                 </button>

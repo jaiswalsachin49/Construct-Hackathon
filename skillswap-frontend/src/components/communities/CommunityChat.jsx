@@ -72,7 +72,7 @@ const CommunityChat = ({ communityId, community }) => {
       {/* Chat Header */}
       <div className="px-4 py-3 border-b border-white/10">
         <h3 className="font-semibold text-white">Community Buzz</h3>
-        <p className="text-xs text-[#00F5A0]">
+        <p className="text-xs text-[#60A5FA]">
           {!isMember ? 'Join to chat' : isConnected ? 'Connected' : 'Connecting...'}
         </p>
       </div>
@@ -83,7 +83,7 @@ const CommunityChat = ({ communityId, community }) => {
           <div className="flex items-center justify-center h-full text-center">
             <div className="space-y-2">
               <p className="text-[#8A90A2]">Join this community to participate in chat</p>
-              <p className="text-sm text-[#00C4FF]">Click "Join Community" to get started</p>
+              <p className="text-sm text-[#3B82F6]">Click "Join Community" to get started</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -103,7 +103,7 @@ const CommunityChat = ({ communityId, community }) => {
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
                     <span
-                      className="font-medium text-sm text-white hover:text-[#00C4FF] cursor-pointer transition-colors"
+                      className="font-medium text-sm text-white hover:text-[#3B82F6] cursor-pointer transition-colors"
                       onClick={() => navigate(`/app/profile/${msg.senderId?._id || msg.senderId || msg.user?._id}`)}
                     >
                       {msg.senderId?.name || msg.user?.name || msg.senderName || 'Unknown User'}
@@ -130,14 +130,14 @@ const CommunityChat = ({ communityId, community }) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={isMember ? "Type message..." : "Join community to chat"}
-            className="flex-1 px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!isConnected || !isMember}
           />
           <button
             data-testid="send-button"
             type="submit"
             disabled={!message.trim() || !isConnected || !isMember}
-            className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg transition-colors"
           >
             <Send className="w-5 h-5" />
           </button>

@@ -135,7 +135,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={() => setActiveTab('photo')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'photo'
-                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            ? 'border-[#3B82F6] text-[#3B82F6]'
                             : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
@@ -145,7 +145,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={() => setActiveTab('video')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'video'
-                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            ? 'border-[#3B82F6] text-[#3B82F6]'
                             : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
@@ -155,7 +155,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={() => setActiveTab('text')}
                         className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'text'
-                            ? 'border-[#00C4FF] text-[#00C4FF]'
+                            ? 'border-[#3B82F6] text-[#3B82F6]'
                             : 'border-transparent text-[#8A90A2] hover:text-white'
                             }`}
                     >
@@ -201,7 +201,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed border-white/20 rounded-lg p-12 text-center cursor-pointer hover:border-[#00C4FF] transition-colors bg-white/5"
+                                    className="border-2 border-dashed border-white/20 rounded-lg p-12 text-center cursor-pointer hover:border-[#3B82F6] transition-colors bg-white/5"
                                 >
                                     <Upload className="h-12 w-12 text-[#8A90A2] mx-auto mb-4" />
                                     <p className="text-[#E6E9EF] mb-2">
@@ -234,7 +234,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                                 placeholder="Type your text..."
                                 rows={6}
                                 maxLength={200}
-                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
+                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                             />
                             <div className="flex items-center justify-between">
                                 <p className="text-sm text-[#8A90A2]">
@@ -294,7 +294,7 @@ const CreateWaveModal = ({ isOpen, onClose }) => {
                         onChange={(e) => setCaption(e.target.value.slice(0, 100))}
                         placeholder="Add a caption..."
                         maxLength={100}
-                        className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
+                        className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                     />
                     <p className="text-xs text-[#8A90A2] mt-1">
                         {caption.length} / 100 characters

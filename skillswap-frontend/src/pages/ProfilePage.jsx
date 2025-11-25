@@ -68,7 +68,7 @@ const ProfilePage = () => {
             </div>
             <h2 className="text-xl font-bold text-white">User Not Found</h2>
             <p className="text-[#8A90A2] mt-2 mb-6">The user you are looking for doesn't exist or has been removed.</p>
-            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-[#00C4FF] text-black font-semibold rounded-lg hover:bg-[#00C4FF]/90">
+            <button onClick={() => navigate('/app/discover')} className="px-6 py-2 bg-[#3B82F6] text-black font-semibold rounded-lg hover:bg-[#3B82F6]/90">
                 Back to Discovery
             </button>
         </div>
@@ -84,7 +84,7 @@ const ProfilePage = () => {
             <div className="bg-white/5 rounded-2xl shadow-sm border border-white/10 overflow-hidden mb-6 mt-6 backdrop-blur-xl">
 
                 {/* Cover Photo with Fallback Gradient */}
-                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-[#7A3EF9] via-[#00C4FF] to-[#00F5A0]' : ''}`}>
+                <div className={`h-48 w-full relative ${!displayUser.coverPhoto ? 'bg-gradient-to-r from-[#7A3EF9] via-[#3B82F6] to-[#60A5FA]' : ''}`}>
                     {displayUser.coverPhoto && (
                         <img
                             src={displayUser.coverPhoto}
@@ -141,7 +141,7 @@ const ProfilePage = () => {
                                                 navigate('/app/chat');
                                             }
                                         }}
-                                        className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black font-semibold rounded-lg shadow-sm transition-all"
+                                        className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black font-semibold rounded-lg shadow-sm transition-all"
                                     >
                                         <MessageCircle size={18} /> Message
                                     </button>
@@ -168,7 +168,7 @@ const ProfilePage = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                             {displayUser.name}
-                            {displayUser.isVerified && <span className="text-[#00C4FF]" title="Verified">✓</span>}
+                            {displayUser.isVerified && <span className="text-[#3B82F6]" title="Verified">✓</span>}
                         </h1>
 
                         {/* Meta Info */}
@@ -195,7 +195,7 @@ const ProfilePage = () => {
                                 <div className="flex flex-wrap gap-2">
                                     {displayUser.teachTags?.length > 0 ? (
                                         displayUser.teachTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm font-medium border border-[#00C4FF]/20">
+                                            <span key={i} className="px-3 py-1 bg-[#3B82F6]/10 text-[#3B82F6] rounded-full text-sm font-medium border border-[#3B82F6]/20">
                                                 {tag.name || tag}
                                             </span>
                                         ))
@@ -209,7 +209,7 @@ const ProfilePage = () => {
                                 <div className="flex flex-wrap gap-2">
                                     {displayUser.learnTags?.length > 0 ? (
                                         displayUser.learnTags.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-[#00F5A0]/10 text-[#00F5A0] rounded-full text-sm font-medium border border-[#00F5A0]/20">
+                                            <span key={i} className="px-3 py-1 bg-[#60A5FA]/10 text-[#60A5FA] rounded-full text-sm font-medium border border-[#60A5FA]/20">
                                                 {tag.name || tag}
                                             </span>
                                         ))
@@ -237,7 +237,7 @@ const ProfilePage = () => {
                                     console.error('Failed to start conversation', err);
                                     navigate('/app/chat');
                                 }
-                            }} className="flex-1 py-2 bg-[#00C4FF] text-black rounded-lg font-medium">Message</button>
+                            }} className="flex-1 py-2 bg-[#3B82F6] text-black rounded-lg font-medium">Message</button>
                         )}
                     </div>
                 </div>
@@ -250,12 +250,12 @@ const ProfilePage = () => {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${activeTab === tab ? 'text-[#00C4FF]' : 'text-[#8A90A2] hover:text-white'
+                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${activeTab === tab ? 'text-[#3B82F6]' : 'text-[#8A90A2] hover:text-white'
                                 }`}
                         >
                             {tab.charAt(0).toUpperCase() + tab.slice(1)}
                             {activeTab === tab && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00C4FF]" />
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3B82F6]" />
                             )}
                         </button>
                     ))}

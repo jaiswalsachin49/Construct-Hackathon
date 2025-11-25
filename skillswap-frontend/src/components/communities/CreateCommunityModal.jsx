@@ -144,7 +144,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
             <div
               data-testid="cover-upload-area"
               onClick={() => coverInputRef.current?.click()}
-              className="border-2 border-dashed border-white/20 rounded-lg h-40 cursor-pointer hover:border-[#00C4FF] transition-colors overflow-hidden bg-white/5"
+              className="border-2 border-dashed border-white/20 rounded-lg h-40 cursor-pointer hover:border-[#3B82F6] transition-colors overflow-hidden bg-white/5"
             >
               {coverPreview ? (
                 <img
@@ -173,7 +173,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter community name"
               maxLength={50}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
               required
             />
             <p className="text-xs text-[#8A90A2] mt-1">{50 - name.length} characters remaining</p>
@@ -191,7 +191,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               placeholder="What is this community about?"
               maxLength={500}
               rows={4}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent resize-none"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent resize-none"
               required
             />
             <p className="text-xs text-[#8A90A2] mt-1">{500 - description.length} characters remaining</p>
@@ -206,7 +206,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               data-testid="modal-category-select"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
               required
             >
               <option value="">Select category</option>
@@ -233,20 +233,20 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               onKeyPress={handleTagKeyPress}
               placeholder="Add tags and press Enter"
               disabled={tags.length >= 5}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-white/5"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent disabled:bg-white/5"
             />
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm border border-[#00C4FF]/20"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-[#3B82F6]/10 text-[#3B82F6] rounded-full text-sm border border-[#3B82F6]/20"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="hover:text-[#00C4FF]/80"
+                      className="hover:text-[#3B82F6]/80"
                     >
                       ×
                     </button>
@@ -271,7 +271,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                 handleLocationSearch(e.target.value);
               }}
               placeholder="Search for location..."
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
             />
 
             {/* Location Suggestions */}
@@ -291,15 +291,15 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
             )}
 
             {selectedLocation && (
-              <div className="mt-2 p-3 bg-[#00C4FF]/10 border border-[#00C4FF]/20 rounded-lg flex items-center gap-2">
-                📍 <span className="text-[#00C4FF] font-medium">{selectedLocation.areaLabel}</span>
+              <div className="mt-2 p-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg flex items-center gap-2">
+                📍 <span className="text-[#3B82F6] font-medium">{selectedLocation.areaLabel}</span>
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedLocation(null);
                     setLocationInput('');
                   }}
-                  className="ml-auto text-[#00C4FF]/60 hover:text-[#00C4FF]"
+                  className="ml-auto text-[#3B82F6]/60 hover:text-[#3B82F6]"
                 >
                   ×
                 </button>
@@ -320,7 +320,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                   name="visibility"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
-                  className="w-4 h-4 text-[#00C4FF] bg-[#101726] border-white/10"
+                  className="w-4 h-4 text-[#3B82F6] bg-[#101726] border-white/10"
                 />
                 <div>
                   <div className="font-medium text-white">Public</div>
@@ -334,7 +334,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
                   name="visibility"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
-                  className="w-4 h-4 text-[#00C4FF] bg-[#101726] border-white/10"
+                  className="w-4 h-4 text-[#3B82F6] bg-[#101726] border-white/10"
                 />
                 <div>
                   <div className="font-medium text-white">Private</div>
@@ -357,7 +357,7 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
               data-testid="create-button"
               type="submit"
               disabled={!canSubmit || isLoading}
-              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-colors"
+              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-colors"
             >
               {isLoading ? 'Creating...' : 'Create Community'}
             </button>

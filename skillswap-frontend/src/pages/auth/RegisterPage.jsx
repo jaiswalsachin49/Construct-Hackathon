@@ -183,7 +183,7 @@ const RegisterPage = () => {
             {/* Full Name */}
             <div>
                 <label className="block text-sm font-medium text-[#E6E9EF] mb-1">
-                    Full Name <span className="text-[#00F5A0]">*</span>
+                    Full Name <span className="text-[#60A5FA]">*</span>
                 </label>
                 <div className="relative">
                     <User className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" />
@@ -195,7 +195,7 @@ const RegisterPage = () => {
                         className={`w-full h-12 pl-10 pr-3 text-base rounded-lg 
                             bg-white/5 border
                             text-[#E6E9EF] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[#00C4FF]
+                            focus:outline-none focus:ring-2 focus:ring-[#3B82F6]
                             ${errors.name ? 'border-red-500' : 'border-white/20'}
                         `}
                         placeholder="John Doe"
@@ -207,7 +207,7 @@ const RegisterPage = () => {
             {/* Email */}
             <div>
                 <label className="block text-sm font-medium text-[#E6E9EF] mb-1">
-                    Email <span className="text-[#00F5A0]">*</span>
+                    Email <span className="text-[#60A5FA]">*</span>
                 </label>
                 <div className="relative">
                     <Mail className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" />
@@ -219,7 +219,7 @@ const RegisterPage = () => {
                         className={`w-full h-12 pl-10 pr-3 text-base rounded-lg 
                             bg-white/5 border
                             text-[#E6E9EF] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[#00C4FF]
+                            focus:outline-none focus:ring-2 focus:ring-[#3B82F6]
                             ${errors.email ? 'border-red-500' : 'border-white/20'}
                         `}
                         placeholder="your.email@example.com"
@@ -231,7 +231,7 @@ const RegisterPage = () => {
             {/* Password */}
             <div>
                 <label className="block text-sm font-medium text-[#E6E9EF] mb-1">
-                    Password <span className="text-[#00F5A0]">*</span>
+                    Password <span className="text-[#60A5FA]">*</span>
                 </label>
                 <div className="relative">
                     <Lock className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" />
@@ -243,7 +243,7 @@ const RegisterPage = () => {
                         className={`w-full h-12 pl-10 pr-10 text-base rounded-lg 
                             bg-white/5 border
                             text-[#E6E9EF] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[#00C4FF]
+                            focus:outline-none focus:ring-2 focus:ring-[#3B82F6]
                             ${errors.password ? 'border-red-500' : 'border-white/20'}
                         `}
                         placeholder="At least 8 characters"
@@ -275,7 +275,7 @@ const RegisterPage = () => {
                         className={`w-full h-12 pl-10 pr-3 text-base rounded-lg 
                             bg-white/5 border
                             text-[#E6E9EF] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[#00C4FF]
+                            focus:outline-none focus:ring-2 focus:ring-[#3B82F6]
                             ${errors.confirmPassword ? 'border-red-500' : 'border-white/20'}
                         `}
                         placeholder="Re-enter password"
@@ -316,13 +316,13 @@ const RegisterPage = () => {
                             type="button"
                             className="
                                 px-3 py-1.5 rounded-full text-sm font-medium
-                                bg-gradient-to-r from-[#00F5A0]/20 to-[#00C4FF]/20
+                                bg-gradient-to-r from-[#2563EB]/20 to-[#3B82F6]/20
                                 text-[#E6E9EF]
-                                border border-[#00C4FF]/30
+                                border border-[#3B82F6]/30
                                 backdrop-blur-sm
-                                shadow-[0_0_10px_rgba(0,196,255,0.25)]
-                                hover:shadow-[0_0_15px_rgba(0,196,255,0.45)]
-                                hover:bg-gradient-to-r hover:from-[#00F5A0]/30 hover:to-[#00C4FF]/30
+                                shadow-[0_2px_10px_rgba(37,99,235,0.25)]
+                                hover:shadow-[0_4px_15px_rgba(37,99,235,0.45)]
+                                hover:bg-gradient-to-r hover:from-[#2563EB]/30 hover:to-[#3B82F6]/30
                                 transition
                             "
                             onClick={() =>
@@ -371,11 +371,11 @@ const RegisterPage = () => {
                                 type="button"
                                 className="
                                     px-4 py-1.5 rounded-full text-sm font-medium
-                                    bg-[linear-gradient(135deg,rgba(122,62,249,0.25),rgba(0,196,255,0.18))]
-                                    border border-[rgba(122,62,249,0.45)]
+                                    bg-[linear-gradient(135deg,rgba(37,99,235,0.25),rgba(59,130,246,0.18))]
+                                    border border-[rgba(59,130,246,0.45)]
                                     text-[#E6E9EF]
-                                    shadow-[0_0_10px_rgba(122,62,249,0.35)]
-                                    hover:shadow-[0_0_18px_rgba(122,62,249,0.55)]
+                                    shadow-[0_2px_10px_rgba(59,130,246,0.35)]
+                                    hover:shadow-[0_4px_18px_rgba(59,130,246,0.55)]
                                     transition
                                 "
                                 onClick={() =>
@@ -406,7 +406,7 @@ const RegisterPage = () => {
             {/* Location */}
             <div className="relative">
                 <label className="block text-sm font-medium text-[#E6E9EF] mb-1">
-                    Location <span className="text-[#00F5A0]">*</span>
+                    Location <span className="text-[#60A5FA]">*</span>
                 </label>
                 <div className="relative">
                     <User className="absolute left-3 top-3.5 h-5 w-5 text-[#8A90A2]" /> {/* Replaced MapPin with User as per new lucide-react import */}
@@ -420,7 +420,7 @@ const RegisterPage = () => {
                         className={`w-full h-12 pl-10 pr-24 text-base rounded-lg 
                             bg-white/5 border
                             text-[#E6E9EF] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[#00C4FF]
+                            focus:outline-none focus:ring-2 focus:ring-[#3B82F6]
                             ${errors.location ? 'border-red-500' : 'border-white/20'}
                         `}
                         placeholder="Search city or area..."
@@ -429,7 +429,7 @@ const RegisterPage = () => {
                     <button
                         type="button"
                         onClick={handleDetectLocation}
-                        className="absolute right-3 top-3 text-xs text-[#00C4FF] hover:text-[#59FFC8]"
+                        className="absolute right-3 top-3 text-xs text-[#60A5FA] hover:text-[#3B82F6]"
                     >
                         {detectingLocation ? 'Detecting…' : 'Use my location'}
                     </button>
@@ -473,7 +473,7 @@ const RegisterPage = () => {
                                 value={option.value}
                                 checked={formData.availability === option.value}
                                 onChange={handleInputChange}
-                                className="text-[#00F5A0] focus:ring-[#00C4FF] bg-transparent border-gray-500"
+                                className="text-[#60A5FA] focus:ring-[#3B82F6] bg-transparent border-gray-500"
                             />
                             <span className="text-[#E6E9EF]">{option.label}</span>
                         </label>
@@ -491,7 +491,7 @@ const RegisterPage = () => {
                     value={formData.bio}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-white/20 bg-white/5 text-[#E6E9EF]
-                        focus:outline-none focus:ring-2 focus:ring-[#00C4FF] p-3 text-base
+                        focus:outline-none focus:ring-2 focus:ring-[#3B82F6] p-3 text-base
                         placeholder-gray-400"
                     rows="4"
                     maxLength={500}
@@ -509,22 +509,22 @@ const RegisterPage = () => {
     return (
         <div
             className="min-h-screen flex items-center justify-center p-6
-                bg-gradient-to-br from-[#0A0F1F] via-[#101726] to-[#0A0F1F]
+                bg-gradient-to-br from-[#020617] via-[#0F172A] to-[#020617]
                 relative text-[#E6E9EF] overflow-hidden
             "
         >
             {/* Glow spots */}
-            <div className="pointer-events-none absolute -top-32 -left-24 w-80 h-80 bg-[#00C4FF]/18 blur-3xl rounded-full" />
-            <div className="pointer-events-none absolute bottom-[-60px] right-[-40px] w-96 h-96 bg-[#7A3EF9]/22 blur-3xl rounded-full" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,244,255,0.12),_transparent_55%)]" />
+            <div className="pointer-events-none absolute -top-32 -left-24 w-80 h-80 bg-[#3B82F6]/18 blur-3xl rounded-full" />
+            <div className="pointer-events-none absolute bottom-[-60px] right-[-40px] w-96 h-96 bg-[#2563EB]/22 blur-3xl rounded-full" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.12),_transparent_55%)]" />
 
             {/* MAIN CARD */}
             <div
                 className="w-full max-w-md relative z-10
-                    bg-white/10 backdrop-blur-2xl
+                    bg-white/[0.05] backdrop-blur-3xl
                     rounded-3xl p-6 lg:p-8
-                    border border-white/20
-                    shadow-[0_0_25px_rgba(0,244,255,0.18)]
+                    border border-white/10
+                    shadow-[0_8px_32px_rgba(37,99,235,0.18),inset_0_1px_0_rgba(255,255,255,0.1)]
                 "
             >
                 {/* Logo */}
@@ -538,7 +538,7 @@ const RegisterPage = () => {
                                 className="w-full h-full"
                             />
                         </div>
-                        <span className="text-3xl font-bold -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-1">
+                        <span className="text-3xl font-bold -skew-x-6 bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] bg-clip-text text-transparent tracking-tight -ml-1">
                             killSwap
                         </span>
                     </Link>
@@ -556,7 +556,7 @@ const RegisterPage = () => {
                         <div
                             key={step}
                             className={`h-2 w-12 rounded-full transition-all ${step <= currentStep
-                                ? 'bg-gradient-to-r from-[#00F5A0] via-[#00C4FF] to-[#7A3EF9]'
+                                ? 'bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#60A5FA]'
                                 : 'bg-white/10'
                                 }`}
                         />
@@ -595,10 +595,10 @@ const RegisterPage = () => {
                             <Button
                                 type="button"
                                 onClick={handleNext}
-                                className="flex-1 py-3 text-black font-semibold rounded-xl
-                                    bg-gradient-to-r from-[#00F5A0] to-[#00C4FF]
-                                    shadow-[0_0_15px_rgba(0,244,255,0.4)]
-                                    hover:shadow-[0_0_25px_rgba(0,244,255,0.6)]
+                                className="flex-1 py-3 text-white font-semibold rounded-xl
+                                    bg-gradient-to-r from-[#2563EB] to-[#3B82F6]
+                                    shadow-[0_4px_20px_rgba(37,99,235,0.4)]
+                                    hover:shadow-[0_6px_30px_rgba(37,99,235,0.6)]
                                 "
                             >
                                 Next
@@ -608,10 +608,10 @@ const RegisterPage = () => {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex-1 py-3 text-black font-semibold rounded-xl
-                                    bg-gradient-to-r from-[#00F5A0] to-[#00C4FF]
-                                    shadow-[0_0_15px_rgba(0,244,255,0.4)]
-                                    hover:shadow-[0_0_25px_rgba(0,244,255,0.6)]
+                                className="flex-1 py-3 text-white font-semibold rounded-xl
+                                    bg-gradient-to-r from-[#2563EB] to-[#3B82F6]
+                                    shadow-[0_4px_20px_rgba(37,99,235,0.4)]
+                                    hover:shadow-[0_6px_30px_rgba(37,99,235,0.6)]
                                 "
                             >
                                 {isLoading ? 'Creating Account…' : 'Create Account'}
@@ -623,7 +623,7 @@ const RegisterPage = () => {
                 {/* Footer */}
                 <div className="mt-6 text-center text-[#8A90A2]">
                     Already have an account?{' '}
-                    <Link to="/auth/login" className="text-[#00F5A0] font-semibold">
+                    <Link to="/auth/login" className="text-[#60A5FA] font-semibold">
                         Log in
                     </Link>
                 </div>

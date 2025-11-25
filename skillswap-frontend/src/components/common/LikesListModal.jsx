@@ -44,7 +44,7 @@ const LikesListModal = ({ isOpen, onClose, targetId, type = 'post' }) => {
                 <div className="flex-1 overflow-y-auto p-4">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C4FF]"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3B82F6]"></div>
                         </div>
                     ) : likes.length === 0 ? (
                         <div className="text-center py-8 text-gray-400">

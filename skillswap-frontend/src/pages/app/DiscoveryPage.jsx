@@ -116,7 +116,7 @@ const DiscoveryPage = () => {
                 <button
                     onClick={() => setMobileView('feed')}
                     className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'feed'
-                        ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                        ? 'text-white border-b-2 border-[#3B82F6] bg-white/5'
                         : 'text-[#8A90A2] hover:text-white'
                         }`}
                 >
@@ -125,7 +125,7 @@ const DiscoveryPage = () => {
                 <button
                     onClick={() => setMobileView('discover')}
                     className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'discover'
-                        ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                        ? 'text-white border-b-2 border-[#3B82F6] bg-white/5'
                         : 'text-[#8A90A2] hover:text-white'
                         }`}
                 >

@@ -133,7 +133,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                         <h3 className="font-bold text-white leading-none">
                             {conversation?.otherUser?.name || 'Unknown User'}
                         </h3>
-                        <p className={`text-xs font-medium mt-1 ${isOnline ? 'text-[#00F5A0]' : 'text-[#8A90A2]'}`}>
+                        <p className={`text-xs font-medium mt-1 ${isOnline ? 'text-[#60A5FA]' : 'text-[#8A90A2]'}`}>
                             {isOnline ? 'Online' : 'Offline'}
                         </p>
                     </div>
@@ -228,7 +228,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
 
             {/* Input Area */}
             <div className="p-4 bg-white/5 border-t border-white/10 backdrop-blur-xl">
-                <div className="flex items-end gap-2 bg-[#101726] p-2 rounded-2xl border border-white/10 focus-within:border-[#00C4FF] focus-within:ring-1 focus-within:ring-[#00C4FF] transition-all">
+                <div className="flex items-end gap-2 bg-[#101726] p-2 rounded-2xl border border-white/10 focus-within:border-[#3B82F6] focus-within:ring-1 focus-within:ring-[#3B82F6] transition-all">
                     <input
                         type="file"
                         ref={fileInputRef}

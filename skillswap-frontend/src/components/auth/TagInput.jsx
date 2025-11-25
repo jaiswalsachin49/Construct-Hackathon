@@ -16,22 +16,22 @@ const TagInput = ({
     // THEME STYLES -------------------------
     const themeStyles = {
         blue: {
-            tagBg: "bg-[#00C4FF]/15",
-            tagBorder: "border-[#00C4FF]/40",
-            tagText: "text-[#59FFC8]",
+            tagBg: "bg-[#3B82F6]/15",
+            tagBorder: "border-[#3B82F6]/40",
+            tagText: "text-[#60A5FA]",
             tagGlow: "shadow-[0_0_10px_rgba(0,196,255,0.25)]",
-            hoverBg: "hover:bg-[#00C4FF]/20",
-            inputRing: "focus:ring-[#00F5A0]",
-            suggestionHover: "hover:bg-[#00C4FF]/20",
+            hoverBg: "hover:bg-[#3B82F6]/20",
+            inputRing: "focus:ring-[#60A5FA]",
+            suggestionHover: "hover:bg-[#3B82F6]/20",
         },
         purple: {
-            tagBg: "bg-[#7A3EF9]/15",
-            tagBorder: "border-[#7A3EF9]/40",
+            tagBg: "bg-[#2563EB]/15",
+            tagBorder: "border-[#2563EB]/40",
             tagText: "text-[#C8A4FF]",
             tagGlow: "shadow-[0_0_10px_rgba(122,62,249,0.25)]",
-            hoverBg: "hover:bg-[#7A3EF9]/20",
-            inputRing: "focus:ring-[#7A3EF9]",
-            suggestionHover: "hover:bg-[#7A3EF9]/20",
+            hoverBg: "hover:bg-[#2563EB]/20",
+            inputRing: "focus:ring-[#2563EB]",
+            suggestionHover: "hover:bg-[#2563EB]/20",
         },
     };
 

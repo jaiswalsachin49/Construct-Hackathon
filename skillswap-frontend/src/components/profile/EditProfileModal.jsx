@@ -272,7 +272,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
             <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Cover Photo
             </label>
-            <div className="relative h-40 rounded-lg overflow-hidden bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF]">
+            <div className="relative h-40 rounded-lg overflow-hidden bg-gradient-to-br from-[#2563EB] to-[#3B82F6]">
               {coverPreview && (
                 <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
               )}
@@ -302,7 +302,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               Profile Photo
             </label>
             <div className="flex items-center gap-4">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#00F5A0] to-[#00C4FF]">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#60A5FA] to-[#3B82F6]">
                 {photoPreview ? (
                   <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -339,7 +339,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
               required
             />
           </div>
@@ -356,7 +356,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               maxLength={500}
               rows={4}
               placeholder="Tell others about yourself..."
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent resize-none"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent resize-none"
             />
             <p className="text-xs text-[#8A90A2] mt-1">{500 - bio.length} characters remaining</p>
           </div>
@@ -367,12 +367,12 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               Location *
             </label>
             {location && !showLocationSearch ? (
-              <div className="flex items-center justify-between p-3 bg-[#00C4FF]/10 border border-[#00C4FF]/20 rounded-lg">
-                <span className="text-[#00C4FF]">📍 {location.areaLabel}</span>
+              <div className="flex items-center justify-between p-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg">
+                <span className="text-[#3B82F6]">📍 {location.areaLabel}</span>
                 <button
                   type="button"
                   onClick={() => setShowLocationSearch(true)}
-                  className="text-[#00F5A0] hover:text-[#00F5A0]/80 font-medium text-sm"
+                  className="text-[#60A5FA] hover:text-[#60A5FA]/80 font-medium text-sm"
                 >
                   Change
                 </button>
@@ -387,14 +387,14 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                     value={locationInput}
                     onChange={(e) => setLocationInput(e.target.value)}
                     placeholder="Search city or area..."
-                    className="w-full pl-10 pr-24 py-2.5 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+                    className="w-full pl-10 pr-24 py-2.5 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
                     autoComplete="off"
                   />
                   <button
                     type="button"
                     onClick={handleDetectLocation}
                     disabled={detectingLocation}
-                    className="absolute right-2 top-2 text-xs text-[#00C4FF] hover:text-[#00F5A0] px-2 py-1 rounded transition-colors"
+                    className="absolute right-2 top-2 text-xs text-[#3B82F6] hover:text-[#60A5FA] px-2 py-1 rounded transition-colors"
                   >
                     {detectingLocation ? 'Detecting...' : 'Use my location'}
                   </button>
@@ -410,7 +410,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                         onClick={() => selectLocation(place)}
                         className="w-full px-4 py-3 text-left text-sm text-[#E6E9EF] hover:bg-white/10 border-b border-white/5 last:border-0 transition-colors">
                         <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-[#00C4FF] mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-[#3B82F6] mt-0.5 flex-shrink-0" />
                           <span className="line-clamp-2">{place.display_name}</span>
                         </div>
                       </button>
@@ -434,13 +434,13 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               {teachTags.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#00C4FF]/10 border border-[#00C4FF]/20 text-[#00C4FF] rounded-full text-sm"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] rounded-full text-sm"
                 >
                   {renderTeachTag(skill)}
                   <button
                     type="button"
                     onClick={() => removeTeachSkill(renderTeachTag(skill))}
-                    className="hover:text-[#00C4FF]/80"
+                    className="hover:text-[#3B82F6]/80"
                   >
                     ×
                   </button>
@@ -461,7 +461,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               }}
               placeholder="Add skill and press Enter..."
               disabled={teachTags.length >= 10}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
             />
             <p className="text-xs text-[#8A90A2] mt-1">Max 10 skills ({teachTags.length}/10)</p>
           </div>
@@ -475,13 +475,13 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               {learnTags.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#00F5A0]/10 border border-[#00F5A0]/20 text-[#00F5A0] rounded-full text-sm"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#60A5FA]/10 border border-[#60A5FA]/20 text-[#60A5FA] rounded-full text-sm"
                 >
                   {renderLearnTag(skill)}
                   <button
                     type="button"
                     onClick={() => removeLearnSkill(renderLearnTag(skill))}
-                    className="hover:text-[#00F5A0]/80"
+                    className="hover:text-[#60A5FA]/80"
                   >
                     ×
                   </button>
@@ -502,7 +502,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               }}
               placeholder="Add skill and press Enter..."
               disabled={learnTags.length >= 10}
-              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent disabled:bg-[#101726]/50 disabled:cursor-not-allowed"
             />
             <p className="text-xs text-[#8A90A2] mt-1">Max 10 skills ({learnTags.length}/10)</p>
           </div>
@@ -525,7 +525,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                     value={option}
                     checked={availability === option}
                     onChange={(e) => setAvailability(e.target.value)}
-                    className="w-4 h-4 text-[#00C4FF]"
+                    className="w-4 h-4 text-[#3B82F6]"
                   />
                   <span className="capitalize text-white">{option}</span>
                 </label>
@@ -546,7 +546,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
               data-testid="save-button"
               type="submit"
               disabled={!canSave || isSaving}
-              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-opacity"
+              className="flex-1 px-6 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-black rounded-lg font-medium transition-opacity"
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>

@@ -30,7 +30,7 @@ const ConfirmationModal = ({
                         disabled={isLoading}
                         className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 ${isDestructive
                                 ? 'bg-red-500 hover:bg-red-600 text-white'
-                                : 'bg-[#00C4FF] hover:bg-[#00A3D9] text-black'
+                                : 'bg-[#3B82F6] hover:bg-[#00A3D9] text-black'
                             }`}
                     >
                         {isLoading ? 'Processing...' : confirmText}

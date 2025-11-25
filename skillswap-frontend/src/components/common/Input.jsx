@@ -44,7 +44,7 @@ const Input = ({
             ${Icon && iconPosition === 'left' ? 'pl-10' : 'pl-3'}
             ${Icon && iconPosition === 'right' ? 'pr-10' : 'pr-3'}
             py-2 text-white placeholder-[#8A90A2]
-            focus:outline-none focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent
+            focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent
             disabled:bg-white/5 disabled:cursor-not-allowed
             ${error ? 'border-red-500' : 'border-white/10'}
           `}
