@@ -105,23 +105,65 @@ const DiscoveryPage = () => {
         setIsModalOpen(true);
     };
 
+    const [mobileView, setMobileView] = useState('feed'); // 'feed' or 'discover'
+
     const displayUsers = view === "nearby" ? nearbyUsers : matchedUsers;
 
     return (
-        <div className="h-screen w-full bg-transparent overflow-hidden">
-            {/* MAIN 2:1 LAYOUT */}
-            <div className="flex h-full">
+        <div className="h-screen w-full bg-transparent overflow-hidden flex flex-col">
+            {/* Mobile Toggle Buttons - Only visible on mobile */}
+            <div className="lg:hidden flex border-b border-white/10 bg-white/5 backdrop-blur-xl">
+                <button
+                    onClick={() => setMobileView('feed')}
+                    className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'feed'
+                            ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                            : 'text-[#8A90A2] hover:text-white'
+                        }`}
+                >
+                    Feed
+                </button>
+                <button
+                    onClick={() => setMobileView('discover')}
+                    className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'discover'
+                            ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                            : 'text-[#8A90A2] hover:text-white'
+                        }`}
+                >
+                    Discover
+                </button>
+            </div>
+
+            {/* MAIN LAYOUT - Responsive */}
+            <div className="flex flex-1 overflow-hidden">
                 {/* ----------------------------------------------------------- */}
-                {/* LEFT SECTION (2 PARTS) — POST FEED SCROLLABLE               */}
+                {/* LEFT SECTION — POST FEED SCROLLABLE */}
+                {/* Hidden on mobile when discover view is active */}
                 {/* ----------------------------------------------------------- */}
-                <div className="w-[60%] h-full overflow-y-auto border-r border-white/10 p-6 space-y-6 no-scrollbar">
-                    <h2 className="text-2xl font-semibold text-white mb-4">
+                <div className={`w-full lg:w-[60%] h-full overflow-y-auto lg:border-r border-white/10 p-4 md:p-6 space-y-4 md:space-y-6 no-scrollbar ${mobileView === 'discover' ? 'hidden lg:block' : 'block'
+                    }`}>
+                    <h2 className="text-xl md:text-2xl font-semibold text-white mb-2 md:mb-4">
                         Latest Posts
                     </h2>
 
                     {feedLoading ? (
-                        <div className="flex justify-center py-10">
-                            <Loading size="lg" text="Loading feed..." />
+                        <div className="space-y-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="bg-white/5 rounded-lg shadow-md p-4 animate-pulse border border-white/10">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="h-10 w-10 rounded-full bg-white/10" />
+                                        <div className="flex-1">
+                                            <div className="h-4 bg-white/10 rounded w-1/4 mb-2" />
+                                            <div className="h-3 bg-white/10 rounded w-1/6" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 mb-4">
+                                        <div className="h-4 bg-white/10 rounded w-full" />
+                                        <div className="h-4 bg-white/10 rounded w-5/6" />
+                                        <div className="h-4 bg-white/10 rounded w-4/6" />
+                                    </div>
+                                    <div className="h-48 bg-white/10 rounded" />
+                                </div>
+                            ))}
                         </div>
                     ) : globalPosts.length > 0 ? (
                         globalPosts.map(post => (
@@ -135,9 +177,11 @@ const DiscoveryPage = () => {
                 </div>
 
                 {/* ----------------------------------------------------------- */}
-                {/* RIGHT SECTION (1 PART) — DISCOVER + FILTER SCROLLABLE        */}
+                {/* RIGHT SECTION — DISCOVER + FILTER SCROLLABLE */}
+                {/* Hidden on mobile when feed view is active */}
                 {/* ----------------------------------------------------------- */}
-                <div className="w-[40%] h-full flex flex-col p-6">
+                <div className={`w-full lg:w-[40%] h-full flex flex-col p-4 md:p-6 ${mobileView === 'feed' ? 'hidden lg:flex' : 'flex'
+                    }`}>
                     <FilterBar
                         filters={filters}
                         onFilterChange={setFilters}
@@ -147,7 +191,7 @@ const DiscoveryPage = () => {
 
                     {/* Error */}
                     {error && (
-                        <div className="mb-6 bg-red-500/10 border border-red-500/40 text-red-400 px-4 py-3 rounded-lg flex items-center justify-between">
+                        <div className="mb-4 md:mb-6 bg-red-500/10 border border-red-500/40 text-red-400 px-4 py-3 rounded-lg flex items-center justify-between text-sm md:text-base">
                             <span>{error}</span>
                             <button
                                 onClick={() => fetchNearbyUsers()}
@@ -161,15 +205,29 @@ const DiscoveryPage = () => {
                     {/* Loading */}
                     <div className="flex-1 overflow-y-auto mt-4">
                         {isLoading ? (
-                            <div className="flex justify-center py-10">
-                                <Loading
-                                    size="lg"
-                                    text={`Finding ${view === "nearby" ? "nearby users" : "matches"
-                                        }...`}
-                                />
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="bg-white/5 rounded-xl shadow-sm p-4 animate-pulse border border-white/10">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="h-12 w-12 rounded-full bg-white/10" />
+                                            <div className="flex-1">
+                                                <div className="h-4 bg-white/10 rounded w-2/3 mb-2" />
+                                                <div className="h-3 bg-white/10 rounded w-1/2" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="h-3 bg-white/10 rounded w-full" />
+                                            <div className="h-3 bg-white/10 rounded w-4/5" />
+                                        </div>
+                                        <div className="flex gap-2 mt-3">
+                                            <div className="h-8 bg-white/10 rounded flex-1" />
+                                            <div className="h-8 bg-white/10 rounded flex-1" />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-5 mt-6">
+                            <div className="grid grid-cols-1 gap-4 md:gap-5 mt-4 md:mt-6">
                                 {displayUsers.map((user) => (
                                     <UserCard
                                         key={user._id}
@@ -184,14 +242,14 @@ const DiscoveryPage = () => {
                     </div>
                     {/* Empty State */}
                     {!isLoading && displayUsers.length === 0 && !error && (
-                        <div className="text-center py-16">
-                            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-white/10 mb-4">
-                                <Search className="h-10 w-10 text-[#8A90A2]" />
+                        <div className="text-center py-12 md:py-16">
+                            <div className="inline-flex items-center justify-center h-16 w-16 md:h-20 md:w-20 rounded-full bg-white/10 mb-4">
+                                <Search className="h-8 w-8 md:h-10 md:w-10 text-[#8A90A2]" />
                             </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">
+                            <h3 className="text-lg md:text-xl font-semibold text-white mb-2">
                                 No users found
                             </h3>
-                            <p className="text-[#8A90A2] mb-6">Try adjusting your filters</p>
+                            <p className="text-sm md:text-base text-[#8A90A2] mb-4 md:mb-6">Try adjusting your filters</p>
                             <Button
                                 variant="warm"
                                 onClick={() =>

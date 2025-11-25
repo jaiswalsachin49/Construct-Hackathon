@@ -18,7 +18,7 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
     };
 
     return (
-        <div className="sticky top-16 lg:top-0 z-10 bg-white/5 border-b border-white/10 shadow-sm backdrop-blur-xl">
+        <div className="sticky top-16 lg:top-0 z-10 bg-white/5 border-b border-white/10 shadow-sm backdrop-blur-xl rounded-xl">
             <div className="max-w-7xl mx-auto p-4 space-y-4">
                 {/* Search and View Toggle */}
                 <div className="flex flex-col md:flex-row gap-4">

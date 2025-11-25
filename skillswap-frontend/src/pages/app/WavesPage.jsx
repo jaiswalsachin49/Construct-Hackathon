@@ -41,16 +41,25 @@ const WavesPage = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // --- FIX: CLICK HANDLER ---
+    // --- FIX: CLICK HANDLER - Group by User ---
     const handleViewWave = (wave, sourceList) => {
-        // 1. Set the list of waves to view (so user can swipe next/prev)
-        setViewerWaves(sourceList);
+        // Get the user ID from the clicked wave
+        const waveUserId = wave.userId?._id || wave.userId || wave.user?._id;
 
-        // 2. Find the index of the clicked wave
-        const index = sourceList.findIndex(w => w._id === wave._id);
+        // Filter to only show waves from the same user
+        const userWaves = sourceList.filter(w => {
+            const currentWaveUserId = w.userId?._id || w.userId || w.user?._id;
+            return currentWaveUserId === waveUserId;
+        });
+
+        // Set the filtered list of waves to view
+        setViewerWaves(userWaves);
+
+        // Find the index of the clicked wave in the filtered list
+        const index = userWaves.findIndex(w => w._id === wave._id);
         setViewerInitialIndex(index !== -1 ? index : 0);
 
-        // 3. Open Modal
+        // Open Modal
         setIsViewerOpen(true);
     };
 
