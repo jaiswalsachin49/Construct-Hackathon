@@ -9,7 +9,7 @@ import PostCard from '../Posts/PostCard';
 const CommunityPosts = ({ communityId, community }) => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { fetchCommunityPosts, communityPosts } = useCommunities();
+  const { fetchCommunityPosts, communityPosts, removeCommunityPost } = useCommunities();
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -84,7 +84,14 @@ const CommunityPosts = ({ communityId, community }) => {
         </div>
       ) : (
         posts.map((post) => (
-          <PostCard key={post._id} post={post} />
+          <PostCard
+            key={post._id}
+            post={post}
+            isCommunityAdmin={community?.admins?.some(admin =>
+              (typeof admin === 'string' ? admin : admin?._id) === user?._id
+            )}
+            onDelete={(postId) => removeCommunityPost(communityId, postId)}
+          />
         ))
       )}
     </div>

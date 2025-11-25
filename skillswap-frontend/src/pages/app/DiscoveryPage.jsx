@@ -116,8 +116,8 @@ const DiscoveryPage = () => {
                 <button
                     onClick={() => setMobileView('feed')}
                     className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'feed'
-                            ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
-                            : 'text-[#8A90A2] hover:text-white'
+                        ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                        : 'text-[#8A90A2] hover:text-white'
                         }`}
                 >
                     Feed
@@ -125,8 +125,8 @@ const DiscoveryPage = () => {
                 <button
                     onClick={() => setMobileView('discover')}
                     className={`flex-1 py-3 px-4 font-semibold transition-all ${mobileView === 'discover'
-                            ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
-                            : 'text-[#8A90A2] hover:text-white'
+                        ? 'text-white border-b-2 border-[#00C4FF] bg-white/5'
+                        : 'text-[#8A90A2] hover:text-white'
                         }`}
                 >
                     Discover
@@ -167,7 +167,18 @@ const DiscoveryPage = () => {
                         </div>
                     ) : globalPosts.length > 0 ? (
                         globalPosts.map(post => (
-                            <PostCard key={post._id} post={post} />
+                            <PostCard
+                                key={post._id}
+                                post={post}
+                                onUpdate={(updatedFields) => {
+                                    setGlobalPosts(prev => prev.map(p =>
+                                        p._id === post._id ? { ...p, ...updatedFields } : p
+                                    ));
+                                }}
+                                onDelete={(postId) => {
+                                    setGlobalPosts(prev => prev.filter(p => p._id !== postId));
+                                }}
+                            />
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center py-12 text-center bg-white/5 rounded-lg border border-dashed border-white/20">

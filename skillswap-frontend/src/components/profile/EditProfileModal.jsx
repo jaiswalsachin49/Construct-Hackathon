@@ -3,6 +3,7 @@ import { X, Upload, MapPin } from 'lucide-react';
 import { updateProfile, getCurrentUser } from '../../services/authService';
 import useAuthStore from '../../store/authStore';
 import { searchPlaces } from '../../services/locationService';
+import { toast } from 'react-hot-toast';
 
 const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   const coverInputRef = useRef(null);
@@ -130,7 +131,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation not supported');
+      toast.error('Geolocation not supported');
       return;
     }
     setDetectingLocation(true);
@@ -145,7 +146,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
         setDetectingLocation(false);
       },
       () => {
-        alert('Could not detect location');
+        toast.error('Could not detect location');
         setDetectingLocation(false);
       }
     );
@@ -190,11 +191,11 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
         }
       }
 
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       onClose();
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      toast.error('Failed to update profile. Please try again.');
     } finally {
       setIsSaving(false);
     }

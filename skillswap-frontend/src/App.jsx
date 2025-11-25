@@ -85,9 +85,18 @@ const API = `${BACKEND_URL}/api`;
 //   );
 // };
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" toastOptions={{
+        style: {
+          background: '#1A2333',
+          color: '#fff',
+          border: '1px solid rgba(255,255,255,0.1)',
+        },
+      }} />
       <Routes>
 
         {/* Public Routes */}

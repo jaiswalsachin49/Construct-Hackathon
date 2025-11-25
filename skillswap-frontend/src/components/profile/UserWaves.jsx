@@ -6,6 +6,7 @@ import {
   deleteWave as apiDeleteWave,
 } from '../../services/waveService';
 import WaveViewerModal from '../waves/WaveViewerModal';
+import { toast } from 'react-hot-toast';
 
 const UserWaves = ({ userId, isOwnProfile }) => {
   const [waves, setWaves] = useState([]);
@@ -47,9 +48,10 @@ const UserWaves = ({ userId, isOwnProfile }) => {
     try {
       await apiDeleteWave(waveId);
       setWaves((prev) => prev.filter((w) => w._id !== waveId));
+      toast.success('Wave deleted');
     } catch (err) {
       console.error('Failed to delete wave', err);
-      alert('Could not delete wave.');
+      toast.error('Could not delete wave.');
     }
   };
 

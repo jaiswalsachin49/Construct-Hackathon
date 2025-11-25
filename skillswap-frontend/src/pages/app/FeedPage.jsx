@@ -8,7 +8,7 @@ import Loading from '../../components/common/Loading';
 
 const FeedPage = () => {
     const { user } = useAuthStore();
-    const { feedPosts, isLoading, error, fetchFeed } = usePosts();
+    const { feedPosts, isLoading, error, fetchFeed, removePostFromFeed } = usePosts();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [page, setPage] = useState(1);
@@ -143,7 +143,11 @@ const FeedPage = () => {
             {feedPosts.length > 0 && (
                 <>
                     {feedPosts.map((post) => (
-                        <PostCard key={post._id} post={post} />
+                        <PostCard
+                            key={post._id}
+                            post={post}
+                            onDelete={(postId) => removePostFromFeed(postId)}
+                        />
                     ))}
 
                     {/* Load More Trigger */}

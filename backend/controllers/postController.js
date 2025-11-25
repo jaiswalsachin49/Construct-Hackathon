@@ -208,7 +208,18 @@ exports.deletePost = async (req, res) => {
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        if (post.userId.toString() !== req.user.userId) {
+        const userId = req.user.userId;
+        let isAuthorized = post.userId.toString() === userId;
+
+        // If not author, check if community admin
+        if (!isAuthorized && post.communityId) {
+            const community = await Community.findById(post.communityId);
+            if (community && community.admins.includes(userId)) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 

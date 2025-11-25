@@ -132,7 +132,7 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-[#101726] border border-white/10 w-full max-w-6xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] h-[90vh]">
+      <div className="bg-[#101726] border border-white/10 w-full max-w-7xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] h-[90vh]">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <h2 className="text-xl font-bold text-white">Create Activity</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white">

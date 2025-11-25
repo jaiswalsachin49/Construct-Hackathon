@@ -194,5 +194,6 @@ export const usePosts = () => {
         toggleLike,
         addComment,
         deleteComment,
+        removePostFromFeed: store.deletePost, // Alias for feed page
     };
 };
