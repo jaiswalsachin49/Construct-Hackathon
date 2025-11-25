@@ -70,7 +70,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     const isOnline = onlineUsers.includes(otherUserId);
 
     // ... (Keep your existing header helpers) ...
-    
+
     if (!conversation) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-transparent">
@@ -266,7 +266,7 @@ ChatWindow.propTypes = {
     conversation: PropTypes.object,
     messages: PropTypes.array.isRequired,
     onSendMessage: PropTypes.func.isRequired,
-    isTyping: PropTypes.bool,
+    isTyping: PropTypes.object,
     currentUserId: PropTypes.string,
     onBack: PropTypes.func,
     onlineUsers: PropTypes.array,

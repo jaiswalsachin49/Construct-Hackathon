@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import api from '../../services/api';
 
 const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
   const [reason, setReason] = useState('');
@@ -15,10 +16,15 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
     try {
       setIsReporting(true);
 
-      // Mock API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Real API call
+      await api.post('/api/reports', {
+        targetType,
+        targetId,
+        reason,
+        details
+      });
 
-      console.log('Report submitted:', { targetType, targetId, reason, details });
+      // console.log('Report submitted:', { targetType, targetId, reason, details });
 
       alert('Report submitted. We will review it shortly.');
       onClose();
