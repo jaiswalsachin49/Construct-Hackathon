@@ -24,7 +24,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
         details
       });
 
-      console.log('Report submitted:', { targetType, targetId, reason, details });
+      // console.log('Report submitted:', { targetType, targetId, reason, details });
 
       alert('Report submitted. We will review it shortly.');
       onClose();
