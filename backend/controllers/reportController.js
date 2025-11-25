@@ -47,6 +47,10 @@ const createReport = async (req, res) => {
         await newReport.save();
 
         // Send Email Notification
+        console.log('Attempting to send email...');
+        console.log('Sender:', process.env.EMAIL_USER || 'sj976958@gmail.com');
+        console.log('Password present:', !!process.env.EMAIL_PASSWORD);
+
         const mailOptions = {
             from: process.env.EMAIL_USER || 'sj976958@gmail.com',
             to: 'sj976958@gmail.com',
@@ -109,8 +113,31 @@ const resolveReport = async (req, res) => {
     }
 };
 
+const testEmail = async (req, res) => {
+    try {
+        console.log('Testing email from controller...');
+        console.log('User:', process.env.EMAIL_USER || 'sj976958@gmail.com');
+        console.log('Password present:', !!process.env.EMAIL_PASSWORD);
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER || 'sj976958@gmail.com',
+            to: 'sj976958@gmail.com',
+            subject: 'Test Email from Controller',
+            text: 'If you receive this, the controller configuration is correct.'
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Test email sent:', info.response);
+        res.json({ success: true, message: 'Email sent successfully', info });
+    } catch (error) {
+        console.error('Test email failed:', error);
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
+};
+
 module.exports = {
     getReports,
     resolveReport,
-    createReport
+    createReport,
+    testEmail
 };
