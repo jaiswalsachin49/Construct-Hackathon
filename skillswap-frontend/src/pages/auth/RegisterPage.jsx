@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, Upload, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, ArrowLeft, Loader2, Upload, X } from 'lucide-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Button from '../../components/common/Button';
 import TagInput from '../../components/auth/TagInput';
@@ -510,7 +510,7 @@ const RegisterPage = () => {
         <div
             className="min-h-screen flex items-center justify-center p-6
                 bg-gradient-to-br from-[#0A0F1F] via-[#101726] to-[#0A0F1F]
-                relative text-[#E6E9EF]
+                relative text-[#E6E9EF] overflow-hidden
             "
         >
             {/* Glow spots */}
@@ -520,9 +520,9 @@ const RegisterPage = () => {
 
             {/* MAIN CARD */}
             <div
-                className="w-full max-w-xl relative z-10
+                className="w-full max-w-md relative z-10
                     bg-white/10 backdrop-blur-2xl
-                    rounded-3xl p-8 lg:p-10
+                    rounded-3xl p-6 lg:p-8
                     border border-white/20
                     shadow-[0_0_25px_rgba(0,244,255,0.18)]
                 "
