@@ -62,12 +62,21 @@ exports.getNearbyUsers = async (req, res) => {
 exports.getBestMatches = async (req, res) => {
     try {
         const user = await User.findById(req.user.userId);
+        // Debug logging
+        console.log('User ID:', user._id);
+        console.log('Allies:', user.allies);
+        console.log('Sent Requests:', user.sentRequests);
+        console.log('Friend Requests:', user.friendRequests);
+        console.log('Blocked:', user.blocked);
+
         const nearbyUsers = await User.find({
             _id: {
                 $ne: user._id,
                 $nin: [...user.allies, ...user.sentRequests, ...user.friendRequests, ...user.blocked]
             }
         }).select('name profilePhoto location teachTags learnTags stats availability');
+
+        console.log('Found nearby users for matching:', nearbyUsers.length);
 
         // Score each user
         const scoredMatches = nearbyUsers.map(otherUser => {
@@ -116,11 +125,15 @@ exports.getBestMatches = async (req, res) => {
 // Search users by skill
 exports.searchUsers = async (req, res) => {
     try {
-        const { query, search } = req.query;
+        const { query } = req.query;
         const user = await User.findById(req.user.userId);
 
         const users = await User.find({
-            $text: { $search: query }
+            $text: { $search: query },
+            _id: {
+                $ne: user._id,
+                $nin: [...user.allies, ...user.sentRequests, ...user.friendRequests, ...user.blocked]
+            }
         })
             .select('name profilePhoto location teachTags learnTags stats')
             .limit(20);

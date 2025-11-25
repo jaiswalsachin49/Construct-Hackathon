@@ -307,7 +307,8 @@ exports.deleteComment = async (req, res) => {
             return res.status(404).json({ error: 'Comment not found' });
         }
 
-        if (comment.userId.toString() !== req.user.userId) {
+        // Allow comment author OR post author to delete
+        if (comment.userId.toString() !== req.user.userId && post.userId.toString() !== req.user.userId) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
@@ -315,6 +316,18 @@ exports.deleteComment = async (req, res) => {
         await post.save();
 
         res.json({ success: true, message: 'Comment deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getPostLikes = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).populate('likes', 'name profilePhoto bio');
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        res.json({ success: true, likes: post.likes });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -392,5 +405,20 @@ exports.createCommunityPost = async (req, res) => {
     }
 };
 
+
+exports.getUserPosts = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const posts = await Post.find({ userId })
+            .populate('userId', 'name profilePhoto')
+            .populate('comments.userId', 'name profilePhoto')
+            .populate('communityId', 'name')
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, posts });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 module.exports = exports;

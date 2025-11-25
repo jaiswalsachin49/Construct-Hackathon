@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWaves } from '../../hooks/useWaves';
 import { viewWave, reactToWave } from '../../services/waveService';
 import { startChat } from '../../services/discoveryService';
+import LikesListModal from '../common/LikesListModal';
 
 const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
+    const [showLikesModal, setShowLikesModal] = useState(false);
     const timerRef = useRef(null);
     const videoRef = useRef(null);
 
@@ -218,15 +220,30 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
                         {/* Likes */}
                         <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => {
-                                    reactToWave(currentWave._id);
-                                    setIsLiked(!isLiked);
-                                }}
-                                className={`p-2 rounded-full transition-transform hover:scale-110 ${isLiked ? 'text-red-500' : 'text-white'}`}
-                            >
-                                <Heart className={`h-7 w-7 ${isLiked ? 'fill-current' : ''}`} />
-                            </button>
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={() => {
+                                        reactToWave(currentWave._id);
+                                        setIsLiked(!isLiked);
+                                    }}
+                                    className={`p-2 rounded-full transition-transform hover:scale-110 ${isLiked ? 'text-red-500' : 'text-white'}`}
+                                >
+                                    <Heart className={`h-7 w-7 ${isLiked ? 'fill-current' : ''}`} />
+                                </button>
+                                {/* Like Count */}
+                                {currentWave.likes?.length > 0 && (
+                                    <span 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsPaused(true);
+                                            setShowLikesModal(true);
+                                        }}
+                                        className="text-white text-xs font-medium cursor-pointer hover:underline"
+                                    >
+                                        {currentWave.likes.length}
+                                    </span>
+                                )}
+                            </div>
 
                             {/* Mute Toggle for Video */}
                             {currentWave.type === 'video' && (
@@ -251,6 +268,17 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                     <div onClick={nextWave} className="w-1/3 h-full pointer-events-auto" />
                 </div>
             </div>
+
+            {/* Likes List Modal */}
+            <LikesListModal
+                isOpen={showLikesModal}
+                onClose={() => {
+                    setShowLikesModal(false);
+                    setIsPaused(false);
+                }}
+                targetId={currentWave._id}
+                type="wave"
+            />
         </div>
     );
 };

@@ -7,6 +7,7 @@ import { usePosts } from '../../hooks/usePosts';
 import useAuthStore from '../../store/authStore';
 import { sharePost } from '../../services/postService';
 import ReportModal from '../safety/ReportModal';
+import LikesListModal from '../common/LikesListModal';
 
 const PostCard = ({ post, onUpdate }) => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const PostCard = ({ post, onUpdate }) => {
     const [commentText, setCommentText] = useState('');
     const [isAddingComment, setIsAddingComment] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
+    const [showLikesModal, setShowLikesModal] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     const isLiked = post.likes?.includes(user?._id);
@@ -318,7 +320,12 @@ const PostCard = ({ post, onUpdate }) => {
 
             {/* Stats */}
             <div className="px-4 py-2 flex items-center justify-between text-sm text-[#8A90A2] border-t border-white/10">
-                <span>{post.likes?.length || 0} likes</span>
+                <span
+                    onClick={() => setShowLikesModal(true)}
+                    className="cursor-pointer hover:text-white hover:underline transition-colors"
+                >
+                    {post.likes?.length || 0} likes
+                </span>
                 <div className="flex gap-3">
                     <span>{post.comments?.length || 0} comments</span>
                     {post.shares > 0 && <span>{post.shares} shares</span>}
@@ -378,8 +385,8 @@ const PostCard = ({ post, onUpdate }) => {
                                     <div className="bg-white/5 rounded-lg px-3 py-2 relative">
                                         <p className="font-semibold text-sm text-white">{comment.userId?.name}</p>
                                         <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
-                                        {/* Delete button - only show for comment author */}
-                                        {(comment.userId === user?._id || comment.user?._id === user?._id) && (
+                                        {/* Delete button - only show for comment author or post author */}
+                                        {((comment.userId?._id || comment.userId) === user?._id || isOwnPost) && (
                                             <button
                                                 onClick={() => handleDeleteComment(comment._id)}
                                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
@@ -457,6 +464,14 @@ const PostCard = ({ post, onUpdate }) => {
                 targetType="post"
                 targetId={post._id}
                 targetName={`Post by ${post.userId?.name || 'Unknown User'}`}
+            />
+
+            {/* Likes List Modal */}
+            <LikesListModal
+                isOpen={showLikesModal}
+                onClose={() => setShowLikesModal(false)}
+                targetId={post._id}
+                type="post"
             />
         </div>
     );

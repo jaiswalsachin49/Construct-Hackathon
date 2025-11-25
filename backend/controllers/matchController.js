@@ -15,8 +15,11 @@ exports.getAIMatches = async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         const allUsers = await User.find({
-            _id: { $ne: user._id },
-            blocked: { $nin: [user._id] },
+            _id: {
+                $ne: user._id,
+                $nin: [...user.allies, ...user.sentRequests, ...user.friendRequests, ...user.blocked]
+            },
+            blocked: { $nin: [user._id] }, // Also exclude users who blocked ME
             'location.lat': { $exists: true },
             'location.lng': { $exists: true }
         }).limit(100);
@@ -124,13 +127,13 @@ function generateMatchReason(user1, user2) {
 
 function getDistance(loc1, loc2) {
     const R = 6371;
-    const dLat = (loc2.lat - loc1.lat) * Math.PI/180;
-    const dLng = (loc2.lng - loc1.lng) * Math.PI/180;
+    const dLat = (loc2.lat - loc1.lat) * Math.PI / 180;
+    const dLng = (loc2.lng - loc1.lng) * Math.PI / 180;
 
     const a =
         Math.sin(dLat / 2) ** 2 +
-        Math.cos(loc1.lat * Math.PI/180) *
-        Math.cos(loc2.lat * Math.PI/180) *
+        Math.cos(loc1.lat * Math.PI / 180) *
+        Math.cos(loc2.lat * Math.PI / 180) *
         Math.sin(dLng / 2) ** 2;
 
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
