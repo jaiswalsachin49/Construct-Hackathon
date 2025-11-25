@@ -8,8 +8,10 @@ import useAuthStore from '../../store/authStore';
 import { sharePost } from '../../services/postService';
 import ReportModal from '../safety/ReportModal';
 import LikesListModal from '../common/LikesListModal';
+import ConfirmationModal from '../common/ConfirmationModal';
+import { toast } from 'react-hot-toast';
 
-const PostCard = ({ post, onUpdate }) => {
+const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const { toggleLike, addComment, deleteComment, deletePost, updatePost } = usePosts();
@@ -22,10 +24,14 @@ const PostCard = ({ post, onUpdate }) => {
     const [isAddingComment, setIsAddingComment] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showLikesModal, setShowLikesModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     const isLiked = post.likes?.includes(user?._id);
-    const isOwnPost = post.user?._id === user?._id;
+    // Handle both post.user and post.userId (different backend response formats)
+    const postAuthorId = post.user?._id || post.userId?._id || post.userId;
+    const isOwnPost = postAuthorId === user?._id;
+    const canDelete = isOwnPost || isCommunityAdmin;
 
     const handleMouseMove = (e) => {
         if (!cardRef.current) return;
@@ -87,9 +93,10 @@ const PostCard = ({ post, onUpdate }) => {
                 const newComments = (post.comments || []).filter(c => c._id !== commentId);
                 onUpdate({ comments: newComments });
             }
+            toast.success('Comment deleted');
         } catch (error) {
             console.error('Failed to delete comment:', error);
-            alert('Failed to delete comment');
+            toast.error('Failed to delete comment');
         }
     };
 
@@ -108,7 +115,7 @@ const PostCard = ({ post, onUpdate }) => {
             }
         } else {
             navigator.clipboard.writeText(postUrl);
-            alert('Link copied to clipboard!');
+            toast.success('Link copied to clipboard!');
         }
 
         try {
@@ -118,13 +125,23 @@ const PostCard = ({ post, onUpdate }) => {
         }
     };
 
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            try {
-                await deletePost(post._id);
-            } catch (error) {
-                console.error('Failed to delete post:', error);
+    const handleDeleteClick = () => {
+        setShowMore(false);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            await deletePost(post._id);
+            toast.success('Post deleted');
+            setShowDeleteModal(false);
+            if (onDelete) {
+                onDelete(post._id);
             }
+        } catch (error) {
+            console.error('Failed to delete post:', error);
+            toast.error('Failed to delete post');
+            setShowDeleteModal(false);
         }
     };
 
@@ -210,59 +227,46 @@ const PostCard = ({ post, onUpdate }) => {
 
                     {showMore && (
                         <div className="absolute right-0 mt-2 w-48 bg-[#101726] rounded-lg shadow-lg border border-white/10 py-1 z-10 backdrop-blur-sm">
-                            {isOwnPost ? (
-                                <>
-                                    <button onClick={() => {
-                                        const newContent = window.prompt('Edit post content', post.content);
-                                        if (newContent !== null) {
-                                            try {
-                                                // update post (async)
-                                                updatePost(post._id, { content: newContent }).catch(err => {
-                                                    console.error('Edit failed', err);
-                                                    alert('Failed to update post');
-                                                });
-                                            } catch (err) {
-                                                console.error(err);
-                                            }
+                            {isOwnPost && (
+                                <button onClick={() => {
+                                    const newContent = window.prompt('Edit post content', post.content);
+                                    if (newContent !== null) {
+                                        try {
+                                            // update post (async)
+                                            updatePost(post._id, { content: newContent }).catch(err => {
+                                                console.error('Edit failed', err);
+                                                toast.error('Failed to update post');
+                                            });
+                                        } catch (err) {
+                                            console.error(err);
                                         }
-                                    }} className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
-                                        Edit Post
-                                    </button>
-                                    {/* The original code had a direct delete button here.
-                                        The provided snippet introduces `onDelete` prop, which is not defined in PostCard props.
-                                        For faithfulness, I'll adapt the original delete logic to the new button structure.
-                                    */}
-                                    <button
-                                        onClick={async () => {
-                                            setShowMore(false);
-                                            const ok = window.confirm('Are you sure you want to delete this post?');
-                                            if (!ok) return;
-                                            const success = await deletePost(post._id);
-                                            if (!success) {
-                                                alert('Failed to delete post');
-                                            }
-                                        }}
-                                        className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-red-500"
-                                    >
-                                        Delete Post
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={() => {
-                                            setShowMore(false);
-                                            setShowReportModal(true);
-                                        }}
-                                        className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white flex items-center gap-2"
-                                    >
-                                        <Flag className="h-4 w-4" />
-                                        Report Post
-                                    </button>
-                                    {/* <button className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
-                                        Hide Post
-                                    </button> */}
-                                </>
+                                    }
+                                }} className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white">
+                                    Edit Post
+                                </button>
+                            )}
+
+                            {canDelete && (
+                                <button
+                                    onClick={handleDeleteClick}
+                                    className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-red-500 flex items-center gap-2"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Post
+                                </button>
+                            )}
+
+                            {!isOwnPost && (
+                                <button
+                                    onClick={() => {
+                                        setShowMore(false);
+                                        setShowReportModal(true);
+                                    }}
+                                    className="w-full px-4 py-2 text-left hover:bg-white/10 text-sm text-white flex items-center gap-2"
+                                >
+                                    <Flag className="h-4 w-4" />
+                                    Report Post
+                                </button>
                             )}
                         </div>
                     )}
@@ -473,6 +477,17 @@ const PostCard = ({ post, onUpdate }) => {
                 targetId={post._id}
                 type="post"
             />
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDelete}
+                title="Delete Post"
+                message="Are you sure you want to delete this post? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+            />
         </div>
     );
 };
@@ -499,6 +514,9 @@ PostCard.propTypes = {
         community: PropTypes.object,
         tags: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
+    onUpdate: PropTypes.func,
+    onDelete: PropTypes.func,
+    isCommunityAdmin: PropTypes.bool,
 };
 
 export default PostCard;

@@ -88,10 +88,10 @@ const CreateCommunityModal = ({ isOpen, onClose }) => {
       await createNewCommunity(formData);
       onClose();
       // Show success toast
-      alert('Community created successfully!');
+      toast.success('Community created successfully!');
     } catch (error) {
       console.error('Error creating community:', error);
-      alert('Failed to create community. Please try again.');
+      toast.error('Failed to create community. Please try again.');
     }
   };
 

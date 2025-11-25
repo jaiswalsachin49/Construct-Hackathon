@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video, RefreshCw, Trash2, Ban } from 'lucide-react';
+import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video, Trash2, Ban } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import Button from '../common/Button';
 import socketService from '../../services/socketService';
 import { format, isToday, isYesterday } from 'date-fns';
+import { toast } from 'react-hot-toast';
 
 const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUserId, onBack, onlineUsers = [], onDeleteConversation, onBlockUser }) => {
     const navigate = useNavigate();
@@ -15,10 +16,9 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     const messageContainerRef = useRef(null);
     const textareaRef = useRef(null);
     const typingTimeoutRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     // ... (rest of the component)
-
-
 
     // --- FIX: Safe Scroll Logic ---
     const scrollToBottom = () => {
@@ -61,6 +61,21 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
+        }
+    };
+
+    const handleAttachmentClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Placeholder for actual upload logic
+            toast.success(`Selected file: ${file.name}`);
+            toast("Attachment upload is coming soon!", { icon: '📎' });
+            // Reset input
+            e.target.value = '';
         }
     };
 
@@ -126,26 +141,20 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
 
                 <div className="flex items-center gap-1">
                     <button
-                        onClick={() => alert("Audio calls coming soon!")}
+                        onClick={() => toast("Audio calls coming soon!", { icon: '📞' })}
                         className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         title="Audio Call"
                     >
                         <Phone className="h-5 w-5" />
                     </button>
                     <button
-                        onClick={() => alert("Video calls coming soon!")}
+                        onClick={() => toast("Video calls coming soon!", { icon: '📹' })}
                         className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
                         title="Video Call"
                     >
                         <Video className="h-5 w-5" />
                     </button>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="p-2 text-[#8A90A2] hover:bg-white/10 rounded-full transition-colors"
-                        title="Refresh Chat"
-                    >
-                        <RefreshCw className="h-5 w-5" />
-                    </button>
+
                     <div className="relative">
                         <button
                             onClick={() => setShowMenu(!showMenu)}
@@ -220,7 +229,16 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
             {/* Input Area */}
             <div className="p-4 bg-white/5 border-t border-white/10 backdrop-blur-xl">
                 <div className="flex items-end gap-2 bg-[#101726] p-2 rounded-2xl border border-white/10 focus-within:border-[#00C4FF] focus-within:ring-1 focus-within:ring-[#00C4FF] transition-all">
-                    <button className="p-2 text-[#8A90A2] hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        onClick={handleAttachmentClick}
+                        className="p-2 text-[#8A90A2] hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                    >
                         <Paperclip className="h-5 w-5" />
                     </button>
 

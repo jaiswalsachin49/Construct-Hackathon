@@ -210,6 +210,7 @@ export const useCommunities = () => {
 
     // Store actions
     addCommunityPost: store.addCommunityPost,
+    removeCommunityPost: store.removeCommunityPost,
     addCommunityMessage: store.addCommunityMessage,
     setCurrentCommunity: store.setCurrentCommunity,
     reset: store.reset

@@ -45,6 +45,13 @@ const useCommunityStore = create(
         }
       })),
 
+      removeCommunityPost: (communityId, postId) => set((state) => ({
+        communityPosts: {
+          ...state.communityPosts,
+          [communityId]: (state.communityPosts[communityId] || []).filter(p => p._id !== postId)
+        }
+      })),
+
       setCommunityMessages: (communityId, messages) => set((state) => ({
         communityMessages: {
           ...state.communityMessages,
