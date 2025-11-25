@@ -9,7 +9,7 @@ const DashboardLayout = () => {
     const navItems = [
         { to: '/app/discover', icon: Home, label: 'Discover' },
         // { to: '/app/matches', icon: Users, label: 'Matches' },
-        { to: '/app/activities', icon: Map, label: "Activities"},
+        { to: '/app/activities', icon: Map, label: "Activities" },
         { to: '/app/chat', icon: MessageCircle, label: 'Chat' },
         { to: '/app/waves', icon: Zap, label: 'Waves' },
         { to: '/app/feed', icon: FileText, label: 'Feed' },
@@ -63,7 +63,14 @@ const DashboardLayout = () => {
             {/* Mobile Bottom Navigation */}
             <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#101726]/90 backdrop-blur-xl border-t border-white/10 z-40">
                 <div className="flex justify-around items-center h-16">
-                    {navItems.slice(0, 5).map((item) => (
+                    {/* Mobile nav items: Feed, Communities, Chat, Waves, Profile */}
+                    {[
+                        navItems.find(item => item.to === '/app/feed'),
+                        navItems.find(item => item.to === '/app/communities'),
+                        navItems.find(item => item.to === '/app/chat'),
+                        navItems.find(item => item.to === '/app/waves'),
+                        navItems.find(item => item.to === '/app/profile'),
+                    ].filter(Boolean).map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}

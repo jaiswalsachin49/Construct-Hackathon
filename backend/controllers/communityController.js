@@ -182,9 +182,38 @@ exports.leaveCommunity = async (req, res) => {
             return res.status(404).json({ error: 'Community not found' });
         }
 
-        community.members = community.members.filter(
-            m => m.userId.toString() !== req.user.userId
-        );
+        const userId = req.user.userId;
+        const memberIndex = community.members.findIndex(m => m.userId.toString() === userId);
+
+        if (memberIndex === -1) {
+            return res.status(400).json({ error: 'You are not a member of this community' });
+        }
+
+        const member = community.members[memberIndex];
+
+        // 1. Check if user is the LAST member -> Delete community
+        if (community.members.length === 1) {
+            await Community.findByIdAndDelete(req.params.communityId);
+            return res.json({
+                success: true,
+                message: 'Community deleted as you were the last member',
+                action: 'deleted'
+            });
+        }
+
+        // 2. Check if user is the LAST ADMIN (and there are other members) -> Prevent leaving
+        if (member.role === 'admin') {
+            const adminCount = community.members.filter(m => m.role === 'admin').length;
+            if (adminCount === 1) {
+                return res.status(400).json({
+                    error: 'Cannot leave community',
+                    message: 'You are the only admin. Please promote another member to admin before leaving.'
+                });
+            }
+        }
+
+        // 3. Normal leave
+        community.members.splice(memberIndex, 1);
         await community.save();
 
         res.json({ success: true, message: 'Left community' });
@@ -353,6 +382,48 @@ exports.getCommunityMessages = async (req, res) => {
         // Reverse to show oldest first
         res.json({ success: true, messages: messages.reverse() });
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Delete Community (Admin Only)
+exports.deleteCommunity = async (req, res) => {
+    try {
+        const { communityId } = req.params;
+        const userId = req.user.userId;
+
+        // Find the community
+        const community = await Community.findById(communityId);
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        // Check if user is the admin/creator
+        if (community.creatorId.toString() !== userId) {
+            return res.status(403).json({ error: 'Only the community admin can delete this community' });
+        }
+
+        // Check if community has more than 1 member
+        if (community.members.length > 1) {
+            return res.status(400).json({
+                error: 'Cannot delete community with multiple members',
+                message: `This community has ${community.members.length} members. Please remove all other members before deleting.`
+            });
+        }
+
+        // Delete community (this will also cascade delete related data if configured in schema)
+        await Community.findByIdAndDelete(communityId);
+
+        // Optional: Delete related data manually if not using cascade
+        // await Post.deleteMany({ communityId });
+        // await CommunityMessage.deleteMany({ communityId });
+
+        res.json({
+            success: true,
+            message: 'Community deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete community error:', error);
         res.status(500).json({ error: error.message });
     }
 };

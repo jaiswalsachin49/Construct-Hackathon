@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, MapPin } from 'lucide-react';
 import { updateProfile, getCurrentUser } from '../../services/authService';
 import useAuthStore from '../../store/authStore';
+import { searchPlaces } from '../../services/locationService';
 
 const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   const coverInputRef = useRef(null);
@@ -17,6 +18,8 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
   const [location, setLocation] = useState(null);
   const [showLocationSearch, setShowLocationSearch] = useState(false);
   const [locationInput, setLocationInput] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const [teachTags, setTeachTags] = useState([]);
   const [teachInput, setTeachInput] = useState('');
   const [learnTags, setLearnTags] = useState([]);
@@ -99,10 +102,53 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
     }));
   };
 
-  const selectLocation = (loc) => {
-    setLocation(loc);
-    setShowLocationSearch(false);
+  // Location search with debouncing
+  useEffect(() => {
+    const searchLocation = async () => {
+      if (locationInput.length > 2) {
+        const results = await searchPlaces(locationInput);
+        setLocationSuggestions(results);
+      } else {
+        setLocationSuggestions([]);
+      }
+    };
+
+    const timeoutId = setTimeout(searchLocation, 300);
+    return () => clearTimeout(timeoutId);
+  }, [locationInput]);
+
+  const selectLocation = (place) => {
+    setLocation({
+      lat: place.lat,
+      lng: place.lng,
+      areaLabel: place.display_name
+    });
     setLocationInput('');
+    setLocationSuggestions([]);
+    setShowLocationSearch(false);
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation not supported');
+      return;
+    }
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setLocation({
+          lat: coords.latitude,
+          lng: coords.longitude,
+          areaLabel: `Lat: ${coords.latitude.toFixed(4)}, Lng: ${coords.longitude.toFixed(4)}`
+        });
+        setShowLocationSearch(false);
+        setDetectingLocation(false);
+      },
+      () => {
+        alert('Could not detect location');
+        setDetectingLocation(false);
+      }
+    );
   };
 
   const canSave = name.trim() && location && teachTags.length > 0 && learnTags.length > 0;
@@ -315,7 +361,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
           </div>
 
           {/* Location */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-[#E6E9EF] mb-2">
               Location *
             </label>
@@ -325,46 +371,54 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
                 <button
                   type="button"
                   onClick={() => setShowLocationSearch(true)}
-                  className="text-[#00F5A0] hover:text-[#00F5A0]/80 font-medium"
+                  className="text-[#00F5A0] hover:text-[#00F5A0]/80 font-medium text-sm"
                 >
                   Change
                 </button>
               </div>
             ) : (
               <>
-                <input
-                  data-testid="location-input"
-                  type="text"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                  placeholder="Search for location..."
-                  className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
-                />
-                {locationInput && (
-                  <div className="mt-2 bg-[#101726] border border-white/10 rounded-lg overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => selectLocation({
-                        lat: 12.9716,
-                        lng: 77.5946,
-                        areaLabel: 'Koramangala, Bangalore'
-                      })}
-                      className="w-full px-4 py-2 text-left hover:bg-white/10 flex items-center gap-2 text-white"
-                    >
-                      📍 Koramangala, Bangalore
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => selectLocation({
-                        lat: 12.9352,
-                        lng: 77.6245,
-                        areaLabel: 'Indiranagar, Bangalore'
-                      })}
-                      className="w-full px-4 py-2 text-left hover:bg-white/10 flex items-center gap-2 text-white"
-                    >
-                      📍 Indiranagar, Bangalore
-                    </button>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 h-5 w-5 text-[#8A90A2]" />
+                  <input
+                    data-testid="location-input"
+                    type="text"
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    placeholder="Search city or area..."
+                    className="w-full pl-10 pr-24 py-2.5 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-[#8A90A2] focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleDetectLocation}
+                    disabled={detectingLocation}
+                    className="absolute right-2 top-2 text-xs text-[#00C4FF] hover:text-[#00F5A0] px-2 py-1 rounded transition-colors"
+                  >
+                    {detectingLocation ? 'Detecting...' : 'Use my location'}
+                  </button>
+                </div>
+
+                {/* Location Suggestions */}
+                {locationSuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-[#0A0F1F] border border-white/20 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {locationSuggestions.map((place) => (
+                      <button
+                        key={place.place_id}
+                        type="button"
+                        onClick={() => selectLocation(place)}
+                        className="w-full px-4 py-3 text-left text-sm text-[#E6E9EF] hover:bg-white/10 border-b border-white/5 last:border-0 transition-colors">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-[#00C4FF] mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-2">{place.display_name}</span>
+                        </div>
+                      </button>
+                    ))}
                   </div>
+                )}
+
+                {locationInput && locationSuggestions.length === 0 && (
+                  <p className="mt-2 text-sm text-[#8A90A2]">Type at least 3 characters to search...</p>
                 )}
               </>
             )}
@@ -497,8 +551,8 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }) => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

@@ -201,8 +201,8 @@ const CommunitiesPage = () => {
               ))}
             </div>
           ) : filteredCommunities.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCommunities.filter(c => c && c._id).map((community) =>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {filteredCommunities.map((community) =>
               (
                 <CommunityCard
                   key={community._id}
@@ -233,34 +233,6 @@ const CommunitiesPage = () => {
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #00C4FF;
-          cursor: pointer;
-          box-shadow: 0 0 10px rgba(0, 196, 255, 0.5);
-        }
-        .slider::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #00C4FF;
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 10px rgba(0, 196, 255, 0.5);
-        }
-      `}</style>
     </div>
   );
 };

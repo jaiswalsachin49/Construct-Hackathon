@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Menu, X, LogOut, Settings, User as UserIcon, ChevronDown, MessageCircle, Check, Loader2 } from 'lucide-react';
+import { Bell, Menu, X, LogOut, Settings, User as UserIcon, ChevronDown, MessageCircle, Check, Loader2, Search, MapPin, Users } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useChatStore from '../../store/chatStore';
 import socketService from '../../services/socketService';
@@ -262,55 +262,57 @@ const Navbar = () => {
                                                                     )}
                                                                 </button>
                                                             </div>
-                                                        </div>
+                                                        </div >
                                                     ))}
-                                                </div>
+                                                </div >
                                             )}
 
                                             {/* --- SECTION 2: MESSAGES --- */}
-                                            {unreadConversations.length > 0 ? (
-                                                <>
-                                                    <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
-                                                        <span>Unread Messages</span>
-                                                        <span className="text-[#00F5A0]">{unreadConversations.length}</span>
-                                                    </div>
-                                                    {unreadConversations.map(conv => (
-                                                        <div
-                                                            key={conv._id}
-                                                            onClick={() => {
-                                                                navigate(`/app/chat/${conv._id}`);
-                                                                setUnreadCount(conv._id, 0);
-                                                                setIsNotificationsOpen(false);
-                                                            }}
-                                                            className="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-b border-white/5 last:border-none"
-                                                        >
-                                                            <img
-                                                                src={conv.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conv.otherUser?.name}`}
-                                                                className="w-10 h-10 rounded-full object-cover bg-white/10"
-                                                                alt=""
-                                                            />
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-medium text-white truncate">
-                                                                    {conv.otherUser?.name || 'Unknown User'}
-                                                                </p>
-                                                                <p className="text-xs text-[#8A90A2] truncate">
-                                                                    {conv.lastMessage?.content || 'New message'}
-                                                                </p>
-                                                            </div>
-                                                            <div className="w-2 h-2 bg-[#00C4FF] rounded-full flex-shrink-0"></div>
+                                            {
+                                                unreadConversations.length > 0 ? (
+                                                    <>
+                                                        <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
+                                                            <span>Unread Messages</span>
+                                                            <span className="text-[#00F5A0]">{unreadConversations.length}</span>
                                                         </div>
-                                                    ))}
-                                                </>
-                                            ) : requests.length === 0 && (
-                                                <div className="p-8 text-center">
-                                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#00C4FF]/20 to-[#00F5A0]/20 mb-3">
-                                                        <Bell className="h-8 w-8 text-[#00C4FF]" />
+                                                        {unreadConversations.map(conv => (
+                                                            <div
+                                                                key={conv._id}
+                                                                onClick={() => {
+                                                                    navigate(`/app/chat/${conv._id}`);
+                                                                    setUnreadCount(conv._id, 0);
+                                                                    setIsNotificationsOpen(false);
+                                                                }}
+                                                                className="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-b border-white/5 last:border-none"
+                                                            >
+                                                                <img
+                                                                    src={conv.otherUser?.profilePhoto || `https://ui-avatars.com/api/?name=${conv.otherUser?.name}`}
+                                                                    className="w-10 h-10 rounded-full object-cover bg-white/10"
+                                                                    alt=""
+                                                                />
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-medium text-white truncate">
+                                                                        {conv.otherUser?.name || 'Unknown User'}
+                                                                    </p>
+                                                                    <p className="text-xs text-[#8A90A2] truncate">
+                                                                        {conv.lastMessage?.content || 'New message'}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="w-2 h-2 bg-[#00C4FF] rounded-full flex-shrink-0"></div>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                ) : requests.length === 0 && (
+                                                    <div className="p-8 text-center">
+                                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#00C4FF]/20 to-[#00F5A0]/20 mb-3">
+                                                            <Bell className="h-8 w-8 text-[#00C4FF]" />
+                                                        </div>
+                                                        <p className="text-sm font-medium text-white mb-1">All caught up!</p>
+                                                        <p className="text-xs text-[#8A90A2]">No new notifications right now</p>
                                                     </div>
-                                                    <p className="text-sm font-medium text-white mb-1">All caught up!</p>
-                                                    <p className="text-xs text-[#8A90A2]">No new notifications right now</p>
-                                                </div>
-                                            )}
-                                        </div>
+                                                )
+                                            }
+                                        </div >
 
                                         <div className="border-t border-white/10 p-2 bg-white/5">
                                             <Link
@@ -321,13 +323,13 @@ const Navbar = () => {
                                                 View all messages
                                             </Link>
                                         </div>
-                                    </div>
+                                    </div >
                                 </>
                             )}
-                        </div>
+                        </div >
 
                         {/* Profile Dropdown */}
-                        <div className="relative">
+                        < div className="relative" >
                             <button
                                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                                 className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-white/10 rounded-full border border-transparent hover:border-white/10 transition-all focus:outline-none"
@@ -347,46 +349,48 @@ const Navbar = () => {
                                 <ChevronDown className="w-4 h-4 text-[#8A90A2]" />
                             </button>
 
-                            {isProfileDropdownOpen && (
-                                <>
-                                    <div className="fixed inset-0 z-10" onClick={() => setIsProfileDropdownOpen(false)} />
-                                    <div className="absolute right-0 mt-2 w-56 bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 backdrop-blur-xl">
-                                        <div className="px-4 py-3 border-b border-white/10 lg:hidden">
-                                            <p className="text-sm font-semibold text-white">{user?.name}</p>
-                                            <p className="text-xs text-[#8A90A2] truncate">{user?.email}</p>
+                            {
+                                isProfileDropdownOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setIsProfileDropdownOpen(false)} />
+                                        <div className="absolute right-0 mt-2 w-56 bg-[#101726] rounded-xl shadow-2xl border border-white/10 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200 backdrop-blur-xl">
+                                            <div className="px-4 py-3 border-b border-white/10 lg:hidden">
+                                                <p className="text-sm font-semibold text-white">{user?.name}</p>
+                                                <p className="text-xs text-[#8A90A2] truncate">{user?.email}</p>
+                                            </div>
+
+                                            <Link
+                                                to="/app/profile"
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
+                                                onClick={() => setIsProfileDropdownOpen(false)}
+                                            >
+                                                <UserIcon className="w-4 h-4" /> Your Profile
+                                            </Link>
+                                            <Link
+                                                to="/app/settings"
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
+                                                onClick={() => setIsProfileDropdownOpen(false)}
+                                            >
+                                                <Settings className="w-4 h-4" /> Settings
+                                            </Link>
+
+                                            <div className="h-px bg-white/10 my-2" />
+
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                                            >
+                                                <LogOut className="w-4 h-4" /> Sign Out
+                                            </button>
                                         </div>
-
-                                        <Link
-                                            to="/app/profile"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
-                                            onClick={() => setIsProfileDropdownOpen(false)}
-                                        >
-                                            <UserIcon className="w-4 h-4" /> Your Profile
-                                        </Link>
-                                        <Link
-                                            to="/app/settings"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
-                                            onClick={() => setIsProfileDropdownOpen(false)}
-                                        >
-                                            <Settings className="w-4 h-4" /> Settings
-                                        </Link>
-
-                                        <div className="h-px bg-white/10 my-2" />
-
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-                                        >
-                                            <LogOut className="w-4 h-4" /> Sign Out
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                                    </>
+                                )
+                            }
+                        </div >
+                    </div >
 
                     {/* Mobile Menu Button */}
-                    <div className="flex items-center gap-4 md:hidden">
+                    < div className="flex items-center gap-4 md:hidden" >
                         <button
                             className="relative p-2 text-gray-600"
                             onClick={() => navigate('/app/chat')}
@@ -402,54 +406,77 @@ const Navbar = () => {
                         >
                             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </button>
-                    </div>
-                </div>
-            </div>
+                    </div >
+                </div >
+            </div >
 
             {/* Mobile Menu Drawer */}
-            {isMenuOpen && (
-                <div className="md:hidden border-t border-white/10 bg-[#101726] absolute w-full shadow-lg z-50">
-                    <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold border border-white/10 overflow-hidden">
-                            {user?.profilePhoto ? (
-                                <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
-                            ) : (
-                                getInitials(user?.name)
-                            )}
+            {
+                isMenuOpen && (
+                    <div className="md:hidden border-t border-white/10 bg-[#101726] absolute w-full shadow-lg z-50">
+                        <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold border border-white/10 overflow-hidden">
+                                {user?.profilePhoto ? (
+                                    <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
+                                ) : (
+                                    getInitials(user?.name)
+                                )}
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white">{user?.name}</p>
+                                <p className="text-xs text-[#8A90A2]">{user?.email}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="font-semibold text-white">{user?.name}</p>
-                            <p className="text-xs text-[#8A90A2]">{user?.email}</p>
+                        <div className="p-2 space-y-1">
+                            <Link
+                                to="/app/profile"
+                                className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <UserIcon className="w-5 h-5 text-[#8A90A2]" /> Profile
+                            </Link>
+                            <Link
+                                to="/app/communities"
+                                className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Users className="w-5 h-5 text-[#8A90A2]" /> Communities
+                            </Link>
+                            <Link
+                                to="/app/discover"
+                                className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Search className="w-5 h-5 text-[#8A90A2]" /> Discover
+                            </Link>
+                            <Link
+                                to="/app/activities"
+                                className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <MapPin className="w-5 h-5 text-[#8A90A2]" /> Activities
+                            </Link>
+                            <Link
+                                to="/app/settings"
+                                className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Settings className="w-5 h-5 text-[#8A90A2]" /> Settings
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    handleLogout();
+                                    setIsMenuOpen(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg"
+                            >
+                                <LogOut className="w-5 h-5" /> Logout
+                            </button>
                         </div>
                     </div>
-                    <div className="p-2 space-y-1">
-                        <Link
-                            to="/app/profile"
-                            className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <UserIcon className="w-5 h-5 text-[#8A90A2]" /> Profile
-                        </Link>
-                        <Link
-                            to="/app/settings"
-                            className="flex items-center gap-3 px-4 py-3 text-[#E6E9EF] hover:bg-white/10 rounded-lg"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <Settings className="w-5 h-5 text-[#8A90A2]" /> Settings
-                        </Link>
-                        <button
-                            onClick={() => {
-                                handleLogout();
-                                setIsMenuOpen(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg"
-                        >
-                            <LogOut className="w-5 h-5" /> Logout
-                        </button>
-                    </div>
-                </div>
-            )}
-        </nav>
+                )
+            }
+        </nav >
     );
 };
 
