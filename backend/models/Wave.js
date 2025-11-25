@@ -8,6 +8,7 @@ const waveSchema = new mongoose.Schema({
     textContent: String,
     backgroundColor: String, // for text waves
     viewedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // New field
     viewCount: { type: Number, default: 0 },
     expiresAt: Date, // 24 hours from creation
     createdAt: { type: Date, default: Date.now }
