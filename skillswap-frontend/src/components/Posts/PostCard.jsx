@@ -203,7 +203,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                                 <>
                                     <span>•</span>
                                     <span
-                                        className="text-[#00C4FF] hover:text-[#00F5A0] cursor-pointer transition-colors"
+                                        className="text-[#3B82F6] hover:text-[#60A5FA] cursor-pointer transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             navigate(`/app/communities/${post.communityId._id}`);
@@ -289,7 +289,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                 {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                         {post.tags.map((tag, index) => (
-                            <span key={index} className="text-[#00C4FF] text-sm">
+                            <span key={index} className="text-[#3B82F6] text-sm">
                                 #{tag}
                             </span>
                         ))}
@@ -446,13 +446,13 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                                 onChange={(e) => setCommentText(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                                 placeholder="Add a comment..."
-                                className="flex-1 px-3 py-2 bg-[#101726] border border-white/10 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
+                                className="flex-1 px-3 py-2 bg-[#101726] border border-white/10 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                                 disabled={isAddingComment}
                             />
                             <button
                                 onClick={handleAddComment}
                                 disabled={!commentText.trim()}
-                                className="px-4 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                                className="px-4 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                             >
                                 Post
                             </button>

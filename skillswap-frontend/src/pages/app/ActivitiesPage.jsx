@@ -13,7 +13,7 @@ const ActivitiesPage = () => {
       {/* Mobile Toggle Button - Top Right */}
       <button
         onClick={() => setShowSidebar(!showSidebar)}
-        className="lg:hidden fixed top-20 right-6 z-50 p-3 bg-gradient-to-r from-[#00C4FF] to-[#00F5A0] text-black rounded-full shadow-lg hover:shadow-xl transition-all"
+        className="lg:hidden fixed top-20 right-6 z-50 p-3 bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] text-black rounded-full shadow-lg hover:shadow-xl transition-all"
         aria-label="Toggle sidebar"
       >
         {showSidebar ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

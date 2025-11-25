@@ -31,7 +31,7 @@ const CommunityPreview = ({ community, onClick }) => {
       onMouseMove={handleMouseMove}
       data-testid={`community-preview-${community._id}`}
       onClick={handleClick}
-      className="flex-shrink-0 w-40 bg-[#101726] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-white/10 hover:border-[#00C4FF]/30 relative group"
+      className="flex-shrink-0 w-40 bg-[#101726] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden border border-white/10 hover:border-[#3B82F6]/30 relative group"
       style={{
         '--mouse-x': `${mousePosition.x}px`,
         '--mouse-y': `${mousePosition.y}px`,
@@ -44,7 +44,7 @@ const CommunityPreview = ({ community, onClick }) => {
           background: `radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.15), transparent 40%)`,
         }}
       />
-      <div className="h-28 bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] relative">
+      <div className="h-28 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] relative">
         {community.coverImage ? (
           <img
             src={community.coverImage}

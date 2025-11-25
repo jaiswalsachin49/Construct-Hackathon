@@ -60,7 +60,7 @@ const CommunityPosts = ({ communityId, community }) => {
       {isMember ? (
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="w-full p-4 bg-[#0A0F1F] border border-white/10 rounded-lg hover:border-[#00C4FF] transition-colors flex items-center justify-center gap-2 text-white"
+          className="w-full p-4 bg-[#0A0F1F] border border-white/10 rounded-lg hover:border-[#3B82F6] transition-colors flex items-center justify-center gap-2 text-white"
         >
           <Plus className="w-5 h-5" />
           <span>Create Post</span>

@@ -40,7 +40,7 @@ const DashboardLayout = () => {
                                 to={item.to}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-white/10 text-[#00C4FF] border border-white/5'
+                                        ? 'bg-white/10 text-[#3B82F6] border border-white/5'
                                         : 'text-[#8A90A2] hover:bg-white/5 hover:text-[#E6E9EF]'
                                     }`
                                 }
@@ -75,7 +75,7 @@ const DashboardLayout = () => {
                             key={item.to}
                             to={item.to}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-[#00C4FF]' : 'text-[#8A90A2]'
+                                `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-[#3B82F6]' : 'text-[#8A90A2]'
                                 }`
                             }
                         >

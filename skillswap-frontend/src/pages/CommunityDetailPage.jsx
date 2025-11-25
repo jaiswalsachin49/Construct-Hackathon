@@ -167,7 +167,7 @@ const CommunityDetailPage = () => {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C4FF] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B82F6] mx-auto mb-4"></div>
           <p className="text-[#8A90A2]">Loading community...</p>
         </div>
       </div>
@@ -181,7 +181,7 @@ const CommunityDetailPage = () => {
           <p className="text-red-400 font-semibold mb-2">{loadError}</p>
           <button
             onClick={() => navigate('/app/communities')}
-            className="px-4 py-2 bg-[#00C4FF] text-black font-semibold rounded-lg"
+            className="px-4 py-2 bg-[#3B82F6] text-black font-semibold rounded-lg"
           >
             Back to Communities
           </button>
@@ -252,7 +252,7 @@ const CommunityDetailPage = () => {
               {currentCommunity.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="text-sm px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded-full"
+                  className="text-sm px-3 py-1 bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 rounded-full"
                 >
                   #{tag}
                 </span>
@@ -274,7 +274,7 @@ const CommunityDetailPage = () => {
               <button
                 data-testid="join-button"
                 onClick={handleJoin}
-                className="px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black rounded-lg font-semibold transition-colors hover:shadow-[0_0_15px_rgba(0,244,255,0.4)]"
+                className="px-6 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black rounded-lg font-semibold transition-colors hover:shadow-[0_0_15px_rgba(0,244,255,0.4)]"
               >
                 Join Community
               </button>
@@ -318,7 +318,7 @@ const CommunityDetailPage = () => {
               data-testid="posts-tab"
               onClick={() => setActiveTab('posts')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'posts'
-                ? 'border-[#00C4FF] text-[#00C4FF]'
+                ? 'border-[#3B82F6] text-[#3B82F6]'
                 : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >
@@ -328,7 +328,7 @@ const CommunityDetailPage = () => {
               data-testid="buzz-tab"
               onClick={() => setActiveTab('buzz')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'buzz'
-                ? 'border-[#00C4FF] text-[#00C4FF]'
+                ? 'border-[#3B82F6] text-[#3B82F6]'
                 : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >
@@ -338,7 +338,7 @@ const CommunityDetailPage = () => {
               data-testid="members-tab"
               onClick={() => setActiveTab('members')}
               className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'members'
-                ? 'border-[#00C4FF] text-[#00C4FF]'
+                ? 'border-[#3B82F6] text-[#3B82F6]'
                 : 'border-transparent text-[#8A90A2] hover:text-white'
                 }`}
             >

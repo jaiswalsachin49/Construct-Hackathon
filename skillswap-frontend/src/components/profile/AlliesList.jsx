@@ -90,7 +90,7 @@ const AlliesList = ({ userId, isOwnProfile }) => {
       {isOwnProfile && (
         <button
           onClick={() => navigate('/app/discover')}
-          className="mt-2 text-[#00C4FF] font-medium hover:text-[#00F5A0] transition-colors"
+          className="mt-2 text-[#3B82F6] font-medium hover:text-[#60A5FA] transition-colors"
         >
           Find people nearby
         </button>
@@ -130,7 +130,7 @@ const AlliesList = ({ userId, isOwnProfile }) => {
             ) : (
               <button
                 onClick={(e) => { e.stopPropagation(); handleMessage(ally._id); }}
-                className="p-2 text-[#00C4FF] hover:bg-[#00C4FF]/10 rounded-full"
+                className="p-2 text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-full"
               >
                 <MessageCircle size={18} />
               </button>

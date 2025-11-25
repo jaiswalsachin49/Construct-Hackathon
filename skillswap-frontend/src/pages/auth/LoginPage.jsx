@@ -44,14 +44,14 @@ const LoginPage = () => {
 
             {/* LEFT — LOGIN PANEL */}
             <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-16
-                bg-gradient-to-br from-[#0A0F1F] via-[#101726] to-[#0A0F1F]">
+                bg-gradient-to-br from-[#020617] via-[#0F172A] to-[#020617]">
 
                 <div className="
                     w-full max-w-lg 
-                    bg-white/10 backdrop-blur-2xl 
+                    bg-white/[0.05] backdrop-blur-3xl 
                     rounded-3xl p-10 
-                    border border-white/20 
-                    shadow-[0_0_25px_rgba(0,244,255,0.15)]
+                    border border-white/10 
+                    shadow-[0_8px_32px_rgba(37,99,235,0.15),inset_0_1px_0_rgba(255,255,255,0.1)]
                     text-[#E6E9EF]
                 ">
 
@@ -66,7 +66,7 @@ const LoginPage = () => {
                                     className="w-full h-full"
                                 />
                             </div>
-                            <span className="text-3xl font -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-2">
+                            <span className="text-3xl font-extrabold -skew-x-6 bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] bg-clip-text text-transparent tracking-tight -ml-2">
                                 killSwap
                             </span>
                         </div>
@@ -104,7 +104,7 @@ const LoginPage = () => {
                                         text-[#E6E9EF]
                                         placeholder-gray-400
                                         focus:outline-none
-                                        focus:ring-2 focus:ring-[#00C4FF]
+                                        focus:ring-2 focus:ring-[#3B82F6]
                                         ${errors.email ? 'border-red-500' : 'border-white/20'}
                                     `}
                                     placeholder="your.email@example.com"
@@ -133,7 +133,7 @@ const LoginPage = () => {
                                         text-[#E6E9EF]
                                         placeholder-gray-400
                                         focus:outline-none
-                                        focus:ring-2 focus:ring-[#00C4FF]
+                                        focus:ring-2 focus:ring-[#3B82F6]
                                         ${errors.password ? 'border-red-500' : 'border-white/20'}
                                     `}
                                     placeholder="Enter your password"
@@ -161,27 +161,27 @@ const LoginPage = () => {
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="accent-[#00F5A0]"
+                                    className="accent-[#3B82F6]"
                                 />
                                 Remember me
                             </label>
 
                             <Link
                                 to="/auth/forgot-password"
-                                className="text-[#00C4FF] text-sm hover:underline"
+                                className="text-[#60A5FA] text-sm hover:underline"
                             >
                                 Forgot password?
                             </Link>
                         </div>
 
-                        {/* Submit Button — Neon CTA */}
+                        {/* Submit Button — Blue CTA */}
                         <Button
                             type="submit"
                             className="
-                                w-full py-3 text-black font-semibold rounded-xl
-                                bg-gradient-to-r from-[#00F5A0] to-[#00C4FF]
-                                shadow-[0_0_15px_rgba(0,244,255,0.4)]
-                                hover:shadow-[0_0_25px_rgba(0,244,255,0.6)]
+                                w-full py-3 text-white font-semibold rounded-xl
+                                bg-gradient-to-r from-[#2563EB] to-[#3B82F6]
+                                shadow-[0_4px_20px_rgba(37,99,235,0.4)]
+                                hover:shadow-[0_6px_30px_rgba(37,99,235,0.6)]
                             "
                             disabled={isLoading}
                         >
@@ -191,8 +191,8 @@ const LoginPage = () => {
 
                     {/* Sign Up */}
                     <p className="text-center text-[#8A90A2] mt-6">
-                        Don’t have an account?{' '}
-                        <Link to="/auth/register" className="text-[#00F5A0] font-semibold">
+                        Don't have an account?{' '}
+                        <Link to="/auth/register" className="text-[#60A5FA] font-semibold">
                             Sign up
                         </Link>
                     </p>
@@ -201,20 +201,20 @@ const LoginPage = () => {
 
             {/* RIGHT — HERO PANEL */}
             <div className="hidden lg:flex w-1/2 justify-center items-center p-16 
-                bg-gradient-to-br from-[#101726] via-[#0A0F1F] to-[#101726]
+                bg-gradient-to-br from-[#0F172A] via-[#020617] to-[#0F172A]
                 text-white relative">
 
                 {/* Glow */}
-                <div className="absolute right-20 top-20 w-80 h-80 bg-[#00C4FF]/30 blur-3xl rounded-full"></div>
+                <div className="absolute right-20 top-20 w-80 h-80 bg-[#3B82F6]/30 blur-3xl rounded-full"></div>
 
                 {/* Glass Card */}
                 <div className="
-                    bg-white/10 backdrop-blur-2xl
-                    border border-white/20
-                    rounded-3xl p-10 shadow-2xl max-w-xl
+                    bg-white/[0.05] backdrop-blur-3xl
+                    border border-white/10
+                    rounded-3xl p-10 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] max-w-xl
                 ">
-                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] flex items-center justify-center mb-6 shadow-xl">
-                        <Zap className="h-7 w-7 text-black" />
+                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center mb-6 shadow-xl">
+                        <Zap className="h-7 w-7 text-white" />
                     </div>
 
                     <h2 className="text-4xl font-extrabold mb-4">Connect. Learn. Grow.</h2>
@@ -223,10 +223,10 @@ const LoginPage = () => {
                         Meet people, exchange skills, and create meaningful friendships.
                     </p>
 
-                    <div className="border-l-4 border-[#00C4FF]/40 pl-4">
+                    <div className="border-l-4 border-[#3B82F6]/40 pl-4">
                         <p className="italic text-[#E6E9EF] mb-2">
-                            “SkillSwap helped me learn guitar and teach coding.
-                            Best experience ever!”
+                            "SkillSwap helped me learn guitar and teach coding.
+                            Best experience ever!"
                         </p>
                         <p className="text-[#8A90A2] text-sm">— Sarah K.</p>
                     </div>

@@ -45,7 +45,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
     };
 
     const getMatchColor = (score) => {
-        if (score >= 80) return 'text-[#00F5A0] bg-[#00F5A0]/10 border-[#00F5A0]/20';
+        if (score >= 80) return 'text-[#60A5FA] bg-[#60A5FA]/10 border-[#60A5FA]/20';
         if (score >= 60) return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
         return 'text-[#8A90A2] bg-white/5 border-white/10';
     };
@@ -81,7 +81,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                                 className="h-16 w-16 rounded-full object-cover border border-white/10"
                             />
                         ) : (
-                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] flex items-center justify-center text-white font-bold text-xl">
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center text-white font-bold text-xl">
                                 {getInitials(user.name)}
                             </div>
                         )}
@@ -105,9 +105,9 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
 
                 {/* Match Reason */}
                 {matchReason && (
-                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#7A3EF9]/10 rounded-lg border border-[#00C4FF]/20 flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-[#00C4FF] flex-shrink-0" />
-                        <p className="text-xs font-medium text-[#00C4FF] line-clamp-1">
+                    <div className="mb-4 px-3 py-2 bg-gradient-to-r from-[#3B82F6]/10 to-[#2563EB]/10 rounded-lg border border-[#3B82F6]/20 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-[#3B82F6] flex-shrink-0" />
+                        <p className="text-xs font-medium text-[#3B82F6] line-clamp-1">
                             {matchReason}
                         </p>
                     </div>
@@ -129,7 +129,7 @@ const UserCard = ({ user, onConnect, onViewProfile }) => {
                             <p className="text-[10px] uppercase tracking-wider text-[#8A90A2] font-semibold mb-1.5">Teaches</p>
                             <div className="flex flex-wrap gap-1.5">
                                 {user.teachTags.slice(0, 3).map((tag, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded text-xs font-medium">
+                                    <span key={i} className="px-2 py-0.5 bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 rounded text-xs font-medium">
                                         {tag.name || tag}
                                     </span>
                                 ))}

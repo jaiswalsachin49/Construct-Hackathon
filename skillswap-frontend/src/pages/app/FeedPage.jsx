@@ -95,7 +95,7 @@ const FeedPage = () => {
 
                 <div className="flex items-center justify-around pt-3 border-t border-white/10">
                     <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
-                        <Image className="h-5 w-5 text-[#00C4FF]" />
+                        <Image className="h-5 w-5 text-[#3B82F6]" />
                         <span className="text-sm font-medium text-[#E6E9EF]">Photo</span>
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -103,7 +103,7 @@ const FeedPage = () => {
                         <span className="text-sm font-medium text-[#E6E9EF]">Video</span>
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
-                        <FileText className="h-5 w-5 text-[#00F5A0]" />
+                        <FileText className="h-5 w-5 text-[#60A5FA]" />
                         <span className="text-sm font-medium text-[#E6E9EF]">Post</span>
                     </button>
                 </div>
@@ -168,7 +168,7 @@ const FeedPage = () => {
                                         if (data) setHasMore(data.hasMore);
                                     });
                                 }}
-                                className="px-6 py-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
+                                className="px-6 py-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
                             >
                                 Refresh Feed
                             </button>
@@ -180,8 +180,8 @@ const FeedPage = () => {
             {/* Empty State */}
             {!isLoading && feedPosts.length === 0 && !error && (
                 <div className="bg-white/5 rounded-lg shadow-md p-12 text-center border border-white/10 backdrop-blur-xl">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#00C4FF]/10 mb-4">
-                        <FileText className="h-8 w-8 text-[#00C4FF]" />
+                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#3B82F6]/10 mb-4">
+                        <FileText className="h-8 w-8 text-[#3B82F6]" />
                     </div>
                     <h3 className="text-xl font-semibold text-white mb-2">
                         No posts yet
@@ -191,7 +191,7 @@ const FeedPage = () => {
                     </p>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="px-6 py-3 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
+                        className="px-6 py-3 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black font-medium rounded-lg hover:opacity-90 transition-opacity"
                     >
                         Create Post
                     </button>

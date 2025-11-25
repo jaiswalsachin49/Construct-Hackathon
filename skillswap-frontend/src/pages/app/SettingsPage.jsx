@@ -87,7 +87,7 @@ const SettingsPage = () => {
                         <button
                             onClick={() => setActiveTab('general')}
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${activeTab === 'general'
-                                    ? 'bg-[#00C4FF]/10 text-[#00C4FF] border-l-2 border-[#00C4FF]'
+                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
                                     : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
                                 }`}
                         >
@@ -97,7 +97,7 @@ const SettingsPage = () => {
                         <button
                             onClick={() => setActiveTab('blocked')}
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${activeTab === 'blocked'
-                                    ? 'bg-[#00C4FF]/10 text-[#00C4FF] border-l-2 border-[#00C4FF]'
+                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
                                     : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
                                 }`}
                         >
@@ -112,7 +112,7 @@ const SettingsPage = () => {
                     {activeTab === 'general' && (
                         <Card className="bg-[#101726] border-white/10">
                             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                                <Shield className="w-5 h-5 text-[#00C4FF]" />
+                                <Shield className="w-5 h-5 text-[#3B82F6]" />
                                 Change Password
                             </h2>
 
@@ -125,7 +125,7 @@ const SettingsPage = () => {
                                         type="password"
                                         value={passwordForm.currentPassword}
                                         onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none"
                                         required
                                     />
                                 </div>
@@ -137,7 +137,7 @@ const SettingsPage = () => {
                                         type="password"
                                         value={passwordForm.newPassword}
                                         onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none"
                                         required
                                     />
                                 </div>
@@ -149,7 +149,7 @@ const SettingsPage = () => {
                                         type="password"
                                         value={passwordForm.confirmPassword}
                                         onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1F] border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none"
                                         required
                                     />
                                 </div>

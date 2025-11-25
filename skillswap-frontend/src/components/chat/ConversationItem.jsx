@@ -54,7 +54,7 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
             onClick={onClick}
             className={`
         flex items-center gap-3 p-4 cursor-pointer transition-colors border-b border-white/5
-        ${isActive ? 'bg-white/10 border-l-4 border-[#00C4FF]' : 'hover:bg-white/5 border-l-4 border-transparent'}
+        ${isActive ? 'bg-white/10 border-l-4 border-[#3B82F6]' : 'hover:bg-white/5 border-l-4 border-transparent'}
         ${unreadCount > 0 ? 'bg-white/5' : ''}
       `}
         >
@@ -90,7 +90,7 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
                 </div>
                 {/* Online Indicator */}
                 {isOnline && (
-                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-[#00F5A0] border-2 border-[#101726] rounded-full pointer-events-none" />
+                    <div className="absolute bottom-0 right-0 h-3 w-3 bg-[#60A5FA] border-2 border-[#101726] rounded-full pointer-events-none" />
                 )}
             </div>
 
@@ -113,7 +113,7 @@ const ConversationItem = ({ conversation, isActive, onClick, onlineUsers, curren
                     </p>
                     {/* Unread Badge */}
                     {unreadCount > 0 && (
-                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-[#00C4FF] text-black text-xs font-bold rounded-full">
+                        <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 bg-[#3B82F6] text-black text-xs font-bold rounded-full">
                             {unreadCount}
                         </span>
                     )}

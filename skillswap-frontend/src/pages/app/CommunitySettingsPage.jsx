@@ -55,7 +55,7 @@ const CommunitySettingsPage = () => {
     if (isLoading || !currentCommunity) {
         return (
             <div className="min-h-screen bg-transparent flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C4FF]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B82F6]"></div>
             </div>
         );
     }
@@ -72,7 +72,7 @@ const CommunitySettingsPage = () => {
                     <p className="text-[#8A90A2] mb-4">You do not have permission to view this page.</p>
                     <button
                         onClick={() => navigate(`/app/communities/${communityId}`)}
-                        className="px-4 py-2 bg-[#00C4FF] text-black font-semibold rounded-lg"
+                        className="px-4 py-2 bg-[#3B82F6] text-black font-semibold rounded-lg"
                     >
                         Back to Community
                     </button>
@@ -110,7 +110,7 @@ const CommunitySettingsPage = () => {
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none transition-all"
+                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none transition-all"
                                 required
                             />
                         </div>
@@ -124,7 +124,7 @@ const CommunitySettingsPage = () => {
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 rows={4}
-                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none transition-all resize-none"
+                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none transition-all resize-none"
                             />
                         </div>
 
@@ -136,7 +136,7 @@ const CommunitySettingsPage = () => {
                             <select
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent outline-none transition-all"
+                                className="w-full px-4 py-3 bg-[#101726] border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent outline-none transition-all"
                             >
                                 <option value="tech">Technology</option>
                                 <option value="arts">Arts & Crafts</option>
@@ -155,7 +155,7 @@ const CommunitySettingsPage = () => {
                                 id="isPrivate"
                                 checked={formData.isPrivate}
                                 onChange={(e) => setFormData({ ...formData, isPrivate: e.target.checked })}
-                                className="w-5 h-5 rounded border-gray-600 text-[#00C4FF] focus:ring-[#00C4FF] bg-gray-700"
+                                className="w-5 h-5 rounded border-gray-600 text-[#3B82F6] focus:ring-[#3B82F6] bg-gray-700"
                             />
                             <label htmlFor="isPrivate" className="text-[#E6E9EF] font-medium cursor-pointer">
                                 Private Community
@@ -174,7 +174,7 @@ const CommunitySettingsPage = () => {
                             </button>
                             <button
                                 type="submit"
-                                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black font-bold rounded-xl hover:shadow-[0_0_20px_rgba(0,244,255,0.3)] transition-all transform hover:scale-[1.02]"
+                                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black font-bold rounded-xl hover:shadow-[0_0_20px_rgba(0,244,255,0.3)] transition-all transform hover:scale-[1.02]"
                             >
                                 <Save className="w-5 h-5" />
                                 Save Changes

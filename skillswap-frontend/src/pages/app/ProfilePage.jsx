@@ -46,7 +46,7 @@ const ProfilePage = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C4FF]"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3B82F6]"></div>
             </div>
         );
     }

@@ -81,7 +81,7 @@ const CommunitiesPage = () => {
             <button
               data-testid="create-community-button"
               onClick={() => navigate('/app/communities/create')}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black px-4 py-2 rounded-lg font-semibold transition-all"
+              className="flex items-center gap-2 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:shadow-[0_0_15px_rgba(0,244,255,0.4)] text-black px-4 py-2 rounded-lg font-semibold transition-all"
             >
               <Plus className="w-5 h-5" />
               Create
@@ -119,7 +119,7 @@ const CommunitiesPage = () => {
               <p className="text-[#8A90A2] mb-4">You haven't joined any communities yet</p>
               <button
                 onClick={() => document.getElementById('discover-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-[#00C4FF] hover:text-[#00F5A0] font-medium transition-colors"
+                className="text-[#3B82F6] hover:text-[#60A5FA] font-medium transition-colors"
               >
                 Discover communities →
               </button>
@@ -145,7 +145,7 @@ const CommunitiesPage = () => {
                   placeholder="Search communities..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent focus:outline-none"
+                  className="w-full pl-10 pr-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent focus:outline-none"
                 />
               </div>
 
@@ -155,7 +155,7 @@ const CommunitiesPage = () => {
                   data-testid="category-select"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent focus:outline-none"
+                  className="w-full px-4 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent focus:outline-none"
                 >
                   <option value="">All Categories</option>
                   <option value="tech">Technology</option>
@@ -224,7 +224,7 @@ const CommunitiesPage = () => {
                     setSearch('');
                     setCategory('');
                   }}
-                  className="mt-4 text-[#00C4FF] hover:text-[#00F5A0] font-medium transition-colors"
+                  className="mt-4 text-[#3B82F6] hover:text-[#60A5FA] font-medium transition-colors"
                 >
                   Clear filters
                 </button>

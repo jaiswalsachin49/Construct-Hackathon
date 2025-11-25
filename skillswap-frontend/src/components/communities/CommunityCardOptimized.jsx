@@ -27,10 +27,10 @@ const CommunityCardOptimized = memo(({ community, onJoin }) => {
     <div
       data-testid={`community-card-${community._id}`}
       onClick={handleCardClick}
-      className="bg-[#101726] rounded-lg shadow-sm hover:shadow-lg transition-all overflow-hidden cursor-pointer border border-white/10 hover:border-[#00C4FF]/30"
+      className="bg-[#101726] rounded-lg shadow-sm hover:shadow-lg transition-all overflow-hidden cursor-pointer border border-white/10 hover:border-[#3B82F6]/30"
     >
       {/* Cover Image */}
-      <div className="h-32 bg-gradient-to-br from-[#7A3EF9] to-[#00C4FF] relative">
+      <div className="h-32 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] relative">
         {community.coverImage ? (
           <img
             src={community.coverImage}
@@ -61,7 +61,7 @@ const CommunityCardOptimized = memo(({ community, onJoin }) => {
             {community.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="text-xs px-2 py-1 bg-[#00C4FF]/10 text-[#00C4FF] border border-[#00C4FF]/20 rounded-full"
+                className="text-xs px-2 py-1 bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 rounded-full"
               >
                 #{tag}
               </span>
@@ -73,17 +73,17 @@ const CommunityCardOptimized = memo(({ community, onJoin }) => {
         <div className="space-y-2 mb-4">
           {community.distance !== undefined && (
             <div className="flex items-center text-sm text-[#8A90A2]">
-              <MapPin className="w-4 h-4 mr-2 text-[#00C4FF]" />
+              <MapPin className="w-4 h-4 mr-2 text-[#3B82F6]" />
               <span>{community.distance} km away</span>
             </div>
           )}
           <div className="flex items-center text-sm text-[#8A90A2]">
-            <Users className="w-4 h-4 mr-2 text-[#7A3EF9]" />
+            <Users className="w-4 h-4 mr-2 text-[#2563EB]" />
             <span>{community.memberCount || 0} members</span>
           </div>
           {community.postCount !== undefined && (
             <div className="flex items-center text-sm text-[#8A90A2]">
-              <FileText className="w-4 h-4 mr-2 text-[#00F5A0]" />
+              <FileText className="w-4 h-4 mr-2 text-[#60A5FA]" />
               <span>{community.postCount} posts this week</span>
             </div>
           )}
@@ -95,7 +95,7 @@ const CommunityCardOptimized = memo(({ community, onJoin }) => {
             <button
               data-testid={`join-button-${community._id}`}
               onClick={handleJoin}
-              className="flex-1 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] hover:opacity-90 text-black px-4 py-2 rounded-lg font-medium transition-all"
+              className="flex-1 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] hover:opacity-90 text-black px-4 py-2 rounded-lg font-medium transition-all"
             >
               Join
             </button>

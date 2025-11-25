@@ -180,7 +180,7 @@ const ActivityDetails = () => {
           <>
             <button
               onClick={() => joinActivity(selectedActivity._id)}
-              className="w-full py-3 bg-gradient-to-r from-[#8B5CF6] to-[#00C4FF] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+              className="w-full py-3 bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
             >
               Join Meetup
             </button>

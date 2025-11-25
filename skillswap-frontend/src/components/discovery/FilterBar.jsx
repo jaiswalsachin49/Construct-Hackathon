@@ -65,7 +65,7 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
                             max={20}
                             value={filters.radius}
                             onChange={handleRadiusChange}
-                            className="w-full h-2 bg-[#101726] rounded-lg appearance-none cursor-pointer accent-[#00C4FF]"
+                            className="w-full h-2 bg-[#101726] rounded-lg appearance-none cursor-pointer accent-[#3B82F6]"
                         />
                         <div className="flex justify-between text-xs text-[#8A90A2] mt-1">
                             <span>1 km</span>
@@ -81,7 +81,7 @@ const FilterBar = ({ filters, onFilterChange, view, onViewChange }) => {
                         <select
                             value={filters.availability || ''}
                             onChange={handleAvailabilityChange}
-                            className="w-full px-3 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00C4FF]"
+                            className="w-full px-3 py-2 bg-[#101726] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                         >
                             <option value="">All</option>
                             <option value="morning">Morning</option>

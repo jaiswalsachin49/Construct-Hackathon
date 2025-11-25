@@ -81,7 +81,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
               data-testid="report-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-4 py-2 bg-[#0A0F1F] border border-white/10 text-white rounded-lg focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent"
+              className="w-full px-4 py-2 bg-[#0A0F1F] border border-white/10 text-white rounded-lg focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
               required
             >
               <option value="">Select a reason</option>
@@ -108,7 +108,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
               maxLength={500}
               rows={4}
               placeholder="Please provide more information..."
-              className="w-full px-4 py-2 bg-[#0A0F1F] border border-white/10 text-white rounded-lg focus:ring-2 focus:ring-[#00C4FF] focus:border-transparent resize-none placeholder-[#8A90A2]"
+              className="w-full px-4 py-2 bg-[#0A0F1F] border border-white/10 text-white rounded-lg focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent resize-none placeholder-[#8A90A2]"
               required
             />
             <p className="text-xs text-[#8A90A2] mt-1">
@@ -117,8 +117,8 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
           </div>
 
           {/* Notice */}
-          <div className="bg-[#00C4FF]/10 border border-[#00C4FF]/20 rounded-lg p-4">
-            <p className="text-sm text-[#00C4FF]">
+          <div className="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg p-4">
+            <p className="text-sm text-[#3B82F6]">
               📋 Your report will be reviewed by our team within 24 hours. All reports are kept confidential.
             </p>
           </div>

@@ -108,7 +108,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                 ) : (
                     <>
                         {/* Header / Cover */}
-                        <div className="relative h-32 bg-gradient-to-r from-[#7A3EF9] via-[#00C4FF] to-[#00F5A0] w-full flex-shrink-0">
+                        <div className="relative h-32 bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#60A5FA] w-full flex-shrink-0">
                             {user.coverPhoto && (
                                 <img
                                     src={user.coverPhoto}
@@ -140,10 +140,10 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                     onClose();
                                     navigate(`/app/profile/${user._id}`);
                                 }}
-                                className="text-2xl font-bold text-white flex items-center gap-2 cursor-pointer hover:text-[#00C4FF] transition-colors"
+                                className="text-2xl font-bold text-white flex items-center gap-2 cursor-pointer hover:text-[#3B82F6] transition-colors"
                             >
                                 {user.name}
-                                {user.isVerified && <CheckCircle className="w-5 h-5 text-[#00C4FF]" />}
+                                {user.isVerified && <CheckCircle className="w-5 h-5 text-[#3B82F6]" />}
                             </h2>
 
                             <div className="flex items-center gap-4 text-sm text-[#8A90A2] mt-1 mb-4">
@@ -173,7 +173,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.teachTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-[#00C4FF]/10 text-[#00C4FF] rounded-full text-sm font-medium border border-[#00C4FF]/20">
+                                            <span key={i} className="px-3 py-1 bg-[#3B82F6]/10 text-[#3B82F6] rounded-full text-sm font-medium border border-[#3B82F6]/20">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}
@@ -189,7 +189,7 @@ const ProfileModal = ({ userId, isOpen, onClose }) => {
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {user.learnTags?.map((tag, i) => (
-                                            <span key={i} className="px-3 py-1 bg-[#7A3EF9]/10 text-[#7A3EF9] rounded-full text-sm font-medium border border-[#7A3EF9]/20">
+                                            <span key={i} className="px-3 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-full text-sm font-medium border border-[#2563EB]/20">
                                                 {renderTag(tag)}
                                             </span>
                                         ))}

@@ -171,7 +171,7 @@ const Navbar = () => {
                                 className="w-full h-full"
                             />
                         </div>
-                        <span className="text-2xl font-bold -skew-x-6 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] bg-clip-text text-transparent tracking-tight -ml-2">
+                        <span className="text-2xl font-bold -skew-x-6 bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] bg-clip-text text-transparent tracking-tight -ml-2">
                             killSwap
                         </span>
                     </Link>
@@ -189,7 +189,7 @@ const Navbar = () => {
                             >
                                 <Bell className="h-6 w-6" />
                                 {totalNotifications > 0 && (
-                                    <span className="absolute top-1 right-1 h-5 w-5 bg-gradient-to-r from-[#00F5A0] to-[#00C4FF] text-black text-xs font-bold flex items-center justify-center rounded-full border-2 border-[#101726] shadow-lg animate-pulse">
+                                    <span className="absolute top-1 right-1 h-5 w-5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-[#101726] shadow-lg animate-pulse">
                                         {totalNotifications > 9 ? '9+' : totalNotifications}
                                     </span>
                                 )}
@@ -203,7 +203,7 @@ const Navbar = () => {
                                         <div className="px-4 py-3 border-b border-white/10 flex justify-between items-center bg-white/5">
                                             <h3 className="font-semibold text-white">Notifications</h3>
                                             {totalNotifications > 0 && (
-                                                <span className="bg-[#00C4FF]/20 text-[#00C4FF] text-xs px-2 py-1 rounded-full font-medium border border-[#00C4FF]/30">
+                                                <span className="bg-[#3B82F6]/20 text-[#60A5FA] text-xs px-2 py-1 rounded-full font-medium border border-[#3B82F6]/30">
                                                     {totalNotifications} new
                                                 </span>
                                             )}
@@ -214,22 +214,22 @@ const Navbar = () => {
                                             {/* --- SECTION 1: CONNECTION REQUESTS --- */}
                                             {requests.length > 0 && (
                                                 <div className="border-b border-white/10">
-                                                    <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
+                                                    <div className="px-4 py-2 bg-gradient-to-r from-[#3B82F6]/10 to-[#60A5FA]/10 text-xs font-bold text-[#60A5FA] uppercase tracking-wider flex items-center justify-between">
                                                         <span>Connection Requests</span>
-                                                        <span className="text-[#00F5A0]">{requests.length}</span>
+                                                        <span className="text-[#3B82F6]">{requests.length}</span>
                                                     </div>
                                                     {requests.map(req => (
                                                         <div key={req._id} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors group">
                                                             <img
                                                                 src={req.profilePhoto || `https://ui-avatars.com/api/?name=${req.name}`}
-                                                                className="w-10 h-10 rounded-full object-cover bg-white/10 border border-white/10 ring-2 ring-transparent group-hover:ring-[#00C4FF]/30 transition-all"
+                                                                className="w-10 h-10 rounded-full object-cover bg-white/10 border border-white/10 ring-2 ring-transparent group-hover:ring-[#3B82F6]/30 transition-all"
                                                                 alt={req.name}
                                                             />
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-semibold text-white truncate">{req.name}</p>
                                                                 <p className="text-xs text-[#8A90A2] truncate">wants to connect</p>
                                                                 {req.createdAt && (
-                                                                    <p className="text-xs text-[#00C4FF]/60 mt-0.5">
+                                                                    <p className="text-xs text-[#60A5FA]/60 mt-0.5">
                                                                         {formatDistanceToNow(new Date(req.createdAt), { addSuffix: true })}
                                                                     </p>
                                                                 )}
@@ -238,7 +238,7 @@ const Navbar = () => {
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); handleAccept(req._id); }}
                                                                     disabled={!!loadingRequests[req._id]}
-                                                                    className="p-1.5 bg-[#00F5A0]/20 text-[#00F5A0] rounded-full hover:bg-[#00F5A0]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                    className="p-1.5 bg-[#3B82F6]/20 text-[#60A5FA] rounded-full hover:bg-[#3B82F6]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     title="Accept"
                                                                     aria-label="Accept connection request"
                                                                 >
@@ -271,9 +271,9 @@ const Navbar = () => {
                                             {
                                                 unreadConversations.length > 0 ? (
                                                     <>
-                                                        <div className="px-4 py-2 bg-gradient-to-r from-[#00C4FF]/10 to-[#00F5A0]/10 text-xs font-bold text-[#00C4FF] uppercase tracking-wider flex items-center justify-between">
+                                                        <div className="px-4 py-2 bg-gradient-to-r from-[#3B82F6]/10 to-[#60A5FA]/10 text-xs font-bold text-[#60A5FA] uppercase tracking-wider flex items-center justify-between">
                                                             <span>Unread Messages</span>
-                                                            <span className="text-[#00F5A0]">{unreadConversations.length}</span>
+                                                            <span className="text-[#3B82F6]">{unreadConversations.length}</span>
                                                         </div>
                                                         {unreadConversations.map(conv => (
                                                             <div
@@ -298,14 +298,14 @@ const Navbar = () => {
                                                                         {conv.lastMessage?.content || 'New message'}
                                                                     </p>
                                                                 </div>
-                                                                <div className="w-2 h-2 bg-[#00C4FF] rounded-full flex-shrink-0"></div>
+                                                                <div className="w-2 h-2 bg-[#3B82F6] rounded-full flex-shrink-0"></div>
                                                             </div>
                                                         ))}
                                                     </>
                                                 ) : requests.length === 0 && (
                                                     <div className="p-8 text-center">
-                                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#00C4FF]/20 to-[#00F5A0]/20 mb-3">
-                                                            <Bell className="h-8 w-8 text-[#00C4FF]" />
+                                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#3B82F6]/20 to-[#60A5FA]/20 mb-3">
+                                                            <Bell className="h-8 w-8 text-[#60A5FA]" />
                                                         </div>
                                                         <p className="text-sm font-medium text-white mb-1">All caught up!</p>
                                                         <p className="text-xs text-[#8A90A2]">No new notifications right now</p>
@@ -317,7 +317,7 @@ const Navbar = () => {
                                         <div className="border-t border-white/10 p-2 bg-white/5">
                                             <Link
                                                 to="/app/chat"
-                                                className="block text-center py-2 text-sm text-[#00C4FF] hover:bg-white/10 rounded-lg font-medium transition-colors"
+                                                className="block text-center py-2 text-sm text-[#60A5FA] hover:bg-white/10 rounded-lg font-medium transition-colors"
                                                 onClick={() => setIsNotificationsOpen(false)}
                                             >
                                                 View all messages
@@ -339,7 +339,7 @@ const Navbar = () => {
                                     <p className="text-xs text-[#8A90A2] mt-0.5">Available</p>
                                 </div>
 
-                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#00C4FF] to-[#7A3EF9] flex items-center justify-center text-white font-bold border-2 border-[#101726] shadow-sm overflow-hidden">
+                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center text-white font-bold border-2 border-[#101726] shadow-sm overflow-hidden">
                                     {user?.profilePhoto ? (
                                         <img src={user.profilePhoto} alt="Me" className="w-full h-full object-cover" />
                                     ) : (
@@ -361,14 +361,14 @@ const Navbar = () => {
 
                                             <Link
                                                 to="/app/profile"
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#60A5FA] transition-colors"
                                                 onClick={() => setIsProfileDropdownOpen(false)}
                                             >
                                                 <UserIcon className="w-4 h-4" /> Your Profile
                                             </Link>
                                             <Link
                                                 to="/app/settings"
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#00C4FF] transition-colors"
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#E6E9EF] hover:bg-white/10 hover:text-[#3B82F6] transition-colors"
                                                 onClick={() => setIsProfileDropdownOpen(false)}
                                             >
                                                 <Settings className="w-4 h-4" /> Settings

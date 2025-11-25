@@ -122,7 +122,7 @@ const ActivitiesMap = () => {
         <Marker
           position={userLocation}
           icon={L.divIcon({
-            html: '<div class="w-4 h-4 bg-[#00C4FF] rounded-full border-2 border-white shadow-lg pulse-ring"></div>',
+            html: '<div class="w-4 h-4 bg-[#3B82F6] rounded-full border-2 border-white shadow-lg pulse-ring"></div>',
             className: 'user-location-marker',
             iconSize: [16, 16]
           })}
