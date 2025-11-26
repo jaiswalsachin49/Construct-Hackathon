@@ -49,3 +49,9 @@ export const reactToWave = async (waveId) => {
     const response = await api.post(`/api/waves/${waveId}/react`);
     return response.data;
 };
+
+// Get wave viewers
+export const getWaveViewers = async (waveId) => {
+    const response = await api.get(`/api/waves/${waveId}/viewers`);
+    return response.data;
+};
