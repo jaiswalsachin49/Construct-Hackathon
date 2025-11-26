@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCommunities } from '../../hooks/useCommunities';
 import useAuthStore from '../../store/authStore';
 import { Search, Crown, Shield } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import ConfirmationModal from '../common/ConfirmationModal';
 
 const MembersList = ({ communityId }) => {
@@ -48,7 +49,7 @@ const MembersList = ({ communityId }) => {
       setMemberToRemove(null);
     } catch (error) {
       console.error('Failed to remove member:', error);
-      alert(error.response?.data?.error || 'Failed to remove member');
+      toast.error(error.response?.data?.error || 'Failed to remove member');
     }
   };
 

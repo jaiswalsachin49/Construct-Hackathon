@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ExternalLink, MessageSquare } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const PlaceSuggestionsModal = ({ isOpen, onClose }) => {
   const [places, setPlaces] = useState([]);
@@ -79,7 +80,7 @@ const PlaceSuggestionsModal = ({ isOpen, onClose }) => {
     const message = `📍 I suggest we meet at ${place.name} (${place.distance} km away). It's a safe public place. https://maps.google.com/?q=${place.lat},${place.lng}`;
 
     navigator.clipboard.writeText(message);
-    alert('Place suggestion copied to clipboard! You can paste it in your chat.');
+    toast.success('Place suggestion copied to clipboard! You can paste it in your chat.');
     onClose();
   };
 

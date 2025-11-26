@@ -122,7 +122,11 @@ const CommunityDetailPage = () => {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      toast({
+        title: "Link Copied",
+        description: "Community link copied to clipboard!",
+        variant: "default",
+      });
     }
   };
 

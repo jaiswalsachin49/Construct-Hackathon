@@ -11,26 +11,29 @@ const ConfirmationModal = ({
     confirmText = 'Confirm',
     cancelText = 'Cancel',
     isDestructive = false,
-    isLoading = false
+    isLoading = false,
+    showCancel = true
 }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <div className="space-y-4">
                 <p className="text-[#E6E9EF]">{message}</p>
                 <div className="flex gap-3 pt-2">
-                    <button
-                        onClick={onClose}
-                        disabled={isLoading}
-                        className="flex-1 px-4 py-2 border border-white/10 hover:bg-white/5 rounded-lg font-medium transition-colors text-[#E6E9EF] disabled:opacity-50"
-                    >
-                        {cancelText}
-                    </button>
+                    {showCancel && (
+                        <button
+                            onClick={onClose}
+                            disabled={isLoading}
+                            className="flex-1 px-4 py-2 border border-white/10 hover:bg-white/5 rounded-lg font-medium transition-colors text-[#E6E9EF] disabled:opacity-50"
+                        >
+                            {cancelText}
+                        </button>
+                    )}
                     <button
                         onClick={onConfirm}
                         disabled={isLoading}
                         className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 ${isDestructive
-                                ? 'bg-red-500 hover:bg-red-600 text-white'
-                                : 'bg-[#3B82F6] hover:bg-[#00A3D9] text-black'
+                            ? 'bg-red-500 hover:bg-red-600 text-white'
+                            : 'bg-[#3B82F6] hover:bg-[#00A3D9] text-black'
                             }`}
                     >
                         {isLoading ? 'Processing...' : confirmText}
