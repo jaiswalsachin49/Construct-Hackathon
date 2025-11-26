@@ -12,13 +12,20 @@ const isAdmin = async (userId) => {
 const nodemailer = require('nodemailer');
 
 // Configure transporter
+const emailUser = process.env.EMAIL_USER || 'sj976958@gmail.com';
+const emailPass = process.env.EMAIL_PASSWORD;
+
+if (!emailPass) {
+    console.warn('WARNING: EMAIL_PASSWORD environment variable is not set. Email sending will fail.');
+}
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-        user: process.env.EMAIL_USER || 'sj976958@gmail.com',
-        pass: process.env.EMAIL_PASSWORD
+        user: emailUser,
+        pass: emailPass
     }
 });
 

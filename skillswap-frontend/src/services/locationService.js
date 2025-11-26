@@ -1,12 +1,10 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080/api/locations';
+import api from './api';
 
 export const searchPlaces = async (query) => {
     if (!query || query.length < 3) return [];
 
     try {
-        const response = await axios.get(`${API_BASE_URL}/search`, {
+        const response = await api.get('/api/locations/search', {
             params: {
                 q: query
             }
