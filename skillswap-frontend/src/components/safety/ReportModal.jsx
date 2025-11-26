@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 
 const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
@@ -26,14 +27,14 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId, targetName }) => {
 
             // console.log('Report submitted:', { targetType, targetId, reason, details });
 
-            alert('Report submitted. We will review it shortly.');
+            toast.success('Report submitted. We will review it shortly.');
             onClose()
             // Reset form
             setReason('');
             setDetails('');
         } catch (error) {
             console.error('Failed to submit report:', error);
-            alert('Failed to submit report. Please try again.');
+            toast.error('Failed to submit report. Please try again.');
         } finally {
             setIsReporting(false);
         }

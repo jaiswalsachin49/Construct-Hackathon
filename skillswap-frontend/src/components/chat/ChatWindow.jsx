@@ -263,6 +263,32 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                     </Button>
                 </div>
             </div>
+            {/* Confirmation Modals */}
+            <ConfirmationModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={() => {
+                    onDeleteConversation(conversation._id);
+                    setShowDeleteModal(false);
+                }}
+                title="Delete Conversation"
+                message="Are you sure you want to delete this conversation? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+            />
+
+            <ConfirmationModal
+                isOpen={showBlockModal}
+                onClose={() => setShowBlockModal(false)}
+                onConfirm={() => {
+                    onBlockUser(conversation.otherUser._id);
+                    setShowBlockModal(false);
+                }}
+                title={`Block ${conversation?.otherUser?.name}?`}
+                message={`Are you sure you want to block ${conversation?.otherUser?.name}? They won't be able to message you.`}
+                confirmText="Block"
+                isDestructive={true}
+            />
         </div>
     );
 };

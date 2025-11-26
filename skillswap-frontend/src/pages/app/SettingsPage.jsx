@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, UserX, Shield, Check } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import { changePassword } from '../../services/authService';
@@ -43,7 +44,7 @@ const SettingsPage = () => {
             setBlockedUsers(prev => prev.filter(u => u._id !== userId));
         } catch (error) {
             console.error('Failed to unblock user:', error);
-            alert('Failed to unblock user');
+            toast.error('Failed to unblock user');
         }
     };
 

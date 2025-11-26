@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, AlertTriangle } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useCommunities } from '../../hooks/useCommunities';
 import { useAuth } from '../../hooks/useAuth';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
@@ -43,7 +44,7 @@ const CommunitySettingsPage = () => {
         e.preventDefault();
         // TODO: Implement update community functionality
         console.log('Update community:', formData);
-        alert('Settings saved!');
+        toast.success('Settings saved!');
     };
 
     const handleDelete = async () => {

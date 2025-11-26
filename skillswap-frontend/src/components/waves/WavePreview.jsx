@@ -72,19 +72,19 @@ const WavePreview = ({ wave, onClick, isViewed }) => {
             {/* Glow Effect */}
             <div
                 className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 rounded-full"
-                style={{
-                    background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.2), transparent 40%)`,
-                }}
+            // style={{
+            //     background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(0, 196, 255, 0.2), transparent 40%)`,
+            // }}
             />
             <div className="relative">
                 {/* Ring */}
                 <div
                     className={`absolute -inset-1 rounded-full ${isViewed
-                        ? "bg-gray-300"
-                        : "bg-gradient-to-tr from-pink-500 to-purple-500"
-                        } p-[2px]`}
+                        ? "bg-gray-600"
+                        : "bg-gradient-to-tr from-[#00F5A0] via-[#00C4FF] to-[#7A3EF9]"
+                        } p-[2px] transition-all duration-300`}
                 >
-                    <div className="bg-white rounded-full w-full h-full" />
+                    <div className="bg-[#101726] rounded-full w-full h-full" />
                 </div>
 
                 {/* Avatar / Thumbnail */}

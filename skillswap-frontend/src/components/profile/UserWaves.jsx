@@ -17,12 +17,12 @@ const UserWaves = ({ userId, isOwnProfile }) => {
     const [viewerWaves, setViewerWaves] = useState([]);
     const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [waveToDelete, setWaveToDelete] = useState(null);
 
     useEffect(() => {
         const load = async () => {
-            setLoading(true);
+            setIsLoading(true);
             try {
                 const res = isOwnProfile ? await getMyWaves() : await getUserWaves(userId);
                 // response shape may vary: be defensive

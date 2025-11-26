@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import Modal from '../common/Modal'; // Ensure this is the FIXED Modal
 import api from '../../services/api'; // Direct API call
 
@@ -22,7 +23,7 @@ const BlockConfirmModal = ({ isOpen, onClose, userId, userName }) => {
             // Optional: Trigger a toast here
         } catch (error) {
             console.error('Failed to block:', error);
-            alert('Failed to block user.');
+            toast.error('Failed to block user.');
         } finally {
             setIsBlocking(false);
         }

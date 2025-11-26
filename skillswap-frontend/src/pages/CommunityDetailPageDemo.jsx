@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Settings, Users, MapPin } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 // Mock community data
 const mockCommunity = {
@@ -54,7 +55,7 @@ const CommunityDetailPageDemo = () => {
     const [isMember, setIsMember] = useState(true);
 
     const handleShare = () => {
-        alert('Link copied to clipboard! (Demo)');
+        toast.success('Link copied to clipboard! (Demo)');
     };
 
     return (
@@ -121,7 +122,9 @@ const CommunityDetailPageDemo = () => {
                             <button
                                 data-testid="leave-button"
                                 onClick={() => {
-                                    if (window.confirm('Leave community?')) setIsMember(false);
+                                    // Demo only - skipping confirmation modal for simplicity in demo
+                                    toast.success('Left community (Demo)');
+                                    setIsMember(false);
                                 }}
                                 className="px-6 py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors"
                             >
@@ -156,8 +159,8 @@ const CommunityDetailPageDemo = () => {
                             data-testid="posts-tab"
                             onClick={() => setActiveTab('posts')}
                             className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'posts'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Posts
@@ -166,8 +169,8 @@ const CommunityDetailPageDemo = () => {
                             data-testid="buzz-tab"
                             onClick={() => setActiveTab('buzz')}
                             className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'buzz'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Buzz (Chat)
@@ -176,8 +179,8 @@ const CommunityDetailPageDemo = () => {
                             data-testid="members-tab"
                             onClick={() => setActiveTab('members')}
                             className={`py-4 border-b-2 font-medium transition-colors ${activeTab === 'members'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Members

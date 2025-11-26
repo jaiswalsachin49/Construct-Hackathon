@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import CommunityPreview from '../components/communities/CommunityPreview';
 import CommunityCard from '../components/communities/CommunityCard';
 import CreateCommunityModal from '../components/communities/CreateCommunityModal';
@@ -145,7 +146,7 @@ const CommunitiesPageDemo = () => {
 
   const handleJoin = async (communityId) => {
     console.log('Joining community:', communityId);
-    alert(`Joined community ${communityId}! (Demo - backend integration required)`);
+    toast.success(`Joined community ${communityId}! (Demo - backend integration required)`);
   };
 
   return (
@@ -180,7 +181,7 @@ const CommunitiesPageDemo = () => {
               <CommunityPreview
                 key={community._id}
                 community={community}
-                onClick={() => alert(`Navigate to community ${community._id} detail (Prompt 13.3)`)}
+                onClick={() => toast.success(`Navigate to community ${community._id} detail (Prompt 13.3)`)}
               />
             ))}
           </div>
