@@ -27,6 +27,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isCommentDeleting, setIsCommentDeleting] = useState(false);
+    const [commentId, setCommentId] = useState(null);
 
     const isLiked = post.likes?.includes(user?._id);
     // Handle both post.user and post.userId (different backend response formats)
@@ -83,6 +84,8 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     };
 
     const confirmDeleteComment = async () => {
+        if (!commentId) return;
+
         try {
             await deleteComment(post._id, commentId);
             // Notify parent component of the update
@@ -91,6 +94,8 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                 onUpdate({ comments: newComments });
             }
             toast.success('Comment deleted');
+            setIsCommentDeleting(false);
+            setCommentId(null);
         } catch (error) {
             console.error('Failed to delete comment:', error);
             toast.error('Failed to delete comment');
@@ -389,7 +394,10 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                                         {/* Delete button - only show for comment author or post author */}
                                         {((comment.userId?._id || comment.userId) === user?._id || isOwnPost) && (
                                             <button
-                                                onClick={() => setShowDeleteModal(true)}
+                                                onClick={() => {
+                                                    setCommentId(comment._id);
+                                                    setIsCommentDeleting(true);
+                                                }}
                                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
                                                 title="Delete comment"
                                             >
@@ -487,7 +495,10 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
             />
             <ConfirmationModal
                 isOpen={isCommentDeleting}
-                onClose={() => setIsCommentDeleting(false)}
+                onClose={() => {
+                    setIsCommentDeleting(false);
+                    setCommentId(null);
+                }}
                 onConfirm={confirmDeleteComment}
                 title="Delete Comment"
                 message="Are you sure you want to delete this comment? This action cannot be undone."

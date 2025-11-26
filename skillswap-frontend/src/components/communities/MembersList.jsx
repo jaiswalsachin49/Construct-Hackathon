@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCommunities } from '../../hooks/useCommunities';
 import useAuthStore from '../../store/authStore';
 import { Search, Crown, Shield } from 'lucide-react';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const MembersList = ({ communityId }) => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const MembersList = ({ communityId }) => {
   const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [memberToRemove, setMemberToRemove] = useState(null);
 
   useEffect(() => {
     const loadMembers = async () => {
@@ -40,14 +42,10 @@ const MembersList = ({ communityId }) => {
   };
 
   const handleRemoveMember = async (memberId) => {
-    if (!window.confirm('Are you sure you want to remove this member?')) {
-      return;
-    }
-
     try {
       await kickMember(communityId, memberId);
-      // Remove from local state
       setMembers(prev => prev.filter(m => m.userId._id !== memberId));
+      setMemberToRemove(null);
     } catch (error) {
       console.error('Failed to remove member:', error);
       alert(error.response?.data?.error || 'Failed to remove member');
@@ -127,7 +125,7 @@ const MembersList = ({ communityId }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleRemoveMember(member.userId._id);
+              setMemberToRemove(member);
             }}
             className="px-3 py-1 text-xs font-medium bg-red-600/20 text-red-500 rounded-full hover:bg-red-600/30 transition-colors"
           >
@@ -215,6 +213,17 @@ const MembersList = ({ communityId }) => {
           No members found
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={memberToRemove !== null}
+        onClose={() => setMemberToRemove(null)}
+        onConfirm={() => handleRemoveMember(memberToRemove.userId._id)}
+        title="Remove Member"
+        message={`Are you sure you want to remove ${memberToRemove?.userId?.name} from this community?`}
+        confirmText="Remove"
+        isDestructive={true}
+      />
     </div>
   );
 };

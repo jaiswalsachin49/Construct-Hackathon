@@ -5,6 +5,7 @@ import { Send, Paperclip, ArrowLeft, MoreVertical, Phone, Video, Trash2, Ban } f
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import Button from '../common/Button';
+import ConfirmationModal from '../common/ConfirmationModal';
 import socketService from '../../services/socketService';
 import { format, isToday, isYesterday } from 'date-fns';
 import { toast } from 'react-hot-toast';
@@ -13,6 +14,8 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
     const navigate = useNavigate();
     const [messageInput, setMessageInput] = useState('');
     const [showMenu, setShowMenu] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showBlockModal, setShowBlockModal] = useState(false);
     const messageContainerRef = useRef(null);
     const textareaRef = useRef(null);
     const typingTimeoutRef = useRef(null);
@@ -167,9 +170,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                             <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
                                 <button
                                     onClick={() => {
-                                        if (window.confirm('Are you sure you want to delete this conversation?')) {
-                                            onDeleteConversation(conversation._id);
-                                        }
+                                        setShowDeleteModal(true);
                                         setShowMenu(false);
                                     }}
                                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
@@ -179,9 +180,7 @@ const ChatWindow = ({ conversation, messages, onSendMessage, isTyping, currentUs
                                 </button>
                                 <button
                                     onClick={() => {
-                                        if (window.confirm('Block this user?')) {
-                                            onBlockUser(conversation.otherUser._id);
-                                        }
+                                        setShowBlockModal(true);
                                         setShowMenu(false);
                                     }}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"

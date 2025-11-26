@@ -14,10 +14,10 @@ const PlaceSuggestionsModal = ({ isOpen, onClose }) => {
   const fetchSafePlaces = async () => {
     try {
       setIsLoading(true);
-      
+
       // Mock data - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setPlaces([
         {
           id: '1',
@@ -77,7 +77,7 @@ const PlaceSuggestionsModal = ({ isOpen, onClose }) => {
 
   const suggestInChat = (place) => {
     const message = `📍 I suggest we meet at ${place.name} (${place.distance} km away). It's a safe public place. https://maps.google.com/?q=${place.lat},${place.lng}`;
-    
+
     navigator.clipboard.writeText(message);
     alert('Place suggestion copied to clipboard! You can paste it in your chat.');
     onClose();

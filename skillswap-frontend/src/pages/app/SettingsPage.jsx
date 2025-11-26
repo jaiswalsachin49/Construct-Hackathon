@@ -87,8 +87,8 @@ const SettingsPage = () => {
                         <button
                             onClick={() => setActiveTab('general')}
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${activeTab === 'general'
-                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
-                                    : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
+                                ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
+                                : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <Lock className="w-5 h-5" />
@@ -97,8 +97,8 @@ const SettingsPage = () => {
                         <button
                             onClick={() => setActiveTab('blocked')}
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${activeTab === 'blocked'
-                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
-                                    : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
+                                ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-l-2 border-[#3B82F6]'
+                                : 'text-[#8A90A2] hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <UserX className="w-5 h-5" />
@@ -156,8 +156,8 @@ const SettingsPage = () => {
 
                                 {passwordStatus.message && (
                                     <div className={`p-3 rounded-lg text-sm ${passwordStatus.type === 'success'
-                                            ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
                                         }`}>
                                         {passwordStatus.message}
                                     </div>

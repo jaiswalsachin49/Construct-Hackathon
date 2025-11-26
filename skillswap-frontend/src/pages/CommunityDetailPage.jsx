@@ -5,6 +5,7 @@ import { useCommunities } from '../hooks/useCommunities';
 import CommunityPosts from '../components/communities/CommunityPosts';
 import CommunityChat from '../components/communities/CommunityChat';
 import MembersList from '../components/communities/MembersList';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 import { useAuth } from '../hooks/useAuth';
 import { deleteCommunity } from '../services/communityService';
 import { useToast } from '../hooks/use-toast';
@@ -20,6 +21,8 @@ const CommunityDetailPage = () => {
   const [activeTab, setActiveTab] = useState('posts');
   const [isMember, setIsMember] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [loadError, setLoadError] = React.useState(null);
 
@@ -51,18 +54,24 @@ const CommunityDetailPage = () => {
 
   useEffect(() => {
     if (currentCommunity) {
-      // Check if user is member/admin (mock for now)
+      // Check if user is member/admin
       let state = false;
+      let adminState = false;
+
       for (let i = 0; i < currentCommunity.members.length; i++) {
         if (currentCommunity.members[i].userId._id === currentUserId) {
           state = true;
+          // Check if this member has admin role
+          if (currentCommunity.members[i].role === 'admin') {
+            adminState = true;
+          }
           break;
         }
       }
       setIsMember(state);
-      setIsAdmin(currentCommunity.admins?.includes(currentUserId) || false);
+      setIsAdmin(adminState);
     }
-  }, [currentCommunity]);
+  }, [currentCommunity, currentUserId]);
 
   const handleJoin = async () => {
     try {
@@ -74,35 +83,33 @@ const CommunityDetailPage = () => {
   };
 
   const handleLeave = async () => {
-    if (window.confirm('Are you sure you want to leave this community?')) {
-      try {
-        const response = await leaveCommunity(communityId);
+    try {
+      const response = await leaveCommunity(communityId);
 
-        // Check if community was deleted (last member left)
-        if (response.action === 'deleted') {
-          toast({
-            title: "Community Deleted",
-            description: "The community has been deleted as you were the last member.",
-            variant: "default",
-          });
-          navigate('/app/communities');
-          return;
-        }
-
-        setIsMember(false);
+      if (response.action === 'deleted') {
         toast({
-          title: "Left Community",
-          description: "You have successfully left the community.",
+          title: "Community Deleted",
+          description: "The community has been deleted as you were the last member.",
           variant: "default",
         });
-      } catch (error) {
-        console.error('Error leaving community:', error);
-        toast({
-          title: "Cannot Leave Community",
-          description: error.response?.data?.message || error.response?.data?.error || "Failed to leave community.",
-          variant: "destructive",
-        });
+        navigate('/app/communities');
+        return;
       }
+
+      setIsMember(false);
+      toast({
+        title: "Left Community",
+        description: "You have successfully left the community.",
+        variant: "default",
+      });
+      setShowLeaveModal(false);
+    } catch (error) {
+      console.error('Error leaving community:', error);
+      toast({
+        title: "Error",
+        description: "Failed to leave community.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -138,10 +145,6 @@ const CommunityDetailPage = () => {
         variant: "destructive",
       });
       return;
-    }
-
-    // Confirm deletion
-    if (!window.confirm(`Are you sure you want to permanently delete "${currentCommunity.name}"? This action cannot be undone.`)) {
       return;
     }
 
@@ -191,7 +194,7 @@ const CommunityDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-transparent rounded-2xl">
       {/* Back Button */}
       <div className="bg-white/5 border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 py-3">
@@ -265,7 +268,7 @@ const CommunityDetailPage = () => {
             {isMember ? (
               <button
                 data-testid="leave-button"
-                onClick={handleLeave}
+                onClick={() => setShowLeaveModal(true)}
                 className="px-6 py-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg font-medium transition-colors"
               >
                 Leave
@@ -290,7 +293,7 @@ const CommunityDetailPage = () => {
             {/* Delete Button (Admin Only) */}
             {isAdmin && (
               <button
-                onClick={handleDelete}
+                onClick={() => setShowDeleteModal(true)}
                 className="p-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                 title="Delete Community"
               >
@@ -300,10 +303,10 @@ const CommunityDetailPage = () => {
             {isAdmin && (
               <button
                 data-testid="settings-button"
+                className="p-2 border border-white/20 text-[#8A90A2] hover:bg-white/10 hover:text-white rounded-lg transition-colors"
                 onClick={() => navigate(`/app/communities/${communityId}/settings`)}
               >
-                <Settings className="w-4 h-4" />
-                Settings
+                <Settings className="w-5 h-5" />
               </button>
             )}
           </div>
@@ -354,6 +357,26 @@ const CommunityDetailPage = () => {
         {activeTab === 'buzz' && <CommunityChat communityId={communityId} community={currentCommunity} />}
         {activeTab === 'members' && <MembersList communityId={communityId} />}
       </div>
+
+      {/* Confirmation Modals */}
+      <ConfirmationModal
+        isOpen={showLeaveModal}
+        onClose={() => setShowLeaveModal(false)}
+        onConfirm={handleLeave}
+        title="Leave Community"
+        message={`Are you sure you want to leave "${currentCommunity?.name}"? You can always rejoin later.`}
+        confirmText="Leave"
+        isDestructive={false}
+      />
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Community"
+        message={`Are you sure you want to permanently delete "${currentCommunity?.name}"? This action cannot be undone and all posts and members will be removed.`}
+        confirmText="Delete"
+        isDestructive={true}
+      />
     </div>
   );
 };
