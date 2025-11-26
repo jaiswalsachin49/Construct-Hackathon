@@ -23,3 +23,15 @@ export const searchPlaces = async (query) => {
         return [];
     }
 };
+
+export const reverseGeocode = async (lat, lon) => {
+    try {
+        const response = await api.get('/api/locations/reverse', {
+            params: { lat, lon }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error reverse geocoding:', error);
+        throw error;
+    }
+};
