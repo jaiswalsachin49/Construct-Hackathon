@@ -102,22 +102,34 @@ const UserWaves = ({ userId, isOwnProfile }) => {
             onClick={() => handleView(wave._id)}
           >
             <div className="aspect-[9/16] bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg overflow-hidden">
-              {wave.thumbnail ? (
+              {wave.type === 'photo' && wave.mediaUrl ? (
                 <img
-                  src={wave.thumbnail}
+                  src={wave.mediaUrl}
                   alt="Wave"
                   className="w-full h-full object-cover"
                 />
+              ) : wave.type === 'video' && wave.thumbnailUrl ? (
+                <img
+                  src={wave.thumbnailUrl}
+                  alt="Wave"
+                  className="w-full h-full object-cover"
+                />
+              ) : wave.type === 'video' && wave.mediaUrl ? (
+                <video
+                  src={wave.mediaUrl}
+                  className="w-full h-full object-cover"
+                  muted
+                />
               ) : (
-                <div className="flex items-center justify-center h-full text-white text-4xl font-bold">
-                  W
+                <div className="flex items-center justify-center h-full text-white text-4xl font-bold bg-gradient-to-br from-blue-500 to-purple-600">
+                  {wave.type === 'text' ? wave.content?.slice(0, 50) : 'W'}
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-3">
-                <p className="text-white text-sm font-medium mb-1">{wave.content}</p>
+                {wave.content && <p className="text-white text-sm font-medium mb-1">{wave.content}</p>}
                 <div className="flex items-center justify-between text-xs text-white/80">
                   <span>{getTimeRemaining(wave.expiresAt)}</span>
-                  <span>{wave.views} views</span>
+                  <span>{wave.views || 0} views</span>
                 </div>
               </div>
             </div>

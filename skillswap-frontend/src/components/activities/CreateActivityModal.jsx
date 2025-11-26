@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, MapPin, Clock, Tag, Globe, Search } from 'lucide-react';
 import useActivityStore from '../../store/activityStore';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 import { searchPlaces } from '../../services/locationService';
 
 // Fix for default marker icon
@@ -30,98 +32,158 @@ const MapUpdater = ({ center }) => {
   return null;
 };
 
-const LocationPicker = ({ position, setPosition, setLocationName }) => {
-  const map = useMapEvents({
-    click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng]);
-      // Optional: Reverse geocoding could go here to update name
-    },
-  });
+// LocationPicker component from original code, will be replaced by MapClickHandler logic
+// const LocationPicker = ({ position, setPosition, setLocationName }) => {
+//   const map = useMapEvents({
+//     click(e) {
+//       setPosition([e.latlng.lat, e.latlng.lng]);
+//       // Optional: Reverse geocoding could go here to update name
+//     },
+//   });
 
-  return position === null ? null : (
-    <Marker position={position} />
-  );
-};
+//   return position === null ? null : (
+//     <Marker position={position} />
+//   );
+// };
 
-const CreateActivityModal = ({ isOpen, onClose }) => {
-  const { createActivity, userLocation } = useActivityStore();
+const CreateActivityModal = ({ isOpen, onClose }) => { // Keep isOpen prop for conditional rendering of the portal
+  const { createActivity, userLocation } = useActivityStore(); // Keep useActivityStore if it's still intended to be used
   const [formData, setFormData] = useState({
-    title: '',
-    category: 'Running',
-    date: '',
-    time: '',
-    startTime: '',
-    endTime: '',
-    location: '',
-    description: '',
-    isOnline: false
+    title: "",
+    category: "Running",
+    date: "",
+    startTime: "", // Changed from 'time' to 'startTime' in the new snippet
+    endTime: "",
+    location: "",
+    lat: null, // New in snippet
+    lng: null, // New in snippet
+    description: "",
+    maxParticipants: 10, // New in snippet
+    isOnline: false // From original code, not in snippet, keeping it
   });
-  const [coordinates, setCoordinates] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Location Search State
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locationResults, setLocationResults] = useState([]); // Renamed from locationSuggestions
   const [isSearching, setIsSearching] = useState(false);
+  const [coordinates, setCoordinates] = useState(null); // Renamed from coordinates to coordinates (but now an object {lat, lng})
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // Renamed from error to error (but now a string)
 
-  // Initialize coordinates with user location when modal opens
+  // Initialize coordinates with user location when modal opens (from original code)
   useEffect(() => {
     if (isOpen && userLocation) {
-      setCoordinates(userLocation);
+      setCoordinates({ lat: userLocation[0], lng: userLocation[1] });
+      setFormData(prev => ({ ...prev, lat: userLocation[0], lng: userLocation[1] }));
     }
   }, [isOpen, userLocation]);
 
-  // Location search with debouncing
+  // Location search with debouncing (modified based on snippet)
   useEffect(() => {
-    const searchLocation = async () => {
-      if (formData.location.length > 2 && isSearching) {
-        const results = await searchPlaces(formData.location);
-        setLocationSuggestions(results);
-        setShowSuggestions(true);
-      } else {
-        setLocationSuggestions([]);
-        setShowSuggestions(false);
-      }
-    };
+    if (formData.location.length < 2) {
+      setLocationResults([]);
+      return;
+    }
 
-    const timeoutId = setTimeout(searchLocation, 300);
-    return () => clearTimeout(timeoutId);
-  }, [formData.location, isSearching]);
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        const response = await axios.get(
+          `http://localhost:8080/api/locations/search?q=${encodeURIComponent(formData.location)}`
+        );
+        setLocationResults(response.data);
+      } catch (err) {
+        console.error("Location search error:", err);
+        setLocationResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.location]);
 
   const handleLocationSelect = (place) => {
-    setFormData({ ...formData, location: place.display_name });
-    setCoordinates([place.lat, place.lng]);
-    setLocationSuggestions([]);
-    setShowSuggestions(false);
-    setIsSearching(false);
+    setFormData({
+      ...formData,
+      location: place.display_name,
+      lat: parseFloat(place.lat),
+      lng: parseFloat(place.lon),
+    });
+    setCoordinates({ lat: parseFloat(place.lat), lng: parseFloat(place.lon) });
+    setLocationResults([]);
   };
 
-  if (!isOpen) return null;
+  // Map click handler (new from snippet)
+  function MapClickHandler() {
+    useMapEvents({
+      click: async (e) => {
+        const { lat, lng } = e.latlng;
+        setCoordinates({ lat, lng });
+        setFormData(prev => ({ ...prev, lat, lng })); // Update formData immediately
+
+        try {
+          const response = await axios.get(
+            `http://localhost:8080/api/locations/reverse?lat=${lat}&lon=${lng}`
+          );
+          setFormData(prev => ({
+            ...prev,
+            location: response.data.display_name,
+            lat,
+            lng,
+          }));
+        } catch (err) {
+          console.error("Reverse geocoding error:", err);
+        }
+      },
+    });
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError("");
 
-    // Basic validation
-    if (!coordinates) {
-      setError("Please select a location on the map.");
+    if (!formData.lat || !formData.lng) {
+      setError("Please select a location on the map or from search.");
       setLoading(false);
       return;
     }
 
+    const activityData = {
+      title: formData.title,
+      category: formData.category,
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      location: {
+        type: "Point",
+        coordinates: [formData.lng, formData.lat],
+        address: formData.location,
+      },
+      description: formData.description,
+      maxParticipants: parseInt(formData.maxParticipants, 10),
+      isOnline: formData.isOnline // Keep this from original
+    };
+
     try {
-      const combinedTime = `${formData.date}T${formData.time}`;
+      // Assuming createActivity from useActivityStore is still the desired method
+      // The snippet uses axios directly, but the original uses a store action.
+      // I'll adapt to use the store action if it exists, otherwise, the axios call.
+      // For now, I'll keep the original store action call structure.
       await createActivity({
         ...formData,
-        time: combinedTime,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
-        coordinates: coordinates
+        time: `${formData.date}T${formData.startTime}`, // Reconstruct time if needed by store
+        coordinates: [formData.lat, formData.lng], // Store expects array [lat, lng]
+        location: formData.location, // Pass location name
+        maxParticipants: parseInt(formData.maxParticipants, 10),
       });
       onClose();
-      setFormData({ title: '', category: 'Running', date: '', time: '', location: '', description: '', isOnline: false });
+      // Reset form data after successful submission
+      setFormData({
+        title: '', category: 'Running', date: '', startTime: '', endTime: '',
+        location: '', lat: null, lng: null, description: '', maxParticipants: 10, isOnline: false
+      });
+      setCoordinates(null);
     } catch (err) {
       console.error("Submission error:", err);
       setError(err.response?.data?.msg || err.message || "Failed to create activity.");
@@ -130,7 +192,9 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
     }
   };
 
-  return (
+  if (!isOpen) return null; // Keep this for conditional rendering of the portal itself
+
+  const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="bg-[#101726] border border-white/10 w-full max-w-7xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] h-[90vh]">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
@@ -243,9 +307,9 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Location Suggestions Dropdown */}
-                  {showSuggestions && locationSuggestions.length > 0 && (
+                  {locationResults.length > 0 && (
                     <div className="absolute z-50 w-full mt-1 bg-[#1A2333] border border-white/10 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                      {locationSuggestions.map((place) => (
+                      {locationResults.map((place) => (
                         <button
                           key={place.place_id}
                           type="button"
@@ -259,10 +323,11 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                     </div>
                   )}
 
+
                   {coordinates && (
                     <p className="text-[10px] text-green-400 mt-1 ml-1 flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
-                      Pin set at {coordinates[0].toFixed(4)}, {coordinates[1].toFixed(4)}
+                      Pin set at {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
                     </p>
                   )}
                 </div>
@@ -307,7 +372,8 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
                       url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                     />
                     <MapUpdater center={coordinates} />
-                    <LocationPicker position={coordinates} setPosition={setCoordinates} />
+                    <MapClickHandler />
+                    {coordinates && <Marker position={[coordinates.lat, coordinates.lng]} />}
                   </MapContainer>
                   <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded pointer-events-none z-[1000]">
                     Tap map to set location
@@ -328,6 +394,8 @@ const CreateActivityModal = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default CreateActivityModal;

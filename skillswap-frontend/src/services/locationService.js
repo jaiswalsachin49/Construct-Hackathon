@@ -1,20 +1,14 @@
 import axios from 'axios';
 
-const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org/search';
+const API_BASE_URL = 'http://localhost:8080/api/locations';
 
 export const searchPlaces = async (query) => {
     if (!query || query.length < 3) return [];
 
     try {
-        const response = await axios.get(NOMINATIM_BASE_URL, {
+        const response = await axios.get(`${API_BASE_URL}/search`, {
             params: {
-                q: query,
-                format: 'json',
-                addressdetails: 1,
-                limit: 5,
-            },
-            headers: {
-                'Accept-Language': 'en-US,en;q=0.9',
+                q: query
             }
         });
 
@@ -23,6 +17,7 @@ export const searchPlaces = async (query) => {
             display_name: place.display_name,
             lat: parseFloat(place.lat),
             lng: parseFloat(place.lon),
+            lon: parseFloat(place.lon), // Include lon for compatibility
             address: place.address
         }));
     } catch (error) {

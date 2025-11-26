@@ -26,6 +26,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     const [showLikesModal, setShowLikesModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isCommentDeleting, setIsCommentDeleting] = useState(false);
 
     const isLiked = post.likes?.includes(user?._id);
     // Handle both post.user and post.userId (different backend response formats)
@@ -81,11 +82,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
         }
     };
 
-    const handleDeleteComment = async (commentId) => {
-        if (!window.confirm('Are you sure you want to delete this comment?')) {
-            return;
-        }
-
+    const confirmDeleteComment = async () => {
         try {
             await deleteComment(post._id, commentId);
             // Notify parent component of the update
@@ -392,7 +389,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                                         {/* Delete button - only show for comment author or post author */}
                                         {((comment.userId?._id || comment.userId) === user?._id || isOwnPost) && (
                                             <button
-                                                onClick={() => handleDeleteComment(comment._id)}
+                                                onClick={() => setShowDeleteModal(true)}
                                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
                                                 title="Delete comment"
                                             >
@@ -485,6 +482,15 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                 onConfirm={confirmDelete}
                 title="Delete Post"
                 message="Are you sure you want to delete this post? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+            />
+            <ConfirmationModal
+                isOpen={isCommentDeleting}
+                onClose={() => setIsCommentDeleting(false)}
+                onConfirm={confirmDeleteComment}
+                title="Delete Comment"
+                message="Are you sure you want to delete this comment? This action cannot be undone."
                 confirmText="Delete"
                 isDestructive={true}
             />

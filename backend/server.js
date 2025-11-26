@@ -50,6 +50,7 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/matches', require('./routes/matches'));
 app.use('/api/badges', require('./routes/badges'));
 app.use('/api/activities', require('./routes/activityRoutes'));
+app.use('/api/locations', require('./routes/locations'));
 
 // Socket.IO
 require('./config/socket')(io);

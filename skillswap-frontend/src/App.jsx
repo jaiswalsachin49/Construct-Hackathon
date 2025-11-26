@@ -13,7 +13,6 @@ import SettingsPage from "./pages/app/SettingsPage";
 import DiscoveryPage from "./pages/app/DiscoveryPage";
 import MatchesPage from "./pages/app/MatchesPage";
 import ChatPage from "./pages/app/ChatPage";
-import WavesPage from "./pages/app/WavesPage";
 import FeedPage from "./pages/app/FeedPage";
 import CommunitiesPageOrig from "./pages/app/CommunitiesPage";
 import ProfilePageOrig from "./pages/app/ProfilePage";
@@ -129,7 +128,6 @@ function App() {
           {/* <Route path="matches" element={<MatchesPage />} /> */}
           <Route path="chat" element={<ChatPage />} />
           <Route path="chat/:conversationId" element={<ChatPage />} />
-          <Route path="waves" element={<WavesPage />} />
           <Route path="feed" element={<FeedPage />} />
           <Route path="settings" element={<SettingsPage />} />
 

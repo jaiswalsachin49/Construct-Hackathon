@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
-import { X, Heart, MessageCircle, Share2, Volume2, VolumeX } from 'lucide-react';
+import { X, Heart, MessageCircle, Share2, Volume2, VolumeX, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useWaves } from '../../hooks/useWaves';
 import { viewWave, reactToWave } from '../../services/waveService';
 import { startChat } from '../../services/discoveryService';
 import LikesListModal from '../common/LikesListModal';
+import ViewersListModal from './ViewersListModal';
+import useAuthStore from '../../store/authStore';
 
 const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
     const navigate = useNavigate();
+    const { user } = useAuthStore();
     const { markWaveViewed } = useWaves();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [isPaused, setIsPaused] = useState(false);
@@ -17,6 +21,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
     const [progress, setProgress] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [showLikesModal, setShowLikesModal] = useState(false);
+    const [showViewersModal, setShowViewersModal] = useState(false);
     const timerRef = useRef(null);
     const videoRef = useRef(null);
 
@@ -108,7 +113,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
     if (!isOpen || !currentWave) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
             {/* Close Button */}
             <button
@@ -220,6 +225,32 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
 
                         {/* Likes */}
                         <div className="flex items-center gap-3">
+                            {/* Viewers (only for wave owner) */}
+                            {waveUser._id === user?._id && currentWave.viewedBy?.length > 0 && (
+                                <div className="flex flex-col items-center">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsPaused(true);
+                                            setShowViewersModal(true);
+                                        }}
+                                        className="p-2 rounded-full transition-transform hover:scale-110 text-white"
+                                    >
+                                        <Eye className="h-7 w-7" />
+                                    </button>
+                                    <span className="text-white text-xs font-medium cursor-pointer hover:underline"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsPaused(true);
+                                            setShowViewersModal(true);
+                                        }}
+                                    >
+                                        {currentWave.viewedBy.length}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Likes */}
                             <div className="flex flex-col items-center">
                                 <button
                                     onClick={() => {
@@ -232,7 +263,7 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                                 </button>
                                 {/* Like Count */}
                                 {currentWave.likes?.length > 0 && (
-                                    <span 
+                                    <span
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setIsPaused(true);
@@ -279,7 +310,18 @@ const WaveViewerModal = ({ waves, initialIndex = 0, isOpen, onClose }) => {
                 targetId={currentWave._id}
                 type="wave"
             />
-        </div>
+
+            {/* Viewers List Modal */}
+            <ViewersListModal
+                isOpen={showViewersModal}
+                onClose={() => {
+                    setShowViewersModal(false);
+                    setIsPaused(false);
+                }}
+                waveId={currentWave._id}
+            />
+        </div>,
+        document.body
     );
 };
 
