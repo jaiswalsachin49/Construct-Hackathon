@@ -161,4 +161,22 @@ exports.getWaveLikes = async (req, res) => {
     }
 };
 
+exports.getWaveViewers = async (req, res) => {
+    try {
+        const wave = await Wave.findById(req.params.waveId).populate('viewedBy', 'name profilePhoto bio');
+        if (!wave) {
+            return res.status(404).json({ error: 'Wave not found' });
+        }
+
+        // Only wave owner can see viewers
+        if (wave.userId.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        res.json({ success: true, viewers: wave.viewedBy || [] });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = exports;

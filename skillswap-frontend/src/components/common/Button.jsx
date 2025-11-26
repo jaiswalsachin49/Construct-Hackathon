@@ -99,7 +99,7 @@ const Button = ({
 
 Button.propTypes = {
     children: PropTypes.node.isRequired,
-    variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'ghost']),
+    variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'ghost', 'ghostWarm', 'warm', 'warmAlt']),
     size: PropTypes.oneOf(['sm', 'md', 'lg']),
     isLoading: PropTypes.bool,
     disabled: PropTypes.bool,
