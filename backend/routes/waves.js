@@ -10,6 +10,7 @@ router.get('/allies', authenticateToken, waveController.getAlliesWaves);
 router.post('/:waveId/view', authenticateToken, waveController.viewWave);
 router.delete('/:waveId', authenticateToken, waveController.deleteWave);
 router.get('/:waveId/likes', authenticateToken, waveController.getWaveLikes);
-router.get('/:waveId/viewers', authenticateToken, waveController.getWaveViewers); // New route
+router.get('/:waveId/viewers', authenticateToken, waveController.getWaveViewers);
+router.get('/user/:userId', authenticateToken, waveController.getUserWaves); // New route
 
 module.exports = router;
