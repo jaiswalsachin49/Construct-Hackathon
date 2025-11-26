@@ -7,6 +7,7 @@ class SocketService {
     messageListeners = [];
     typingListeners = [];
     notificationListeners = []; // <--- NEW: Array for notifications
+    notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); // Simple pop sound
 
     connect() {
         const token = useAuthStore.getState().token;
@@ -100,12 +101,19 @@ class SocketService {
 
             // Notify any registered listeners as well
             this.messageListeners.forEach(cb => cb(message));
+
+            // Play sound if message is from someone else
+            const currentUserId = useAuthStore.getState().user?._id;
+            if (message.senderId !== currentUserId) {
+                this.playNotificationSound();
+            }
         });
 
         // 2. Notifications (Connection Requests) <--- NEW
         this.socket.on('notification:request', (data) => {
             // console.log("🔔 Notification received:", data);
             this.notificationListeners.forEach(cb => cb(data));
+            this.playNotificationSound();
         });
 
         // 3. Typing
@@ -219,6 +227,15 @@ class SocketService {
 
     off(event, callback) {
         this.socket?.off(event, callback);
+    }
+
+    playNotificationSound() {
+        try {
+            this.notificationSound.currentTime = 0;
+            this.notificationSound.play().catch(err => console.warn('Audio play failed (user interaction needed first):', err));
+        } catch (error) {
+            console.error('Error playing notification sound:', error);
+        }
     }
 }
 
