@@ -5,8 +5,7 @@ import useActivityStore from '../../store/activityStore';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import axios from 'axios';
-import { searchPlaces } from '../../services/locationService';
+import { searchPlaces, reverseGeocode } from '../../services/locationService';
 
 // Fix for default marker icon
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -86,10 +85,9 @@ const CreateActivityModal = ({ isOpen, onClose }) => { // Keep isOpen prop for c
     const timer = setTimeout(async () => {
       try {
         setIsSearching(true);
-        const response = await axios.get(
-          `http://localhost:8080/api/locations/search?q=${encodeURIComponent(formData.location)}`
-        );
-        setLocationResults(response.data);
+        setIsSearching(true);
+        const results = await searchPlaces(formData.location);
+        setLocationResults(results);
       } catch (err) {
         console.error("Location search error:", err);
         setLocationResults([]);
@@ -121,12 +119,10 @@ const CreateActivityModal = ({ isOpen, onClose }) => { // Keep isOpen prop for c
         setFormData(prev => ({ ...prev, lat, lng })); // Update formData immediately
 
         try {
-          const response = await axios.get(
-            `http://localhost:8080/api/locations/reverse?lat=${lat}&lon=${lng}`
-          );
+          const data = await reverseGeocode(lat, lng);
           setFormData(prev => ({
             ...prev,
-            location: response.data.display_name,
+            location: data.display_name,
             lat,
             lng,
           }));
