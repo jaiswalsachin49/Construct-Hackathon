@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, AlertTriangle } from 'lucide-react';
 import { useCommunities } from '../../hooks/useCommunities';
 import { useAuth } from '../../hooks/useAuth';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 const CommunitySettingsPage = () => {
     const { communityId } = useParams();
@@ -16,6 +17,7 @@ const CommunitySettingsPage = () => {
         category: '',
         isPrivate: false
     });
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
         const loadCommunity = async () => {
@@ -45,11 +47,10 @@ const CommunitySettingsPage = () => {
     };
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this community? This action cannot be undone.')) {
-            // TODO: Implement delete community functionality
-            console.log('Delete community:', communityId);
-            navigate('/app/communities');
-        }
+        // TODO: Implement delete community functionality
+        console.log('Delete community:', communityId);
+        navigate('/app/communities');
+        setShowDeleteModal(false);
     };
 
     if (isLoading || !currentCommunity) {
@@ -61,7 +62,9 @@ const CommunitySettingsPage = () => {
     }
 
     // Check if user is admin
-    const isAdmin = currentCommunity.admins?.includes(user._id);
+    const isAdmin = currentCommunity.members?.find(
+        m => m.userId._id === user._id
+    )?.role === 'admin';
 
     if (!isAdmin) {
         return (
@@ -166,7 +169,7 @@ const CommunitySettingsPage = () => {
                         <div className="flex items-center justify-between pt-6 border-t border-white/10">
                             <button
                                 type="button"
-                                onClick={handleDelete}
+                                onClick={() => setShowDeleteModal(true)}
                                 className="flex items-center gap-2 px-6 py-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg font-medium transition-colors"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -183,6 +186,17 @@ const CommunitySettingsPage = () => {
                     </form>
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDelete}
+                title="Delete Community"
+                message={`Are you sure you want to delete "${currentCommunity?.name}"? This action cannot be undone and all community data will be lost.`}
+                confirmText="Delete"
+                isDestructive={true}
+            />
         </div>
     );
 };
