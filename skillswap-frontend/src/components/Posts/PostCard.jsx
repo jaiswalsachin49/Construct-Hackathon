@@ -174,7 +174,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
             <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div
-                        onClick={() => navigate(`/app/profile/${post?._id}`)}
+                        onClick={() => navigate(`/app/profile/${postAuthorId}`)}
                         className="cursor-pointer"
                     >
                         {post.userId?.profilePhoto ? (
@@ -194,7 +194,7 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
 
                     <div>
                         <h4
-                            onClick={() => navigate(`/app/profile/${post._id}`)}
+                            onClick={() => navigate(`/app/profile/${postAuthorId}`)}
                             className="font-semibold text-white cursor-pointer hover:underline"
                         >
                             {post.userId?.name || 'Unknown User'}
