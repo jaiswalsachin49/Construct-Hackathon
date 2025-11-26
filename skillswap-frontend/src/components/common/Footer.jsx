@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
- 
+
 
 const FooterSection = styled.footer`
   position: relative;
@@ -20,7 +20,7 @@ const FooterSection = styled.footer`
   border-top: 1px solid rgba(255,255,255,0.05);
 `;
 
- 
+
 const NoiseLayer = styled.div`
   position: absolute;
   inset: 0;
@@ -83,7 +83,7 @@ const FooterLink = styled.button`
   &:hover:after { width: 100%; }
 `;
 
- 
+
 const BigWord = styled.div`
   position: relative;
   z-index: 1;
@@ -148,20 +148,21 @@ const Dot = styled.span`
 `;
 
 const Footer = () => {
-  return (
-    <FooterSection>
-      <NoiseLayer />
-      <TopBar>
-        <LinkGroup>
-          <span>All copyrights @SkillSwap</span>
-          <FooterLink>Terms and Conditions</FooterLink>
-        </LinkGroup>
-        
-      </TopBar>
-      <BigWord aria-hidden>SkillSwap</BigWord>
-       
-    </FooterSection>
-  );
+    return (
+        <FooterSection>
+            <NoiseLayer />
+            <TopBar>
+                <LinkGroup>
+                    <span>All copyrights @SkillSwap</span>
+                    <FooterLink>Terms and Conditions</FooterLink>
+                </LinkGroup>
+
+
+            </TopBar>
+            <BigWord aria-hidden>SkillSwap</BigWord>
+
+        </FooterSection>
+    );
 };
 
 export default Footer;
