@@ -16,6 +16,7 @@ const ChatPage = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [waveToDelete, setWaveToDelete] = useState(null);
 
     const {
         conversations,
@@ -161,6 +162,7 @@ const ChatPage = () => {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
+                                    setWaveToDelete(wave);
                                     setIsDeleteModalOpen(true);
                                 }}
                                 className="absolute top-0 right-0 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
@@ -298,8 +300,17 @@ const ChatPage = () => {
             )}
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={() => deleteWave(wave._id)}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setWaveToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (waveToDelete) {
+                        deleteWave(waveToDelete._id);
+                        setIsDeleteModalOpen(false);
+                        setWaveToDelete(null);
+                    }
+                }}
                 title="Delete Wave"
                 message="Are you sure you want to delete this wave?"
             />

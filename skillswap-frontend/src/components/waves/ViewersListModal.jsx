@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Eye } from 'lucide-react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { getWaveViewers } from '../../services/waveService';
 
 const ViewersListModal = ({ isOpen, onClose, waveId }) => {
     const navigate = useNavigate();
@@ -18,14 +18,8 @@ const ViewersListModal = ({ isOpen, onClose, waveId }) => {
     const fetchViewers = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await axios.get(
-                `http://localhost:8080/api/waves/${waveId}/viewers`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
-            setViewers(response.data.viewers || []);
+            const data = await getWaveViewers(waveId);
+            setViewers(data.viewers || []);
         } catch (error) {
             console.error('Failed to fetch viewers:', error);
             setViewers([]);
