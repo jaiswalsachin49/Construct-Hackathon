@@ -12,7 +12,12 @@ const postSchema = new mongoose.Schema({
     comments: [{
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         content: String,
-        createdAt: { type: Date, default: Date.now }
+        createdAt: { type: Date, default: Date.now },
+        replies: [{
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            content: String,
+            createdAt: { type: Date, default: Date.now }
+        }]
     }],
     shares: { type: Number, default: 0 },
     visibility: { type: String, enum: ['public', 'allies'], default: 'public' },

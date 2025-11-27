@@ -61,6 +61,18 @@ export const deleteComment = async (postId, commentId) => {
     return response.data;
 };
 
+// Add reply to comment
+export const addReply = async (postId, commentId, content) => {
+    const response = await api.post(`/api/posts/${postId}/comment/${commentId}/reply`, { content });
+    return response.data;
+};
+
+// Delete reply
+export const deleteReply = async (postId, commentId, replyId) => {
+    const response = await api.delete(`/api/posts/${postId}/comment/${commentId}/reply/${replyId}`);
+    return response.data;
+};
+
 // Share post
 export const sharePost = async (postId) => {
     const response = await api.post(`/api/posts/${postId}/share`);

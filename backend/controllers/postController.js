@@ -20,6 +20,7 @@ exports.getFeed = async (req, res) => {
         })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
+            .populate('comments.replies.userId', 'name profilePhoto')
             .populate('communityId', 'name')
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -54,6 +55,7 @@ exports.getGlobalFeed = async (req, res) => {
         const posts = await Post.find({ visibility: 'public' })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
+            .populate('comments.replies.userId', 'name profilePhoto')
             .populate('communityId', 'name')
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -297,6 +299,7 @@ exports.addComment = async (req, res) => {
         post.comments.push(comment);
         await post.save();
         await post.populate('comments.userId', 'name profilePhoto');
+        await post.populate('comments.replies.userId', 'name profilePhoto');
 
         res.json({ success: true, comments: post.comments });
     } catch (error) {
@@ -331,6 +334,81 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.addReply = async (req, res) => {
+    try {
+        const { content } = req.body;
+
+        if (!content || content.trim().length === 0) {
+            return res.status(400).json({ error: 'Reply content required' });
+        }
+
+        const post = await Post.findById(req.params.postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const comment = post.comments.id(req.params.commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        const reply = {
+            userId: req.user.userId,
+            content: content.trim()
+        };
+
+        comment.replies.push(reply);
+        await post.save();
+        await post.populate('comments.userId', 'name profilePhoto');
+        await post.populate('comments.replies.userId', 'name profilePhoto');
+
+        res.json({ success: true, comments: post.comments });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.deleteReply = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const comment = post.comments.id(req.params.commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        const reply = comment.replies.id(req.params.replyId);
+
+        if (!reply) {
+            return res.status(404).json({ error: 'Reply not found' });
+        }
+
+        // Allow reply author OR post author OR comment author to delete
+        if (
+            reply.userId.toString() !== req.user.userId &&
+            post.userId.toString() !== req.user.userId &&
+            comment.userId.toString() !== req.user.userId
+        ) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        comment.replies.pull(req.params.replyId);
+        await post.save();
+
+        res.json({ success: true, message: 'Reply deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 exports.getPostLikes = async (req, res) => {
     try {
@@ -369,6 +447,7 @@ exports.getCommunityPosts = async (req, res) => {
         const posts = await Post.find({ communityId })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
+            .populate('comments.replies.userId', 'name profilePhoto')
             .populate('communityId', 'name')
             .sort({ createdAt: -1 });
 
@@ -423,6 +502,7 @@ exports.getUserPosts = async (req, res) => {
         const posts = await Post.find({ userId })
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
+            .populate('comments.replies.userId', 'name profilePhoto')
             .populate('communityId', 'name')
             .sort({ createdAt: -1 });
 

@@ -14,10 +14,11 @@ import { toast } from 'react-hot-toast';
 const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { toggleLike, addComment, deleteComment, deletePost, updatePost } = usePosts();
+    const { toggleLike, addComment, deleteComment, deletePost, updatePost, addReply, deleteReply } = usePosts();
     const cardRef = useRef(null);
 
     const [showComments, setShowComments] = useState(false);
+    const [showAllComments, setShowAllComments] = useState(false);
     const [showMore, setShowMore] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
     const [commentText, setCommentText] = useState('');
@@ -28,6 +29,11 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isCommentDeleting, setIsCommentDeleting] = useState(false);
     const [commentId, setCommentId] = useState(null);
+    const [replyingTo, setReplyingTo] = useState(null); // { commentId, userName }
+    const [replyText, setReplyText] = useState('');
+    const [isAddingReply, setIsAddingReply] = useState(false);
+    const [deletingReply, setDeletingReply] = useState(null); // { commentId, replyId }
+
 
     const isLiked = post.likes?.includes(user?._id);
     // Handle both post.user and post.userId (different backend response formats)
@@ -99,6 +105,52 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
         } catch (error) {
             console.error('Failed to delete comment:', error);
             toast.error('Failed to delete comment');
+        }
+    };
+
+    const handleAddReply = async () => {
+        if (!replyText.trim() || isAddingReply || !replyingTo) return;
+
+        setIsAddingReply(true);
+        try {
+            const result = await addReply(post._id, replyingTo.commentId, replyText.trim());
+            setReplyText('');
+            setReplyingTo(null);
+            // Notify parent component of the update
+            if (onUpdate && result?.comments) {
+                onUpdate({ comments: result.comments });
+            }
+        } catch (error) {
+            console.error('Failed to add reply:', error);
+            toast.error('Failed to add reply');
+        } finally {
+            setIsAddingReply(false);
+        }
+    };
+
+    const confirmDeleteReply = async () => {
+        if (!deletingReply) return;
+
+        try {
+            await deleteReply(post._id, deletingReply.commentId, deletingReply.replyId);
+            // Manually update comments to remove the reply
+            if (onUpdate) {
+                const newComments = (post.comments || []).map(comment => {
+                    if (comment._id === deletingReply.commentId) {
+                        return {
+                            ...comment,
+                            replies: (comment.replies || []).filter(r => r._id !== deletingReply.replyId)
+                        };
+                    }
+                    return comment;
+                });
+                onUpdate({ comments: newComments });
+            }
+            toast.success('Reply deleted');
+            setDeletingReply(null);
+        } catch (error) {
+            console.error('Failed to delete reply:', error);
+            toast.error('Failed to delete reply');
         }
     };
 
@@ -370,59 +422,183 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
             {showComments && (
                 <div className="px-4 pb-4 border-t border-white/10">
                     <div className="space-y-3 mt-3">
-                        {post.comments?.slice(0, 2).map((comment) => (
-                            <div key={comment._id} className="flex gap-2 group">
-                                <div className="flex-shrink-0">
-                                    {comment.userId?.profilePhoto ? (
-                                        <img
-                                            src={comment.userId.profilePhoto}
-                                            alt={comment.userId.name}
-                                            className="h-8 w-8 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
-                                            <span className="text-xs font-semibold text-[#E6E9EF]">
-                                                {getInitials(comment.userId?.name)}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="bg-white/5 rounded-lg px-3 py-2 relative">
-                                        <p className="font-semibold text-sm text-white">{comment.userId?.name}</p>
-                                        <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
-                                        {/* Delete button - only show for comment author or post author */}
-                                        {((comment.userId?._id || comment.userId) === user?._id || isOwnPost) && (
-                                            <button
-                                                onClick={() => {
-                                                    setCommentId(comment._id);
-                                                    setIsCommentDeleting(true);
-                                                }}
-                                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
-                                                title="Delete comment"
-                                            >
-                                                <Trash2 className="h-3 w-3 text-red-400" />
-                                            </button>
+                        {/* Display comments based on showAllComments state */}
+                        {(showAllComments ? post.comments : post.comments?.slice(0, 3))?.map((comment) => (
+                            <div key={comment._id} className="space-y-2">
+                                {/* Comment */}
+                                <div className="flex gap-2 group">
+                                    <div className="flex-shrink-0">
+                                        {comment.userId?.profilePhoto ? (
+                                            <img
+                                                src={comment.userId.profilePhoto}
+                                                alt={comment.userId.name}
+                                                className="h-8 w-8 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
+                                                <span className="text-xs font-semibold text-[#E6E9EF]">
+                                                    {getInitials(comment.userId?.name)}
+                                                </span>
+                                            </div>
                                         )}
                                     </div>
-                                    <p className="text-xs text-[#8A90A2] mt-1 ml-3">
-                                        {(() => {
-                                            try {
-                                                const date = new Date(comment.createdAt);
-                                                if (isNaN(date.getTime())) return 'Just now';
-                                                return formatDistanceToNow(date, { addSuffix: true });
-                                            } catch {
-                                                return 'Just now';
-                                            }
-                                        })()}
-                                    </p>
+                                    <div className="flex-1">
+                                        <div className="bg-white/5 rounded-lg px-3 py-2 relative">
+                                            <p className="font-semibold text-sm text-white">{comment.userId?.name}</p>
+                                            <p className="text-sm text-[#E6E9EF]">{comment.content}</p>
+                                            {/* Delete button - only show for comment author or post author */}
+                                            {((comment.userId?._id || comment.userId) === user?._id || isOwnPost) && (
+                                                <button
+                                                    onClick={() => {
+                                                        setCommentId(comment._id);
+                                                        setIsCommentDeleting(true);
+                                                    }}
+                                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
+                                                    title="Delete comment"
+                                                >
+                                                    <Trash2 className="h-3 w-3 text-red-400" />
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-3 mt-1 ml-3">
+                                            <p className="text-xs text-[#8A90A2]">
+                                                {(() => {
+                                                    try {
+                                                        const date = new Date(comment.createdAt);
+                                                        if (isNaN(date.getTime())) return 'Just now';
+                                                        return formatDistanceToNow(date, { addSuffix: true });
+                                                    } catch {
+                                                        return 'Just now';
+                                                    }
+                                                })()}
+                                            </p>
+                                            <button
+                                                onClick={() => setReplyingTo({ commentId: comment._id, userName: comment.userId?.name })}
+                                                className="text-xs text-[#3B82F6] hover:text-[#60A5FA] font-medium transition-colors"
+                                            >
+                                                Reply
+                                            </button>
+                                            {comment.replies?.length > 0 && (
+                                                <span className="text-xs text-[#8A90A2]">
+                                                    {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Replies */}
+                                        {comment.replies && comment.replies.length > 0 && (
+                                            <div className="ml-6 mt-2 space-y-2 border-l-2 border-white/10 pl-3">
+                                                {comment.replies.map((reply) => (
+                                                    <div key={reply._id} className="flex gap-2 group">
+                                                        <div className="flex-shrink-0">
+                                                            {reply.userId?.profilePhoto ? (
+                                                                <img
+                                                                    src={reply.userId.profilePhoto}
+                                                                    alt={reply.userId.name}
+                                                                    className="h-6 w-6 rounded-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center">
+                                                                    <span className="text-xs font-semibold text-[#E6E9EF]">
+                                                                        {getInitials(reply.userId?.name)}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="bg-white/5 rounded-lg px-3 py-2 relative">
+                                                                <p className="font-semibold text-xs text-white">{reply.userId?.name}</p>
+                                                                <p className="text-xs text-[#E6E9EF]">{reply.content}</p>
+                                                                {/* Delete button for replies */}
+                                                                {((reply.userId?._id || reply.userId) === user?._id || isOwnPost || (comment.userId?._id || comment.userId) === user?._id) && (
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setDeletingReply({ commentId: comment._id, replyId: reply._id });
+                                                                        }}
+                                                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
+                                                                        title="Delete reply"
+                                                                    >
+                                                                        <Trash2 className="h-3 w-3 text-red-400" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-xs text-[#8A90A2] mt-1 ml-3">
+                                                                {(() => {
+                                                                    try {
+                                                                        const date = new Date(reply.createdAt);
+                                                                        if (isNaN(date.getTime())) return 'Just now';
+                                                                        return formatDistanceToNow(date, { addSuffix: true });
+                                                                    } catch {
+                                                                        return 'Just now';
+                                                                    }
+                                                                })()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Reply Input */}
+                                        {replyingTo?.commentId === comment._id && (
+                                            <div className="ml-6 mt-2 flex gap-2">
+                                                <div className="flex-shrink-0">
+                                                    {user?.profilePhoto ? (
+                                                        <img
+                                                            src={user.profilePhoto}
+                                                            alt="You"
+                                                            className="h-6 w-6 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                                            <span className="text-xs font-semibold text-white">
+                                                                {getInitials(user?.name)}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={replyText}
+                                                        onChange={(e) => setReplyText(e.target.value)}
+                                                        onKeyPress={(e) => e.key === 'Enter' && handleAddReply()}
+                                                        placeholder={`Replying to ${replyingTo.userName}...`}
+                                                        className="flex-1 px-3 py-1.5 bg-[#101726] border border-white/10 rounded-full text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
+                                                        disabled={isAddingReply}
+                                                        autoFocus
+                                                    />
+                                                    <button
+                                                        onClick={handleAddReply}
+                                                        disabled={!replyText.trim() || isAddingReply}
+                                                        className="px-3 py-1.5 bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-black text-sm rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                                                    >
+                                                        Reply
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setReplyingTo(null);
+                                                            setReplyText('');
+                                                        }}
+                                                        className="px-3 py-1.5 bg-white/10 text-white text-sm rounded-full hover:bg-white/20 transition-colors"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
 
-                        {post.comments?.length > 2 && (
-                            <button className="text-sm text-gray-600 hover:underline">
-                                View all {post.comments.length} comments
+                        {/* View all/less comments button */}
+                        {post.comments && post.comments.length > 3 && (
+                            <button
+                                onClick={() => setShowAllComments(!showAllComments)}
+                                className="text-sm text-[#3B82F6] hover:text-[#60A5FA] font-medium transition-colors"
+                            >
+                                {showAllComments ? 'Show less' : `View all ${post.comments.length} comments`}
                             </button>
                         )}
                     </div>
@@ -502,6 +678,15 @@ const PostCard = ({ post, onUpdate, onDelete, isCommunityAdmin = false }) => {
                 onConfirm={confirmDeleteComment}
                 title="Delete Comment"
                 message="Are you sure you want to delete this comment? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+            />
+            <ConfirmationModal
+                isOpen={deletingReply !== null}
+                onClose={() => setDeletingReply(null)}
+                onConfirm={confirmDeleteReply}
+                title="Delete Reply"
+                message="Are you sure you want to delete this reply? This action cannot be undone."
                 confirmText="Delete"
                 isDestructive={true}
             />

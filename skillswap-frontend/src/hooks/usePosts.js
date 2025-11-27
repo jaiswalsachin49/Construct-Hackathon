@@ -183,6 +183,32 @@ export const usePosts = () => {
         }
     };
 
+    const addReply = async (postId, commentId, content) => {
+        try {
+            const data = await postService.addReply(postId, commentId, content);
+            // Update the entire comments array from the response
+            store.updatePost(postId, { comments: data.comments });
+            return data;
+        } catch (error) {
+            console.error('Failed to add reply:', error);
+            throw error;
+        }
+    };
+
+    const deleteReply = async (postId, commentId, replyId) => {
+        try {
+            await postService.deleteReply(postId, commentId, replyId);
+            // Re-fetch or update manually
+            // For now, we can fetch the updated post to get fresh comments
+            // Or implement a manual update in the store
+            // Let's just trigger a re-render by touching the post
+            store.updatePost(postId, { updatedAt: Date.now() });
+        } catch (error) {
+            console.error('Failed to delete reply:', error);
+            throw error;
+        }
+    };
+
     return {
         feedPosts: store.feedPosts,
         isLoading: store.isLoading,
@@ -194,6 +220,8 @@ export const usePosts = () => {
         toggleLike,
         addComment,
         deleteComment,
+        addReply,
+        deleteReply,
         removePostFromFeed: store.deletePost, // Alias for feed page
     };
 };

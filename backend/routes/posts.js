@@ -14,6 +14,8 @@ router.post('/:postId/like', authenticateToken, postController.toggleLike);
 router.get('/:postId/likes', authenticateToken, postController.getPostLikes); // New route
 router.post('/:postId/comment', authenticateToken, postController.addComment);
 router.delete('/:postId/comment/:commentId', authenticateToken, postController.deleteComment);
+router.post('/:postId/comment/:commentId/reply', authenticateToken, postController.addReply);
+router.delete('/:postId/comment/:commentId/reply/:replyId', authenticateToken, postController.deleteReply);
 router.post('/:postId/share', authenticateToken, postController.sharePost);
 
 module.exports = router;
