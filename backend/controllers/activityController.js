@@ -21,6 +21,46 @@ exports.getActivities = async (req, res) => {
     }
 };
 
+// Get past activities for the current user
+exports.getPastActivities = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const now = new Date();
+
+        // Find all activities where user was participant
+        const userActivities = await Activity.find({
+            $or: [
+                { host: userId },
+                { attendees: userId }
+            ]
+        })
+            .populate('host', 'name profilePhoto bio')
+            .populate('attendees', 'name profilePhoto')
+            .sort({ time: -1 });
+
+        // Filter for past activities
+        const pastActivities = userActivities.filter(activity => {
+            if (activity.expireAt) {
+                return new Date(activity.expireAt) < now;
+            } else if (activity.time && activity.endTime) {
+                try {
+                    const datePart = activity.time.split('T')[0];
+                    const endDateTime = new Date(`${datePart}T${activity.endTime}:00`);
+                    return endDateTime < now;
+                } catch (e) {
+                    return false;
+                }
+            }
+            return false;
+        });
+
+        res.json(pastActivities);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 // Create a new activity
 exports.createActivity = async (req, res) => {
     try {

@@ -242,6 +242,23 @@ const ActivitiesMap = () => {
     toast.success(`Moved to ${place.display_name.split(',')[0]}`);
   };
 
+  // Helper to check if activity is past
+  const isActivityPast = (activity) => {
+    const now = new Date();
+    let activityEnd = null;
+    if (activity.expireAt) {
+        activityEnd = new Date(activity.expireAt);
+    } else if (activity.time && activity.endTime) {
+        try {
+            const datePart = activity.time.split('T')[0];
+            activityEnd = new Date(`${datePart}T${activity.endTime}:00`);
+        } catch (e) {
+            return false;
+        }
+    }
+    return activityEnd && activityEnd < now;
+  };
+
   return (
     <div className="flex-1 h-full relative z-0">
       <MapContainer
@@ -268,7 +285,9 @@ const ActivitiesMap = () => {
           })}
         />
 
-        {activities.map((activity) => (
+        {activities
+            .filter(activity => !isActivityPast(activity))
+            .map((activity) => (
           <Marker
             key={activity._id}
             position={activity.coordinates}
