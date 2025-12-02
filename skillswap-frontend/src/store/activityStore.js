@@ -11,6 +11,7 @@ const getAuthHeader = () => {
 
 const useActivityStore = create((set, get) => ({
     activities: [],
+    pastActivities: [],
     selectedActivity: null,
     userLocation: [12.9716, 77.5946], // Default to Bangalore
     filters: {
@@ -31,6 +32,20 @@ const useActivityStore = create((set, get) => ({
         } catch (error) {
             console.error('Error fetching activities:', error);
             set({ error: error.message, loading: false });
+        }
+    },
+
+    fetchPastActivities: async () => {
+        try {
+            console.log('[Store] Fetching past activities from:', `${API_URL}/past`);
+            const response = await axios.get(`${API_URL}/past`, {
+                headers: getAuthHeader()
+            });
+            console.log('[Store] Past activities response:', response.data);
+            set({ pastActivities: response.data });
+        } catch (error) {
+            console.error('Error fetching past activities:', error);
+            console.error('Error details:', error.response?.data);
         }
     },
 

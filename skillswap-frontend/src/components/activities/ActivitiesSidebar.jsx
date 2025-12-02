@@ -31,10 +31,30 @@ const ActivitiesSidebar = () => {
     return R * c;
   };
 
+  // Helper to check if activity is past
+  const isActivityPast = (activity) => {
+    const now = new Date();
+    let activityEnd = null;
+    if (activity.expireAt) {
+        activityEnd = new Date(activity.expireAt);
+    } else if (activity.time && activity.endTime) {
+        try {
+            const datePart = activity.time.split('T')[0];
+            activityEnd = new Date(`${datePart}T${activity.endTime}:00`);
+        } catch (e) {
+            return false;
+        }
+    }
+    return activityEnd && activityEnd < now;
+  };
+
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       activity.location.toLowerCase().includes(filters.search.toLowerCase());
     const matchesCategory = filters.category === 'All' || activity.category === filters.category;
+
+    // Filter out past activities
+    const isPast = isActivityPast(activity);
 
     // Distance filtering
     let withinDistance = true;
@@ -48,7 +68,7 @@ const ActivitiesSidebar = () => {
       withinDistance = distance <= filters.distanceRange;
     }
 
-    return matchesSearch && matchesCategory && withinDistance;
+    return matchesSearch && matchesCategory && withinDistance && !isPast;
   });
 
   const handleCardMouseMove = (activityId, e, cardRef) => {

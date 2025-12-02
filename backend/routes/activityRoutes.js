@@ -8,6 +8,11 @@ const auth = require('../middlewares/auth'); // Assuming you have an auth middle
 // @access  Private (or Public depending on reqs, let's say Private for now)
 router.get('/', auth, activityController.getActivities);
 
+// @route   GET api/activities/past
+// @desc    Get past activities for current user
+// @access  Private
+router.get('/past', auth, activityController.getPastActivities);
+
 // @route   POST api/activities
 // @desc    Create an activity
 // @access  Private
