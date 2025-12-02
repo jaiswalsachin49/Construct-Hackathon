@@ -52,6 +52,26 @@ const useActivityStore = create((set, get) => ({
         }
     },
 
+    updateActivity: async (activityId, updateData) => {
+        try {
+            const response = await axios.put(`${API_URL}/${activityId}`, updateData, {
+                headers: getAuthHeader()
+            });
+            set((state) => ({
+                activities: state.activities.map(a =>
+                    a._id === activityId ? response.data : a
+                ),
+                selectedActivity: state.selectedActivity?._id === activityId
+                    ? response.data
+                    : state.selectedActivity
+            }));
+            return response.data;
+        } catch (error) {
+            console.error('Error updating activity:', error);
+            throw error;
+        }
+    },
+
     joinActivity: async (activityId) => {
         try {
             const response = await axios.post(`${API_URL}/${activityId}/join`, {}, {

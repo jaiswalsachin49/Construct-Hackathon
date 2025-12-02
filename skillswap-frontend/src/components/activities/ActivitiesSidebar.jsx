@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { Search, MapPin, Users, Music, Utensils, Zap, Filter, Plus } from 'lucide-react';
+import { Search, MapPin, Users, Music, Utensils, Zap, Filter, Plus, History } from 'lucide-react';
 import useActivityStore from '../../store/activityStore';
 import CreateActivityModal from './CreateActivityModal';
+import PastActivitiesModal from './PastActivitiesModal';
 
 const ActivitiesSidebar = () => {
   const { activities, filters, setFilter, selectActivity, selectedActivity, userLocation } = useActivityStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPastModalOpen, setIsPastModalOpen] = useState(false);
   const [cardMousePositions, setCardMousePositions] = useState({});
 
   const categories = [
@@ -66,13 +68,22 @@ const ActivitiesSidebar = () => {
       <div className="p-4 space-y-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">Live Meetup Spots</h2>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-2 bg-[#3B82F6]/20 text-[#3B82F6] rounded-lg hover:bg-[#3B82F6]/30 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="text-sm font-bold">Create</span>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsPastModalOpen(true)}
+              className="p-2 bg-white/5 text-gray-400 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
+              title="Past Events"
+            >
+              <History className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-[#00C4FF]/20 text-[#00C4FF] rounded-lg hover:bg-[#00C4FF]/30 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="text-sm font-bold">Create</span>
+            </button>
+          </div>
         </div>
 
         {/* Search */}
@@ -210,9 +221,17 @@ const ActivitiesSidebar = () => {
         )}
       </div>
 
-      <CreateActivityModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CreateActivityModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+      <PastActivitiesModal 
+        isOpen={isPastModalOpen} 
+        onClose={() => setIsPastModalOpen(false)} 
+      />
     </div>
   );
 };
 
 export default ActivitiesSidebar;
+
