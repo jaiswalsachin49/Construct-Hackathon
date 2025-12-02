@@ -19,7 +19,7 @@ exports.getActivities = async (req, res) => {
 // Create a new activity
 exports.createActivity = async (req, res) => {
     try {
-        const { title, category, time, startTime, endTime, location, coordinates, description, isOnline } = req.body;
+        const { title, category, time, startTime, endTime, location, coordinates, description, isOnline, meetingLink } = req.body;
 
         // Calculate expireAt based on date from time field and endTime
         // time is in format "YYYY-MM-DDTHH:MM", endTime is "HH:MM"
@@ -57,6 +57,7 @@ exports.createActivity = async (req, res) => {
             description,
             isOnline,
             attendees: [],
+            meetingLink: isOnline ? meetingLink : undefined,
             ...(expireDateTime && { expireAt: expireDateTime }) // Only add if valid
         });
 
@@ -127,6 +128,64 @@ exports.leaveActivity = async (req, res) => {
             .populate('attendees', 'name profilePhoto');
 
         res.json(updatedActivity);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// Update an activity
+exports.updateActivity = async (req, res) => {
+    try {
+        const { title, category, time, startTime, endTime, location, coordinates, description, isOnline, meetingLink, recordingLink } = req.body;
+
+        let activity = await Activity.findById(req.params.id);
+
+        if (!activity) {
+            return res.status(404).json({ msg: 'Activity not found' });
+        }
+
+        // Check user
+        if (activity.host.toString() !== req.user.userId) {
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        // Build update object
+        const activityFields = {};
+        if (title) activityFields.title = title;
+        if (category) activityFields.category = category;
+        if (time) activityFields.time = time;
+        if (startTime) activityFields.startTime = startTime;
+        if (endTime) activityFields.endTime = endTime;
+        if (location) activityFields.location = location;
+        if (coordinates) activityFields.coordinates = coordinates;
+        if (description) activityFields.description = description;
+        if (typeof isOnline !== 'undefined') activityFields.isOnline = isOnline;
+        if (meetingLink) activityFields.meetingLink = meetingLink;
+        if (recordingLink) activityFields.recordingLink = recordingLink;
+
+        // Recalculate expireAt if time/endTime changed
+        if (time && endTime) {
+            try {
+                const datePart = time.split('T')[0];
+                const expireDateTimeStr = `${datePart}T${endTime}:00`;
+                const expireDateTime = new Date(expireDateTimeStr);
+                if (!isNaN(expireDateTime.getTime())) {
+                    activityFields.expireAt = expireDateTime;
+                }
+            } catch (e) {
+                console.error("Error recalculating expireAt on update", e);
+            }
+        }
+
+        activity = await Activity.findByIdAndUpdate(
+            req.params.id,
+            { $set: activityFields },
+            { new: true }
+        ).populate('host', 'name profilePhoto bio')
+            .populate('attendees', 'name profilePhoto');
+
+        res.json(activity);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

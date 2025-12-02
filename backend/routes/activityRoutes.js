@@ -23,6 +23,11 @@ router.post('/:id/join', auth, activityController.joinActivity);
 // @access  Private
 router.post('/:id/leave', auth, activityController.leaveActivity);
 
+// @route   PUT api/activities/:id
+// @desc    Update an activity
+// @access  Private
+router.put('/:id', auth, activityController.updateActivity);
+
 // @route   DELETE api/activities/:id
 // @desc    Delete an activity
 // @access  Private

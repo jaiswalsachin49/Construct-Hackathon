@@ -137,6 +137,50 @@ const ActivityDetails = () => {
                         <p>{selectedActivity.description}</p>
                     </div>
 
+                    {/* Online Event Links */}
+                    {(selectedActivity.isOnline && (isJoined || isHost)) && (
+                        <div className="space-y-3 p-4 bg-[#101726] rounded-xl border border-white/5">
+                            {selectedActivity.meetingLink && (
+                                <div>
+                                    <p className="text-xs font-medium text-gray-400 mb-1">Meeting Link</p>
+                                    <a 
+                                        href={selectedActivity.meetingLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-[#3B82F6] hover:underline text-sm break-all"
+                                    >
+                                        <Globe className="h-4 w-4" />
+                                        {selectedActivity.meetingLink}
+                                    </a>
+                                </div>
+                            )}
+
+                            {selectedActivity.recordingLink && (
+                                <div>
+                                    <p className="text-xs font-medium text-gray-400 mb-1">Recording</p>
+                                    <a 
+                                        href={selectedActivity.recordingLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-red-400 hover:underline text-sm break-all"
+                                    >
+                                        <div className="w-4 h-4 rounded-full bg-red-500/20 flex items-center justify-center">
+                                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                        </div>
+                                        Watch Recording
+                                    </a>
+                                </div>
+                            )}
+
+                            {isHost && (
+                                <div className="pt-2 border-t border-white/5 mt-2">
+                                    <p className="text-xs font-medium text-gray-400 mb-2">Host Controls</p>
+                                    <RecordingLinkInput activity={selectedActivity} />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Attendees */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
@@ -211,6 +255,57 @@ const ActivityDetails = () => {
                 confirmText="Leave"
                 isDestructive={false}
             />
+        </div>
+    );
+};
+
+
+
+const RecordingLinkInput = ({ activity }) => {
+    const { updateActivity } = useActivityStore();
+    const [link, setLink] = useState(activity.recordingLink || '');
+    const [isEditing, setIsEditing] = useState(!activity.recordingLink);
+    const [loading, setLoading] = useState(false);
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            await updateActivity(activity._id, { recordingLink: link });
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to update recording link", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isEditing && activity.recordingLink) {
+        return (
+            <button 
+                onClick={() => setIsEditing(true)}
+                className="text-xs text-[#3B82F6] hover:text-[#60A5FA]"
+            >
+                Edit Recording Link
+            </button>
+        );
+    }
+
+    return (
+        <div className="flex gap-2">
+            <input
+                type="url"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                placeholder="Paste recording link..."
+                className="flex-1 bg-black/20 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-[#3B82F6] focus:outline-none"
+            />
+            <button
+                onClick={handleSave}
+                disabled={loading}
+                className="px-3 py-1 bg-[#3B82F6] text-white text-xs rounded hover:bg-[#2563EB] disabled:opacity-50"
+            >
+                {loading ? 'Saving...' : 'Save'}
+            </button>
         </div>
     );
 };

@@ -55,6 +55,14 @@ const activitySchema = new mongoose.Schema({
   },
   expireAt: {
     type: Date
+  },
+  meetingLink: {
+    type: String,
+    trim: true
+  },
+  recordingLink: {
+    type: String,
+    trim: true
   }
 });
 

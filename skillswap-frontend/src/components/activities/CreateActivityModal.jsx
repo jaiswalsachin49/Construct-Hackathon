@@ -158,7 +158,8 @@ const CreateActivityModal = ({ isOpen, onClose }) => { // Keep isOpen prop for c
       },
       description: formData.description,
       maxParticipants: parseInt(formData.maxParticipants, 10),
-      isOnline: formData.isOnline // Keep this from original
+      isOnline: formData.isOnline,
+      meetingLink: formData.isOnline ? formData.meetingLink : undefined
     };
 
     try {
@@ -339,18 +340,34 @@ const CreateActivityModal = ({ isOpen, onClose }) => { // Keep isOpen prop for c
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, isOnline: !formData.isOnline })}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${formData.isOnline
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/50'
-                      : 'bg-white/5 text-gray-400 border border-white/10'
-                      }`}
-                  >
-                    <Globe className="h-3 w-3" />
-                    {formData.isOnline ? 'Online Event' : 'In-Person Event'}
-                  </button>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, isOnline: !formData.isOnline })}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${formData.isOnline
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/50'
+                        : 'bg-white/5 text-gray-400 border border-white/10'
+                        }`}
+                    >
+                      <Globe className="h-3 w-3" />
+                      {formData.isOnline ? 'Online Event' : 'In-Person Event'}
+                    </button>
+                  </div>
+
+                  {formData.isOnline && (
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                      <label className="block text-xs font-medium text-gray-400 mb-1">Google Meet Link</label>
+                      <input
+                        type="url"
+                        value={formData.meetingLink || ''}
+                        onChange={(e) => setFormData({ ...formData, meetingLink: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-[#3B82F6] focus:outline-none placeholder-gray-600"
+                        placeholder="https://meet.google.com/..."
+                        required={formData.isOnline}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
