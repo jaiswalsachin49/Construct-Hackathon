@@ -5,7 +5,12 @@ const Message = require('../models/Message');
 // Get all activities
 exports.getActivities = async (req, res) => {
     try {
-        const activities = await Activity.find()
+        const activities = await Activity.find({
+            $or: [
+                { expireAt: { $gt: new Date() } },
+                { expireAt: { $exists: false } }
+            ]
+        })
             .populate('host', 'name profilePhoto bio')
             .populate('attendees', 'name profilePhoto')
             .sort({ createdAt: -1 });
