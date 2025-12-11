@@ -168,7 +168,6 @@ const ProfilePage = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                             {displayUser.name}
-                            {displayUser.isVerified && <span className="text-[#3B82F6]" title="Verified">✓</span>}
                         </h1>
 
                         {/* Meta Info */}
