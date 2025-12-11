@@ -118,7 +118,16 @@ const register = async (req, res) => {
     await user.save();
 
     // Send Verification Email
-    sendVerificationEmail(user.email, verificationCode);
+    const emailResult = await sendVerificationEmail(user.email, verificationCode);
+
+    // If email sending FAILS, delete the user so they can try again (Atomic-like behavior)
+    if (!emailResult.success) {
+      await User.findByIdAndDelete(user._id);
+      return res.status(500).json({
+        error: "Failed to send verification email. Please try again.",
+        details: emailResult.error
+      });
+    }
 
     // STRICT VERIFICATION: Do NOT send token. User must verify first.
     // const token = generateToken(user._id);
