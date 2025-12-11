@@ -234,7 +234,5 @@ module.exports = {
   getCurrentUser,
   logout,
   refreshToken,
-  changePassword,
-  verifyEmail,
-  resendVerification
+  changePassword
 };

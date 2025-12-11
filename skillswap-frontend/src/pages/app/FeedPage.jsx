@@ -11,15 +11,19 @@ const FeedPage = () => {
     const { feedPosts, isLoading, error, fetchFeed, removePostFromFeed } = usePosts();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [feedType, setFeedType] = useState('allies'); // 'allies' | 'global'
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const observerRef = useRef(null);
     const loadMoreRef = useRef(null);
 
+    // Reset and load when feedType changes
     useEffect(() => {
+        setPage(1);
+        setHasMore(true);
         const loadInitial = async () => {
             try {
-                const data = await fetchFeed(1);
+                const data = await fetchFeed(1, feedType);
                 if (data) setHasMore(data.hasMore);
             } catch (err) {
                 console.error(err);
@@ -27,7 +31,7 @@ const FeedPage = () => {
         };
         loadInitial();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [feedType]);
 
     useEffect(() => {
         // Intersection Observer for infinite scroll
@@ -36,7 +40,7 @@ const FeedPage = () => {
                 if (entries[0].isIntersecting && !isLoading && hasMore) {
                     const nextPage = page + 1;
                     setPage(nextPage);
-                    fetchFeed(nextPage).then(data => {
+                    fetchFeed(nextPage, feedType).then(data => {
                         if (data) setHasMore(data.hasMore);
                     }).catch(err => {
                         console.error(err);
@@ -57,7 +61,7 @@ const FeedPage = () => {
                 observerRef.current.disconnect();
             }
         };
-    }, [page, isLoading, hasMore]);
+    }, [page, isLoading, hasMore, feedType]);
 
     const getInitials = (name) => {
         if (!name) return 'U';
@@ -107,6 +111,28 @@ const FeedPage = () => {
                         <span className="text-sm font-medium text-[#E6E9EF]">Post</span>
                     </button>
                 </div>
+            </div>
+
+            {/* Feed Toggle */}
+            <div className="flex bg-[#1A2333]/50 p-1 rounded-xl border border-white/5 backdrop-blur-sm">
+                <button
+                    onClick={() => setFeedType('allies')}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${feedType === 'allies'
+                        ? 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white shadow-lg'
+                        : 'text-[#8A90A2] hover:text-white hover:bg-white/5'
+                        }`}
+                >
+                    Allies Only
+                </button>
+                <button
+                    onClick={() => setFeedType('global')}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${feedType === 'global'
+                        ? 'bg-gradient-to-r from-[#EC4899] to-[#DB2777] text-white shadow-lg'
+                        : 'text-[#8A90A2] hover:text-white hover:bg-white/5'
+                        }`}
+                >
+                    Global Explore
+                </button>
             </div>
 
             {/* Error State */}
@@ -164,7 +190,7 @@ const FeedPage = () => {
                                 onClick={() => {
                                     setPage(1);
                                     setHasMore(true);
-                                    fetchFeed(1).then(data => {
+                                    fetchFeed(1, feedType).then(data => {
                                         if (data) setHasMore(data.hasMore);
                                     });
                                 }}
