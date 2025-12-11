@@ -27,10 +27,18 @@ app.use(cors(
 app.use(express.json());
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// // Rate limiting
+// Rate limiting
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/', apiLimiter);
+
+// Security Middleware
+// Security Middleware
+const helmet = require('helmet');
+const hpp = require('hpp');
+
+app.use(helmet()); // Set security headers
+app.use(hpp()); // Prevent HTTP Param Pollution
 
 // Make io accessible to routes
 app.set('io', io);
