@@ -512,7 +512,29 @@ exports.createCommunityPost = async (req, res) => {
 exports.getUserPosts = async (req, res) => {
     try {
         const { userId } = req.params;
-        const posts = await Post.find({ userId })
+        const requesterId = req.user.userId;
+
+        // Determine filter based on relationship
+        let filter = { userId };
+
+        // If requester is NOT the author
+        if (userId !== requesterId) {
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Check if requester is an ally
+            const isAlly = user.allies.includes(requesterId);
+
+            // If NOT an ally, restrict to public posts only
+            if (!isAlly) {
+                filter.visibility = 'public';
+            }
+            // If IS an ally, they see everything (no extra filter needed)
+        }
+
+        const posts = await Post.find(filter)
             .populate('userId', 'name profilePhoto')
             .populate('comments.userId', 'name profilePhoto')
             .populate('comments.replies.userId', 'name profilePhoto')
