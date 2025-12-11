@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { sendVerificationEmail } = require('../utils/emailService');
+const { hasProfanity } = require('../utils/contentFilter');
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -28,6 +30,14 @@ const register = async (req, res) => {
 
     if (!name?.trim()) {
       return res.status(400).json({ error: "Name is required" });
+    }
+
+    if (hasProfanity(name)) {
+      return res.status(400).json({ error: "Name contains inappropriate language" });
+    }
+
+    if (bio && hasProfanity(bio)) {
+      return res.status(400).json({ error: "Bio contains inappropriate language" });
     }
 
     if (!email?.trim()) {
@@ -85,6 +95,9 @@ const register = async (req, res) => {
     //  CREATE USER DOCUMENT
     // ---------------------------
 
+    // Generate 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     const user = new User({
       name: name.trim(),
       email: email.trim(),
@@ -97,12 +110,18 @@ const register = async (req, res) => {
         lat: location.lat,
         lng: location.lng,
         areaLabel: location.areaLabel.trim()
-      }
+      },
+      verificationCode,
+      isVerified: false
     });
 
     await user.save();
 
-    const token = generateToken(user._id);
+    // Send Verification Email
+    sendVerificationEmail(user.email, verificationCode);
+
+    // STRICT VERIFICATION: Do NOT send token. User must verify first.
+    // const token = generateToken(user._id);
 
     // ---------------------------
     //  RESPONSE
@@ -110,7 +129,8 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      token,
+      // token, // OMITTED to enforce verification
+      message: "Registration successful. Please check your email to verify your account.",
       user: {
         _id: user._id,
         name: user.name,
@@ -118,7 +138,8 @@ const register = async (req, res) => {
         location: user.location,
         teachTags: user.teachTags,
         learnTags: user.learnTags,
-        profilePhoto: user.profilePhoto
+        profilePhoto: user.profilePhoto,
+        isVerified: user.isVerified
       }
     });
   } catch (error) {
@@ -142,6 +163,19 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // STRICT VERIFICATION CHECK (Only for new users created after Dec 12, 2025)
+    // We strictly enforce this for users created AFTER this feature implementation.
+    // Existing users are 'grandfathered' in to avoid lockout.
+    const VERIFICATION_ENFORCEMENT_DATE = new Date('2025-12-11T00:00:00.000Z'); // Today
+
+    // Check if user is NEW (created after enforcement date) AND NOT verified
+    if (user.createdAt > VERIFICATION_ENFORCEMENT_DATE && !user.isVerified) {
+      return res.status(403).json({
+        error: 'Account not verified. Please verify your email.',
+        isVerified: false
+      });
+    }
+
     const token = generateToken(user._id);
 
     res.json({
@@ -152,13 +186,81 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         profilePhoto: user.profilePhoto,
-        location: user.location
+        location: user.location,
+        isVerified: user.isVerified
       }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Verify Email
+const verifyEmail = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ error: "Email and code are required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: "User is already verified" });
+    }
+
+    if (user.verificationCode !== code) {
+      return res.status(400).json({ error: "Invalid verification code" });
+    }
+
+    user.isVerified = true;
+    user.verificationCode = undefined; // Clear code after successful verification
+    await user.save();
+
+    res.json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Resend Verification Code
+const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: "User is already verified" });
+    }
+
+    // Generate new code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationCode = verificationCode;
+    await user.save();
+
+    // Send email
+    await sendVerificationEmail(user.email, verificationCode);
+
+    res.json({ success: true, message: "Verification code resent" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 // Get current user
 const getCurrentUser = async (req, res) => {
@@ -219,5 +321,7 @@ module.exports = {
   getCurrentUser,
   logout,
   refreshToken,
-  changePassword
+  changePassword,
+  verifyEmail,
+  resendVerification
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, ArrowLeft, Loader2, Upload, X } from 'lucide-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Button from '../../components/common/Button';
@@ -164,11 +164,17 @@ const RegisterPage = () => {
         setLocationSuggestions([]);
     };
 
+    const navigate = useNavigate(); // Make sure to import useNavigate from react-router-dom if not already imported
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateStep4()) return;
 
-        await registerUser({ ...formData });
+        const result = await registerUser({ ...formData });
+
+        if (result.success && result.requiresVerification) {
+            navigate('/auth/verify-email', { state: { email: formData.email } });
+        }
     };
 
     // ------------------------------ STEP COMPONENTS ------------------------------ //

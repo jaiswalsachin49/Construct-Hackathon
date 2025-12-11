@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Community = require('../models/Community');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
+const { hasProfanity } = require('../utils/contentFilter');
 
 // Get feed for allies only
 exports.getFeed = async (req, res) => {
@@ -94,6 +95,10 @@ exports.createPost = async (req, res) => {
     try {
         const { content, tags, visibility, communityId } = req.body;
         const userId = req.user.userId;
+
+        if (hasProfanity(content)) {
+            return res.status(400).json({ error: 'Content contains inappropriate language' });
+        }
 
         // Upload media to Cloudinary
         const media = [];
@@ -190,6 +195,10 @@ exports.updatePost = async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
+        if (content && hasProfanity(content)) {
+            return res.status(400).json({ error: 'Content contains inappropriate language' });
+        }
+
         post.content = content || post.content;
         post.tags = tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : post.tags;
         post.visibility = visibility || post.visibility;
@@ -283,6 +292,10 @@ exports.addComment = async (req, res) => {
 
         if (!content || content.trim().length === 0) {
             return res.status(400).json({ error: 'Comment content required' });
+        }
+
+        if (hasProfanity(content)) {
+            return res.status(400).json({ error: 'Content contains inappropriate language' });
         }
 
         const post = await Post.findById(req.params.postId);
