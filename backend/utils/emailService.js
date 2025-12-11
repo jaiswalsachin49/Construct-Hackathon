@@ -9,12 +9,19 @@ if (!emailUser || !emailPass) {
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
+    port: 465, // Use 465 for secure
     secure: true,
     auth: {
         user: emailUser,
         pass: emailPass
-    }
+    },
+    // Debugging options for Render
+    logger: true,
+    debug: true,
+    // Increase timeouts
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 5000,    // 5 seconds
+    socketTimeout: 20000      // 20 seconds
 });
 
 /**
