@@ -52,11 +52,6 @@ export const useAuth = () => {
 
             const data = await registerUser(userData);
 
-            // CHANGED: If no token is returned, it means email verification is required
-            if (!data.token) {
-                return { success: true, requiresVerification: true };
-            }
-
             setToken(data.token);
             setUser(data.user);
 

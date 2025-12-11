@@ -117,32 +117,53 @@ const RegisterPage = () => {
     };
 
     const handleDetectLocation = () => {
-        if (!navigator.geolocation) {
-            setErrors({ location: 'Geolocation not supported' });
-            return;
-        }
         setDetectingLocation(true);
-        navigator.geolocation.getCurrentPosition(
-            ({ coords }) => {
-                setFormData((prev) => ({
-                    ...prev,
-                    location: {
-                        lat: coords.latitude,
-                        lng: coords.longitude,
-                        areaLabel:
-                            prev.location.areaLabel ||
-                            `Lat: ${coords.latitude.toFixed(4)}, Lng: ${coords.longitude.toFixed(4)}`,
-                    },
-                }));
-                // Clear error if detection succeeds
-                if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
-                setDetectingLocation(false);
-            },
-            () => {
-                setErrors((prev) => ({ ...prev, location: 'Could not detect location' }));
+        if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
+
+        const success = ({ coords }) => {
+            setFormData((prev) => ({
+                ...prev,
+                location: {
+                    lat: coords.latitude,
+                    lng: coords.longitude,
+                    areaLabel: prev.location.areaLabel || `Lat: ${coords.latitude.toFixed(4)}, Lng: ${coords.longitude.toFixed(4)}`,
+                },
+            }));
+            setDetectingLocation(false);
+        };
+
+        const error = async () => {
+            // FALLBACK: IP Localization
+            try {
+                // console.log('Geolocation failed, trying IP fallback...');
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                if (data.latitude && data.longitude) {
+                    setFormData((prev) => ({
+                        ...prev,
+                        location: {
+                            lat: data.latitude,
+                            lng: data.longitude,
+                            areaLabel: `${data.city}, ${data.region}`
+                        },
+                    }));
+                } else {
+                    throw new Error('IP Location failed');
+                }
+            } catch (err) {
+                console.error(err);
+                setErrors((prev) => ({ ...prev, location: 'Could not detect location. Please type manually.' }));
+            } finally {
                 setDetectingLocation(false);
             }
-        );
+        };
+
+        if (!navigator.geolocation) {
+            error();
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(success, error);
     };
 
     // Location Search Handler
@@ -174,11 +195,7 @@ const RegisterPage = () => {
         e.preventDefault();
         if (!validateStep4()) return;
 
-        const result = await registerUser({ ...formData });
-
-        if (result.success && result.requiresVerification) {
-            navigate('/auth/verify-email', { state: { email: formData.email } });
-        }
+        await registerUser({ ...formData });
     };
 
     // ------------------------------ STEP COMPONENTS ------------------------------ //

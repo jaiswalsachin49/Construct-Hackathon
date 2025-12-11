@@ -48,18 +48,8 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "Passwords do not match" });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      const VERIFICATION_ENFORCEMENT_DATE = new Date('2025-12-11T00:00:00.000Z');
-
-      // If user is verified OR is a legacy user (created before enforcement), BLOCK them.
-      if (existingUser.isVerified || existingUser.createdAt < VERIFICATION_ENFORCEMENT_DATE) {
-        return res.status(409).json({ error: "Email already exists" });
-      }
-
-      // If we are here, the user is NEW (created recently) and NOT verified.
-      // This is a "stuck" registration. We will delete it and let the code below create a fresh one.
-      await User.findByIdAndDelete(existingUser._id);
+    if (await User.findOne({ email })) {
+      return res.status(409).json({ error: "Email already exists" });
     }
 
     if (!teachTags?.length || !learnTags?.length) {
@@ -105,9 +95,6 @@ const register = async (req, res) => {
     //  CREATE USER DOCUMENT
     // ---------------------------
 
-    // Generate 6-digit verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
     const user = new User({
       name: name.trim(),
       email: email.trim(),
@@ -121,26 +108,13 @@ const register = async (req, res) => {
         lng: location.lng,
         areaLabel: location.areaLabel.trim()
       },
-      verificationCode,
-      isVerified: false
+      isVerified: true // Default to true now
     });
 
     await user.save();
 
-    // Send Verification Email
-    const emailResult = await sendVerificationEmail(user.email, verificationCode);
-
-    // If email sending FAILS, delete the user so they can try again (Atomic-like behavior)
-    if (!emailResult.success) {
-      await User.findByIdAndDelete(user._id);
-      return res.status(500).json({
-        error: "Failed to send verification email. Please try again.",
-        details: emailResult.error
-      });
-    }
-
-    // STRICT VERIFICATION: Do NOT send token. User must verify first.
-    // const token = generateToken(user._id);
+    // Generate token immediately
+    const token = generateToken(user._id);
 
     // ---------------------------
     //  RESPONSE
@@ -148,8 +122,8 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      // token, // OMITTED to enforce verification
-      message: "Registration successful. Please check your email to verify your account.",
+      token,
+      message: "Registration successful.",
       user: {
         _id: user._id,
         name: user.name,
@@ -157,8 +131,7 @@ const register = async (req, res) => {
         location: user.location,
         teachTags: user.teachTags,
         learnTags: user.learnTags,
-        profilePhoto: user.profilePhoto,
-        isVerified: user.isVerified
+        profilePhoto: user.profilePhoto
       }
     });
   } catch (error) {
@@ -182,19 +155,6 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // STRICT VERIFICATION CHECK (Only for new users created after Dec 12, 2025)
-    // We strictly enforce this for users created AFTER this feature implementation.
-    // Existing users are 'grandfathered' in to avoid lockout.
-    const VERIFICATION_ENFORCEMENT_DATE = new Date('2025-12-11T00:00:00.000Z'); // Today
-
-    // Check if user is NEW (created after enforcement date) AND NOT verified
-    if (user.createdAt > VERIFICATION_ENFORCEMENT_DATE && !user.isVerified) {
-      return res.status(403).json({
-        error: 'Account not verified. Please verify your email.',
-        isVerified: false
-      });
-    }
-
     const token = generateToken(user._id);
 
     res.json({
@@ -209,72 +169,6 @@ const login = async (req, res) => {
         isVerified: user.isVerified
       }
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Verify Email
-const verifyEmail = async (req, res) => {
-  try {
-    const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({ error: "Email and code are required" });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({ error: "User is already verified" });
-    }
-
-    if (user.verificationCode !== code) {
-      return res.status(400).json({ error: "Invalid verification code" });
-    }
-
-    user.isVerified = true;
-    user.verificationCode = undefined; // Clear code after successful verification
-    await user.save();
-
-    res.json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Resend Verification Code
-const resendVerification = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({ error: "User is already verified" });
-    }
-
-    // Generate new code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    user.verificationCode = verificationCode;
-    await user.save();
-
-    // Send email
-    await sendVerificationEmail(user.email, verificationCode);
-
-    res.json({ success: true, message: "Verification code resent" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
