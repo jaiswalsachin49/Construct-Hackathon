@@ -12,6 +12,10 @@ const { initializeBadges } = require('./controllers/badgeController');
 dotenv.config();
 
 const app = express();
+
+// Trust Proxy (Required for Render/Heroku load balancers)
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
