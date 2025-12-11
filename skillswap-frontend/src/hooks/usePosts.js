@@ -6,12 +6,14 @@ import * as postService from '../services/postService';
 export const usePosts = () => {
     const store = usePostStore();
 
-    const fetchFeed = useCallback(async (page = 1) => {
+    const fetchFeed = useCallback(async (page = 1, type = 'allies') => {
         try {
             store.setLoading(true);
             store.setError(null);
 
-            const data = await postService.getFeedPosts(page);
+            const data = type === 'global'
+                ? await postService.getGlobalFeed(page)
+                : await postService.getFeedPosts(page);
 
             // Normalize posts so frontend uses `post.user` and `comment.user`
             const raw = data.posts || data;
