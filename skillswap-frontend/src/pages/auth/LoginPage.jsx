@@ -166,12 +166,12 @@ const LoginPage = () => {
                                 Remember me
                             </label>
 
-                            <Link
-                                to="/auth/forgot-password"
+                            <a
+                                href="mailto:skillswapconstruct@gmail.com?subject=Password Reset Request"
                                 className="text-[#60A5FA] text-sm hover:underline"
                             >
                                 Forgot password?
-                            </Link>
+                            </a>
                         </div>
 
                         {/* Submit Button — Blue CTA */}

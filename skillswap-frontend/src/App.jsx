@@ -7,7 +7,6 @@ import "./App.css";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
-import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/app/SettingsPage";
 
@@ -103,7 +102,6 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
-        <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
 
         {/* Your Demo Home */}
         {/* <Route path="/demo-home" element={<DemoHome />} /> */}
