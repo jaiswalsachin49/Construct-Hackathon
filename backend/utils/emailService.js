@@ -25,7 +25,9 @@ const transporter = nodemailer.createTransport({
     debug: true,
     connectionTimeout: 10000,
     greetingTimeout: 5000,
-    socketTimeout: 20000
+    socketTimeout: 20000,
+    // Force IPv4 (Fixes timeouts on some cloud providers like Render)
+    family: 4
 });
 
 if (!resendApiKey) {

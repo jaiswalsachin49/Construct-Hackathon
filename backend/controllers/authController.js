@@ -48,8 +48,18 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "Passwords do not match" });
     }
 
-    if (await User.findOne({ email })) {
-      return res.status(409).json({ error: "Email already exists" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      const VERIFICATION_ENFORCEMENT_DATE = new Date('2025-12-11T00:00:00.000Z');
+
+      // If user is verified OR is a legacy user (created before enforcement), BLOCK them.
+      if (existingUser.isVerified || existingUser.createdAt < VERIFICATION_ENFORCEMENT_DATE) {
+        return res.status(409).json({ error: "Email already exists" });
+      }
+
+      // If we are here, the user is NEW (created recently) and NOT verified.
+      // This is a "stuck" registration. We will delete it and let the code below create a fresh one.
+      await User.findByIdAndDelete(existingUser._id);
     }
 
     if (!teachTags?.length || !learnTags?.length) {

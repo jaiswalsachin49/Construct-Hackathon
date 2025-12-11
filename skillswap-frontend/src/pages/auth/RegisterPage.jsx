@@ -91,6 +91,7 @@ const RegisterPage = () => {
                 ...prev,
                 location: { ...prev.location, areaLabel: value },
             }));
+            if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
             return;
         }
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -133,10 +134,12 @@ const RegisterPage = () => {
                             `Lat: ${coords.latitude.toFixed(4)}, Lng: ${coords.longitude.toFixed(4)}`,
                     },
                 }));
+                // Clear error if detection succeeds
+                if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
                 setDetectingLocation(false);
             },
             () => {
-                setErrors({ location: 'Could not detect location' });
+                setErrors((prev) => ({ ...prev, location: 'Could not detect location' }));
                 setDetectingLocation(false);
             }
         );
@@ -161,6 +164,7 @@ const RegisterPage = () => {
                 areaLabel: place.display_name
             }
         }));
+        if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
         setLocationSuggestions([]);
     };
 
